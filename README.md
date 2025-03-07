@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 导航网站
 
-## Getting Started
+一个收录AI服务和应用的导航网站，方便用户快速访问和检索AI工具。
 
-First, run the development server:
+## 技术栈
+
+- 前端：Next.js + TypeScript + Tailwind CSS
+- 后台：Ant Design
+- 数据库：MySQL
+- 搜索引擎：Elasticsearch
+
+## 功能特点
+
+- 响应式设计，适配各种设备
+- 分类展示AI服务
+- 实时搜索功能
+- 点击统计功能
+- 独立的管理后台
+
+## 开发环境准备
+
+### 前提条件
+
+- Node.js 18+
+- MySQL 8.0+
+- Elasticsearch 7.0+
+
+### 安装依赖
+
+```bash
+npm install
+```
+
+### 配置环境变量
+
+复制`.env.example`文件为`.env`，并根据实际情况修改配置：
+
+```
+# 数据库配置
+DATABASE_URL="mysql://用户名:密码@localhost:3306/数据库名"
+
+# Elasticsearch配置
+ELASTICSEARCH_NODE="http://localhost:9200"
+ELASTICSEARCH_USERNAME=""
+ELASTICSEARCH_PASSWORD=""
+
+# 应用配置
+NEXT_PUBLIC_API_URL="http://localhost:3000/api"
+NEXT_PUBLIC_SITE_NAME="AI导航"
+NEXT_PUBLIC_UPLOAD_DIR="uploads"
+```
+
+### 初始化数据库
+
+```bash
+npx prisma migrate dev --name init
+```
+
+### 启动开发服务器
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+访问 [http://localhost:3000](http://localhost:3000) 查看网站。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 系统初始化
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+首次运行时，访问 [http://localhost:3000/api/init](http://localhost:3000/api/init) 初始化系统，这将创建默认的管理员账户和分类。
 
-## Learn More
+默认管理员账户：
+- 用户名：admin
+- 密码：admin123
 
-To learn more about Next.js, take a look at the following resources:
+## 管理后台
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+访问 [http://localhost:3000/admin](http://localhost:3000/admin) 进入管理后台。
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 部署
 
-## Deploy on Vercel
+### 构建生产版本
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run build
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 启动生产服务器
+
+```bash
+npm start
+```
+
+## 许可证
+
+MIT
