@@ -36,10 +36,3 @@ body {
   max-width: 960px;
   margin: 0 auto;
 }
-
-/* 响应式调整 */
-@media (max-width: 768px) {
-  .container {
-    padding: 0 1rem;
-  }
-}

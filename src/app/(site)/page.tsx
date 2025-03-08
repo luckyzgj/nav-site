@@ -55,8 +55,8 @@ export default async function Home() {
   return (
     <div className="relative">
       {/* 左侧分类导航 - 固定在左侧，不影响主内容宽度 */}
-      <div className="hidden xl:block w-36 fixed left-[max(0px,calc(50%-640px))] top-24 bg-white bg-opacity-70 backdrop-blur-sm shadow-sm rounded-lg p-2 overflow-y-auto max-h-[calc(100vh-120px)] z-10">
-        <h2 className="font-bold text-gray-800 pb-2 border-b border-gray-200">
+      <div className="hidden xl:block w-36 fixed left-[max(0px,calc(50%-640px))] top-24 bg-white bg-opacity-70 backdrop-blur-sm shadow-sm rounded-lg overflow-y-auto max-h-[calc(100vh-120px)] z-10">
+        <h2 className="font-bold text-gray-700 px-3 py-2 border-b-2 border-brand-50">
           分类导航
         </h2>
         <div className="flex flex-col space-y-1 mt-2">
@@ -72,7 +72,7 @@ export default async function Home() {
           ))}
           
           {/* 返回顶部链接 */}
-          <div className="pt-4 mt-2 border-t border-gray-200">
+          <div className="pt-4 mt-2 border-t-2 border-brand-50">
             <BackToTopButton className="flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />

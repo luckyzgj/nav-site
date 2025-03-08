@@ -35,52 +35,57 @@ export default function Navbar({ siteName }: NavbarProps) {
       isScrolled ? 'shadow-md' : 'shadow-sm'
     }`}>
       <div className="container mx-auto px-4 py-4">
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          <Link href="/" className="text-4xl font-bold text-gray-800 mb-4 md:mb-0 flex items-center">
-            <Image src="/logo.svg" alt={siteName} width={48} height={48} className="mr-1" />
-            <div>123<span className="text-normal text-brand-400">.SS</span></div>
-          </Link>
+        <div className="flex flex-col md:flex-row items-center justify-between">
+          {/* 左侧Logo */}
+          <div className="flex items-center mb-4 md:mb-0 md:w-1/4">
+            <Link href="/" className="text-2xl font-bold text-gray-800 flex items-center">
+              <Image src="/logo.svg" alt={siteName} width={40} height={40} className="mr-2" />
+              <div>123<span className="text-normal text-brand-400">.SS</span></div>
+            </Link>
+          </div>
           
-          <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6 w-full md:w-auto">
-            <div className="w-full md:w-auto">
+          {/* 中间搜索框 */}
+          <div className="w-full md:w-2/4 px-4 mb-4 md:mb-0 flex justify-center">
+            <div className="w-full max-w-xl">
               <SearchBox />
             </div>
-            
-            <nav className="mt-4 md:mt-0">
-              <ul className="flex space-x-6">
-                <li>
-                  <Link 
-                    href="/" 
-                    className={`text-gray-600 hover:text-blue-600 transition-colors ${
-                      pathname === '/' ? 'font-semibold text-blue-600' : ''
-                    }`}
-                  >
-                    首页
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    href="/about" 
-                    className={`text-gray-600 hover:text-blue-600 transition-colors ${
-                      pathname === '/about' ? 'font-semibold text-blue-600' : ''
-                    }`}
-                  >
-                    关于
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    href="/admin" 
-                    className={`text-gray-600 hover:text-blue-600 transition-colors ${
-                      pathname === '/admin' ? 'font-semibold text-blue-600' : ''
-                    }`}
-                  >
-                    管理
-                  </Link>
-                </li>
-              </ul>
-            </nav>
           </div>
+          
+          {/* 右侧导航 */}
+          <nav className="md:w-1/4 flex justify-end">
+            <ul className="flex space-x-6">
+              <li>
+                <Link 
+                  href="/" 
+                  className={`text-gray-600 hover:text-blue-600 transition-colors ${
+                    pathname === '/' ? 'font-semibold text-blue-600' : ''
+                  }`}
+                >
+                  首页
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/about" 
+                  className={`text-gray-600 hover:text-blue-600 transition-colors ${
+                    pathname === '/about' ? 'font-semibold text-blue-600' : ''
+                  }`}
+                >
+                  关于
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/admin" 
+                  className={`text-gray-600 hover:text-blue-600 transition-colors ${
+                    pathname === '/admin' ? 'font-semibold text-blue-600' : ''
+                  }`}
+                >
+                  管理
+                </Link>
+              </li>
+            </ul>
+          </nav>
         </div>
       </div>
     </header>

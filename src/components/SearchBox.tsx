@@ -6,6 +6,7 @@ import { SearchIcon } from '@/components/icons/SearchIcon';
 
 export default function SearchBox() {
   const [query, setQuery] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
   const router = useRouter();
 
   const handleSubmit = (e: FormEvent) => {
@@ -16,21 +17,33 @@ export default function SearchBox() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="relative flex-grow max-w-md">
-      <input
-        type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="输入关键词..."
-        className="w-full py-2 pl-4 pr-10 text-sm bg-gray-100 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-      />
-      <button
-        type="submit"
-        className="absolute right-0 top-0 mt-2 mr-3 text-gray-500 hover:text-blue-600"
-        aria-label="搜索"
-      >
-        <SearchIcon className="w-5 h-5" />
-      </button>
+    <form onSubmit={handleSubmit} className="relative w-full">
+      <div className={`flex items-center transition-all duration-200 ${
+        isFocused ? 'bg-white shadow-md' : 'bg-white'
+      } border-2 ${
+        isFocused ? 'border-brand-400' : 'border-brand-100'
+      } rounded-full overflow-hidden`}>
+        <div className="pl-4 text-gray-500">
+          <SearchIcon className="w-5 h-5" />
+        </div>
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          placeholder="搜索服务..."
+          className="w-full py-2 px-3 text-sm bg-transparent border-none focus:outline-none focus:ring-0"
+        />
+        {query && (
+          <button
+            type="submit"
+            className="w-20 m-0.5 px-4 py-1.5 rounded-full bg-brand-400 text-white text-sm font-medium hover:bg-brand-500 transition-colors"
+          >
+            搜索
+          </button>
+        )}
+      </div>
     </form>
   );
 } 
