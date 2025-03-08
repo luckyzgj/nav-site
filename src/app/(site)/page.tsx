@@ -4,6 +4,7 @@ import ServiceCard from '@/components/ServiceCard';
 import { Category, ServiceWithCategory } from '@/types';
 import SmoothScrollScript from '@/components/SmoothScrollScript';
 import BackToTopButton from '@/components/BackToTopButton';
+import CategoryNavStyles from '@/components/CategoryNavStyles';
 
 // 获取所有分类及其网站
 async function getCategoriesWithServices(): Promise<Category[]> {
@@ -63,9 +64,10 @@ export default async function Home() {
             <a
               key={category.id}
               href={`#category-${category.slug}`}
-              className="category-nav-link px-3 py-2 border-l-4 border-transparent hover:border-brand-400 hover:bg-gray-50 transition-colors rounded text-gray-700 hover:text-gray-900"
+              className="category-nav-link px-3 py-2 border-l-4 border-transparent hover:border-brand-400 hover:bg-gray-50 transition-all duration-200 rounded text-gray-700 hover:text-gray-900 relative group"
             >
               {category.name}
+              <span className="absolute inset-0 bg-brand-50 opacity-0 group-[.active-category]:opacity-100 rounded transition-opacity -z-10"></span>
             </a>
           ))}
           
@@ -93,7 +95,8 @@ export default async function Home() {
               <a
                 key={category.id}
                 href={`#category-${category.slug}`}
-                className="px-4 py-2 bg-white border-2 border-brand-100 rounded-full hover:border-brand-200 transition-colors"
+                className="category-nav-link px-4 py-2 bg-white border-2 border-brand-100 hover:border-brand-300 transition-all duration-200 rounded-full text-gray-700 hover:text-gray-900"
+                data-category-id={`category-${category.slug}`}
               >
                 {category.name}
               </a>
@@ -138,6 +141,9 @@ export default async function Home() {
           </BackToTopButton>
         </div>
       </div>
+      
+      {/* 添加分类导航样式 */}
+      <CategoryNavStyles />
       
       {/* 添加平滑滚动功能 */}
       <SmoothScrollScript />
