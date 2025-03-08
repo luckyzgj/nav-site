@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import ServiceCard from './ServiceCard';
 import { Category, Service } from '@/types';
 
@@ -13,9 +14,17 @@ export default function CategorySection({ category, services }: CategorySectionP
   
   return (
     <section id={`category-${category.slug}`} className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-2xl font-bold mb-4 text-gray-800 border-b pb-2">
-        {category.name}
-      </h2>
+      <div className="flex justify-between items-center mb-4 border-b pb-2">
+        <h2 className="text-2xl font-bold text-gray-800">
+          {category.name}
+        </h2>
+        <Link 
+          href={`/category/${category.slug}`}
+          className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+        >
+          更多 &raquo;
+        </Link>
+      </div>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {services.map((service) => (

@@ -22,12 +22,14 @@ import {
 import { ColumnsType } from 'antd/es/table';
 
 const { Title } = Typography;
+const { TextArea } = Input;
 
 // 分类类型定义
 interface Category {
   id: number;
   name: string;
   slug: string;
+  description: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -64,7 +66,7 @@ export default function CategoriesPage() {
   }, []);
 
   // 添加或更新分类
-  const handleSave = async (values: { name: string, slug: string }) => {
+  const handleSave = async (values: { name: string, slug: string, description?: string }) => {
     try {
       const url = editingId 
         ? `/api/admin/categories/${editingId}` 
@@ -122,7 +124,8 @@ export default function CategoriesPage() {
     setEditingId(record.id);
     form.setFieldsValue({ 
       name: record.name,
-      slug: record.slug
+      slug: record.slug,
+      description: record.description || ''
     });
     setModalVisible(true);
   };
@@ -151,6 +154,13 @@ export default function CategoriesPage() {
       title: '英文标识',
       dataIndex: 'slug',
       key: 'slug',
+    },
+    {
+      title: '简介',
+      dataIndex: 'description',
+      key: 'description',
+      ellipsis: true,
+      render: (text) => text || '暂无简介',
     },
     {
       title: '创建时间',
@@ -196,7 +206,7 @@ export default function CategoriesPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <Title level={2}>分类管理</Title>
+        <Title level={2} style={{ margin: 0 }}>分类管理</Title>
         <Button 
           type="primary" 
           icon={<PlusOutlined />} 
@@ -219,6 +229,7 @@ export default function CategoriesPage() {
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={null}
+        width={600}
       >
         <Form
           form={form}
@@ -246,6 +257,19 @@ export default function CategoriesPage() {
             extra="用于URL，只能包含小写字母、数字和连字符，例如：ai-tools"
           >
             <Input placeholder="请输入英文标识" />
+          </Form.Item>
+          
+          <Form.Item
+            name="description"
+            label="分类简介"
+            extra="简要描述该分类的特点和包含的内容"
+          >
+            <TextArea 
+              placeholder="请输入分类简介" 
+              rows={4}
+              showCount
+              maxLength={500}
+            />
           </Form.Item>
           
           <Form.Item className="mb-0 text-right">

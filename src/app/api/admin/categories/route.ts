@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     
     // 解析请求数据
     const body = await request.json();
-    const { name, slug } = body;
+    const { name, slug, description } = body;
     
     // 验证数据
     if (!name || typeof name !== 'string') {
@@ -72,7 +72,15 @@ export async function POST(request: NextRequest) {
     
     // 创建分类
     const category = await prisma.category.create({
-      data: { name, slug } as { name: string; slug: string },
+      data: { 
+        name, 
+        slug,
+        description: description || null 
+      } as { 
+        name: string; 
+        slug: string; 
+        description: string | null;
+      },
     });
     
     return successResponse(category, '创建分类成功');

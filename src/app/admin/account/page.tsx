@@ -9,8 +9,7 @@ import {
   Button, 
   Card, 
   message, 
-  Typography,
-  Divider
+  Typography
 } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
 
@@ -99,9 +98,9 @@ export default function AccountPage() {
       <Title level={2}>账号设置</Title>
       
       <Card title="账号信息" className="mb-6">
-        <div className="py-2">
-          <p className="mb-2">
-            <strong>用户名：</strong> {adminInfo?.username || '加载中...'}
+        <div>
+          <p>
+            <strong>当前用户：</strong> <strong className="text-green-600">{adminInfo?.username || '加载中...'}</strong>
           </p>
         </div>
       </Card>
@@ -122,8 +121,6 @@ export default function AccountPage() {
               placeholder="请输入当前密码" 
             />
           </Form.Item>
-          
-          <Divider />
           
           <Form.Item
             name="newPassword"

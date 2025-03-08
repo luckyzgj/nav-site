@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { verifyAdmin } from '@/utils/auth';
 import { successResponse, unauthorizedResponse, serverErrorResponse } from '@/utils/api';
 
-// 服务类型（包含分类名称）
+// 网站类型（包含分类名称）
 type ServiceWithCategory = {
   id: number;
   name: string;
@@ -19,7 +19,7 @@ type ServiceWithCategory = {
   };
 };
 
-// 获取热门服务
+// 获取热门网站
 export async function GET(request: NextRequest) {
   try {
     // 验证管理员身份
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       return unauthorizedResponse();
     }
     
-    // 获取点击量最高的10个服务
+    // 获取点击量最高的10个网站
     const popularServices = await prisma.service.findMany({
       take: 10,
       orderBy: {
@@ -48,11 +48,12 @@ export async function GET(request: NextRequest) {
       id: service.id,
       name: service.name,
       url: service.url,
+      icon: service.icon,
       clickCount: service.clickCount,
       categoryName: service.category.name,
     }));
     
-    // 返回热门服务
+    // 返回热门网站
     return successResponse(formattedServices);
   } catch (error) {
     return serverErrorResponse(error);

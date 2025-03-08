@@ -58,7 +58,7 @@ export async function PUT(
     
     // 解析请求数据
     const body = await request.json();
-    const { name, slug } = body;
+    const { name, slug, description } = body;
     
     // 验证数据
     if (!name || typeof name !== 'string') {
@@ -110,7 +110,15 @@ export async function PUT(
     // 更新分类
     const updatedCategory = await prisma.category.update({
       where: { id },
-      data: { name, slug } as { name: string; slug: string },
+      data: { 
+        name, 
+        slug,
+        description: description || null 
+      } as { 
+        name: string; 
+        slug: string; 
+        description: string | null;
+      },
     });
     
     return successResponse(updatedCategory, '更新分类成功');

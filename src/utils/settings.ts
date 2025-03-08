@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 interface SiteSettings {
   siteName: string;
   siteDescription: string;
+  statisticsCode: string;
   [key: string]: string;
 }
 
@@ -36,6 +37,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     const result = {
       siteName: settingsObject.siteName || 'AI导航',
       siteDescription: settingsObject.siteDescription || '收录优质AI服务和应用的导航网站',
+      statisticsCode: settingsObject.statisticsCode || '',
       ...settingsObject,
     };
     
@@ -49,6 +51,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     return {
       siteName: 'AI导航',
       siteDescription: '收录优质AI服务和应用的导航网站',
+      statisticsCode: '',
     };
   }
 } 

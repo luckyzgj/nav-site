@@ -15,13 +15,17 @@ import {
   message, 
   Popconfirm,
   Typography,
-  Image
+  Image,
+  Card,
+  Row,
+  Col
 } from 'antd';
 import { 
   PlusOutlined, 
   EditOutlined, 
   DeleteOutlined,
-  EyeOutlined
+  EyeOutlined,
+  ReloadOutlined
 } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table';
 import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
@@ -30,7 +34,7 @@ const { Title } = Typography;
 const { TextArea } = Input;
 const { Option } = Select;
 
-// 服务类型定义
+// 网站类型定义
 interface Service {
   id: number;
   name: string;
@@ -61,6 +65,7 @@ interface ServiceFormValues {
 
 export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
+  const [filteredServices, setFilteredServices] = useState<Service[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -68,8 +73,9 @@ export default function ServicesPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
 
-  // 获取服务列表
+  // 获取网站列表
   const fetchServices = async () => {
     setLoading(true);
     try {
@@ -77,12 +83,13 @@ export default function ServicesPage() {
       const data = await response.json();
       if (data.success) {
         setServices(data.data);
+        setFilteredServices(data.data);
       } else {
-        message.error(data.message || '获取服务列表失败');
+        message.error(data.message || '获取网站列表失败');
       }
     } catch (error) {
-      console.error('获取服务列表失败:', error);
-      message.error('获取服务列表失败，请稍后重试');
+      console.error('获取网站列表失败:', error);
+      message.error('获取网站列表失败，请稍后重试');
     } finally {
       setLoading(false);
     }
@@ -110,7 +117,24 @@ export default function ServicesPage() {
     fetchCategories();
   }, []);
 
-  // 添加或更新服务
+  // 筛选网站列表
+  const filterServices = (categoryId: number | null) => {
+    setSelectedCategoryId(categoryId);
+    if (categoryId === null) {
+      setFilteredServices(services);
+    } else {
+      const filtered = services.filter(service => service.categoryId === categoryId);
+      setFilteredServices(filtered);
+    }
+  };
+
+  // 重置筛选
+  const resetFilter = () => {
+    setSelectedCategoryId(null);
+    setFilteredServices(services);
+  };
+
+  // 添加或更新网站
   const handleSave = async (values: ServiceFormValues) => {
     try {
       // 处理图标上传
@@ -156,22 +180,22 @@ export default function ServicesPage() {
       const data = await response.json();
       
       if (data.success) {
-        message.success(editingId ? '更新服务成功' : '添加服务成功');
+        message.success(editingId ? '更新网站成功' : '添加网站成功');
         setModalVisible(false);
         form.resetFields();
         setEditingId(null);
         setFileList([]);
         fetchServices();
       } else {
-        message.error(data.message || (editingId ? '更新服务失败' : '添加服务失败'));
+        message.error(data.message || (editingId ? '更新网站失败' : '添加网站失败'));
       }
     } catch (error) {
-      console.error(editingId ? '更新服务失败:' : '添加服务失败:', error);
-      message.error(editingId ? '更新服务失败，请稍后重试' : '添加服务失败，请稍后重试');
+      console.error(editingId ? '更新网站失败:' : '添加网站失败:', error);
+      message.error(editingId ? '更新网站失败，请稍后重试' : '添加网站失败，请稍后重试');
     }
   };
 
-  // 删除服务
+  // 删除网站
   const handleDelete = async (id: number) => {
     try {
       const response = await fetch(`/api/admin/services/${id}`, {
@@ -181,18 +205,18 @@ export default function ServicesPage() {
       const data = await response.json();
       
       if (data.success) {
-        message.success('删除服务成功');
+        message.success('删除网站成功');
         fetchServices();
       } else {
-        message.error(data.message || '删除服务失败');
+        message.error(data.message || '删除网站失败');
       }
     } catch (error) {
-      console.error('删除服务失败:', error);
-      message.error('删除服务失败，请稍后重试');
+      console.error('删除网站失败:', error);
+      message.error('删除网站失败，请稍后重试');
     }
   };
 
-  // 编辑服务
+  // 编辑网站
   const handleEdit = (record: Service) => {
     setEditingId(record.id);
     form.setFieldsValue({
@@ -220,7 +244,7 @@ export default function ServicesPage() {
     setModalVisible(true);
   };
 
-  // 添加服务
+  // 添加网站
   const handleAdd = () => {
     setEditingId(null);
     form.resetFields();
@@ -313,7 +337,7 @@ export default function ServicesPage() {
             编辑
           </Button>
           <Popconfirm
-            title="确定要删除这个服务吗？"
+            title="确定要删除这个网站吗？"
             description="删除后无法恢复。"
             onConfirm={() => handleDelete(record.id)}
             okText="确定"
@@ -339,26 +363,57 @@ export default function ServicesPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <Title level={2}>服务管理</Title>
+        <Title level={2} style={{ margin: 0 }}>网站管理</Title>
         <Button 
           type="primary" 
           icon={<PlusOutlined />} 
           onClick={handleAdd}
         >
-          添加服务
+          添加网站
         </Button>
       </div>
       
+      {/* 分类筛选卡片 */}
+      <Card className="mb-4">
+        <Row gutter={[16, 16]}>
+          <Col>
+            <Button 
+              type={selectedCategoryId === null ? 'primary' : 'default'}
+              onClick={resetFilter}
+            >
+              全部
+            </Button>
+          </Col>
+          {categories.map(category => (
+            <Col key={category.id}>
+              <Button
+                type={selectedCategoryId === category.id ? 'primary' : 'default'}
+                onClick={() => filterServices(category.id)}
+              >
+                {category.name}
+              </Button>
+            </Col>
+          ))}
+          <Col>
+            <Button 
+              icon={<ReloadOutlined />} 
+              onClick={resetFilter}
+              title="重置筛选"
+            />
+          </Col>
+        </Row>
+      </Card>
+      
       <Table 
         columns={columns} 
-        dataSource={services} 
+        dataSource={filteredServices} 
         rowKey="id" 
         loading={loading}
         pagination={{ pageSize: 10 }}
       />
       
       <Modal
-        title={editingId ? '编辑服务' : '添加服务'}
+        title={editingId ? '编辑网站' : '添加网站'}
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={null}
@@ -372,30 +427,30 @@ export default function ServicesPage() {
         >
           <Form.Item
             name="name"
-            label="服务名称"
-            rules={[{ required: true, message: '请输入服务名称' }]}
+            label="网站名称"
+            rules={[{ required: true, message: '请输入网站名称' }]}
           >
-            <Input placeholder="请输入服务名称" />
+            <Input placeholder="请输入网站名称" />
           </Form.Item>
           
           <Form.Item
             name="url"
-            label="服务网址"
+            label="网站网址"
             rules={[
-              { required: true, message: '请输入服务网址' },
+              { required: true, message: '请输入网站网址' },
               { type: 'url', message: '请输入有效的URL' }
             ]}
           >
-            <Input placeholder="请输入服务网址，例如：https://example.com" />
+            <Input placeholder="请输入网站网址，例如：https://example.com" />
           </Form.Item>
           
           <Form.Item
             name="description"
-            label="服务简介"
-            rules={[{ required: true, message: '请输入服务简介' }]}
+            label="网站简介"
+            rules={[{ required: true, message: '请输入网站简介' }]}
           >
             <TextArea 
-              placeholder="请输入服务简介" 
+              placeholder="请输入网站简介" 
               rows={4} 
               showCount 
               maxLength={500} 
@@ -418,7 +473,7 @@ export default function ServicesPage() {
           
           <Form.Item
             name="icon"
-            label="服务图标"
+            label="网站图标"
             valuePropName="file"
             getValueFromEvent={(e) => e?.file}
             extra="建议上传正方形图片，支持JPG、PNG、GIF、WebP、SVG格式，大小不超过2MB"

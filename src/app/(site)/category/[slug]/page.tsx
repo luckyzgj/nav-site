@@ -30,7 +30,7 @@ export async function generateMetadata(
   
   return {
     title: `${category.name} - ${settings.siteName}`,
-    description: `${category.name}分类下的AI服务和应用`,
+    description: category.description || `${category.name}分类下的AI服务和应用`,
   };
 }
 
@@ -66,12 +66,19 @@ export default async function CategoryPage(
   
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
+      <div className="mb-8">
         <Link href="/" className="text-blue-500 hover:text-blue-700">
           返回首页
         </Link>
         <h1 className="text-3xl font-bold mt-2">{category.name}</h1>
-        <p className="text-gray-600">共 {category.services?.length || 0} 个服务</p>
+        
+        {category.description && (
+          <div className="mt-3 bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <p className="text-gray-700 leading-relaxed">{category.description}</p>
+          </div>
+        )}
+        
+        <p className="text-gray-600 mt-3">共 {category.services?.length || 0} 个服务</p>
       </div>
       
       {(category.services?.length || 0) > 0 ? (

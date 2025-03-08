@@ -10,14 +10,16 @@ import {
   message, 
   Card,
   Typography,
-  Divider
+  Alert
 } from 'antd';
 
 const { Title } = Typography;
+const { TextArea } = Input;
 
 interface SettingsFormValues {
   siteName: string;
   siteDescription: string;
+  statisticsCode: string;
 }
 
 export default function SettingsPage() {
@@ -85,8 +87,6 @@ export default function SettingsPage() {
           layout="vertical"
           onFinish={handleSave}
         >
-          <Divider orientation="left">基本设置</Divider>
-          
           <Form.Item
             name="siteName"
             label="网站名称"
@@ -100,11 +100,32 @@ export default function SettingsPage() {
             label="网站描述"
             rules={[{ required: true, message: '请输入网站描述' }]}
           >
-            <Input.TextArea 
+            <TextArea 
               placeholder="请输入网站描述" 
               rows={3}
             />
           </Form.Item>
+          
+          <Form.Item
+            name="statisticsCode"
+            label="统计代码"
+            tooltip="添加第三方统计代码，如Google Analytics、百度统计等，将显示在前台页面底部"
+            extra="请输入完整的JavaScript代码，包括<script>标签"
+          >
+            <TextArea 
+              placeholder="请输入统计代码，例如：<script>...</script>" 
+              rows={6}
+              className="font-mono text-sm"
+            />
+          </Form.Item>
+          
+          <Alert
+            message="安全提示"
+            description="请确保添加的统计代码来自可信任的来源，恶意代码可能会影响网站安全和用户体验。"
+            type="warning"
+            showIcon
+            className="mb-4"
+          />
           
           <Form.Item>
             <Button 

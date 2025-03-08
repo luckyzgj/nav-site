@@ -4,14 +4,27 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function Footer() {
-  const [siteName, setSiteName] = useState('AI导航');
+  const [siteName, setSiteName] = useState('123导航');
+  const [siteDescription, setSiteDescription] = useState('收录优质AI服务和应用的导航网站');
   const [year, setYear] = useState(new Date().getFullYear());
   
-  // 获取网站名称
+  // 获取网站名称和描述
   useEffect(() => {
-    if (process.env.NEXT_PUBLIC_SITE_NAME) {
-      setSiteName(process.env.NEXT_PUBLIC_SITE_NAME);
-    }
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch('/api/settings');
+        const data = await response.json();
+        
+        if (data.success) {
+          setSiteName(data.data.siteName || '123导航');
+          setSiteDescription(data.data.siteDescription || '收录优质AI服务和应用的导航网站');
+        }
+      } catch (error) {
+        console.error('获取网站设置失败:', error);
+      }
+    };
+    
+    fetchSettings();
     setYear(new Date().getFullYear());
   }, []);
   
@@ -21,7 +34,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0">
             <h3 className="text-xl font-bold">{siteName}</h3>
-            <p className="text-gray-400 mt-1">收录优质AI服务和应用的导航网站</p>
+            <p className="text-gray-400 mt-1">{siteDescription}</p>
           </div>
           
           <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-6 items-center">

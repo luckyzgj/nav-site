@@ -2,6 +2,8 @@
 
 // 导入Ant Design的React 19兼容补丁
 import '@ant-design/v5-patch-for-react-19';
+// 导入后台专用的Tailwind基础类
+import './globals.css';
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Layout, Menu, Button, theme } from 'antd';
@@ -79,7 +81,7 @@ export default function AdminLayout({
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
       >
-        <div className="p-4 h-8 m-4 text-white font-bold text-center overflow-hidden">
+        <div className="h-8 leading-8 m-4 text-white font-bold text-center overflow-hidden">
           {!collapsed ? `${siteName}管理后台` : siteName.charAt(0)}
         </div>
         <Menu
@@ -90,12 +92,12 @@ export default function AdminLayout({
             {
               key: '/admin',
               icon: <DashboardOutlined />,
-              label: <Link href="/admin">控制台</Link>,
+              label: <Link href="/admin">控制面板</Link>,
             },
             {
               key: '/admin/services',
               icon: <AppstoreOutlined />,
-              label: <Link href="/admin/services">服务管理</Link>,
+              label: <Link href="/admin/services">网站管理</Link>,
             },
             {
               key: '/admin/categories',

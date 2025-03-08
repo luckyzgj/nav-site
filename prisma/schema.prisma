@@ -18,6 +18,7 @@ model Category {
   id        Int      @id @default(autoincrement())
   name      String   @unique
   slug      String   @unique // 英文字段，用作URL slug
+  description String?  @db.Text // 分类简介，可为空
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   services  Service[]

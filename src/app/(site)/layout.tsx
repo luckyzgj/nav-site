@@ -1,4 +1,4 @@
-import '../globals.css';
+import './globals.css';
 import Link from 'next/link';
 import { getSiteSettings } from '@/utils/settings';
 
@@ -43,6 +43,11 @@ export default async function SiteLayout({
           <p>© {new Date().getFullYear()} {settings.siteName || 'AI导航'} - 收录优质AI服务和应用</p>
         </div>
       </footer>
+      
+      {/* 统计代码 */}
+      {settings.statisticsCode && (
+        <div dangerouslySetInnerHTML={{ __html: settings.statisticsCode }} />
+      )}
     </>
   );
 } 

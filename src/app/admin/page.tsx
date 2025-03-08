@@ -1,14 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Card, Row, Col, Statistic, Table, Button } from 'antd';
+import { Card, Row, Col, Statistic, Table, Button, Avatar } from 'antd';
 import { 
   AppstoreOutlined, 
   TagsOutlined, 
   BarChartOutlined,
-  EyeOutlined
+  EyeOutlined,
+  GlobalOutlined
 } from '@ant-design/icons';
-import Link from 'next/link';
+import Image from 'next/image';
 
 // 统计数据类型
 interface Stats {
@@ -17,11 +18,12 @@ interface Stats {
   totalClicks: number;
 }
 
-// 热门服务类型
+// 热门网站类型
 interface PopularService {
   id: number;
   name: string;
   url: string;
+  icon: string | null;
   clickCount: number;
   categoryName: string;
 }
@@ -47,7 +49,7 @@ export default function AdminDashboard() {
           setStats(statsData.data);
         }
         
-        // 获取热门服务
+        // 获取热门网站
         const popularResponse = await fetch('/api/admin/popular-services');
         const popularData = await popularResponse.json();
         
@@ -64,15 +66,54 @@ export default function AdminDashboard() {
     fetchData();
   }, []);
 
+  // 判断文件是否为SVG
+  const isSvg = (filename: string | null): boolean => {
+    if (!filename) return false;
+    return filename.toLowerCase().endsWith('.svg');
+  };
+
   // 表格列定义
   const columns = [
     {
-      title: '服务名称',
+      title: '网站名称',
       dataIndex: 'name',
       key: 'name',
+      render: (_: unknown, record: PopularService) => (
+        <div className="flex items-center">
+          {record.icon ? (
+            <div className="mr-2 flex-shrink-0">
+              {isSvg(record.icon) ? (
+                <Image
+                  src={record.icon}
+                  alt={record.name}
+                  width={24}
+                  height={24}
+                  className="rounded"
+                  unoptimized
+                />
+              ) : (
+                <Image
+                  src={record.icon}
+                  alt={record.name}
+                  width={24}
+                  height={24}
+                  className="rounded"
+                />
+              )}
+            </div>
+          ) : (
+            <Avatar 
+              icon={<GlobalOutlined />} 
+              size={24} 
+              className="mr-2 flex-shrink-0" 
+            />
+          )}
+          <span>{record.name}</span>
+        </div>
+      ),
     },
     {
-      title: '分类',
+      title: '所属分类',
       dataIndex: 'categoryName',
       key: 'categoryName',
     },
@@ -99,24 +140,17 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">控制台</h1>
+      <h1 className="text-3xl font-bold mb-6">控制面板</h1>
       
       <Row gutter={16} className="mb-8">
         <Col span={8}>
           <Card>
             <Statistic
-              title="服务总数"
+              title="网站总数"
               value={stats.serviceCount}
               prefix={<AppstoreOutlined />}
               loading={loading}
             />
-            <div className="mt-4">
-              <Link href="/admin/services">
-                <Button type="primary" size="small">
-                  管理服务
-                </Button>
-              </Link>
-            </div>
           </Card>
         </Col>
         <Col span={8}>
@@ -127,13 +161,6 @@ export default function AdminDashboard() {
               prefix={<TagsOutlined />}
               loading={loading}
             />
-            <div className="mt-4">
-              <Link href="/admin/categories">
-                <Button type="primary" size="small">
-                  管理分类
-                </Button>
-              </Link>
-            </div>
           </Card>
         </Col>
         <Col span={8}>
@@ -148,7 +175,7 @@ export default function AdminDashboard() {
         </Col>
       </Row>
       
-      <Card title="热门服务" className="mb-8">
+      <Card title="热门网站" className="mb-8">
         <Table
           columns={columns}
           dataSource={popularServices}
