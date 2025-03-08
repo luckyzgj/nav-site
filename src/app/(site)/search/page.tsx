@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import esClient from '@/lib/elasticsearch';
 import ServiceCard from '@/components/ServiceCard';
+import { getSiteSettings } from '@/utils/settings';
 
 // 服务类型定义
 type Service = {
@@ -14,61 +14,46 @@ type Service = {
   clickCount: number;
   categoryId: number;
   categoryName?: string;
+  categorySlug?: string;
 };
 
-// Elasticsearch搜索结果类型
-interface SearchHit {
-  _source: {
-    id: number;
-    name: string;
-    url: string;
-    description: string;
-    icon: string | null;
-    clickCount: number;
-    categoryId: number;
-    categoryName?: string;
+// 动态生成元数据
+export async function generateMetadata(): Promise<Metadata> {
+  // 获取网站设置
+  const settings = await getSiteSettings();
+  
+  return {
+    title: `搜索结果 - ${settings.siteName}`,
+    description: settings.siteDescription,
   };
 }
-
-export const metadata: Metadata = {
-  title: '搜索结果 - AI导航',
-  description: '搜索AI服务和应用',
-};
 
 // 搜索服务
 async function searchServices(query: string): Promise<Service[]> {
   if (!query) return [];
   
   try {
-    const response = await esClient.search({
-      index: 'services',
-      body: {
-        query: {
-          multi_match: {
-            query,
-            fields: ['name^3', 'description^2', 'categoryName'],
-            fuzziness: 'AUTO',
-          },
-        },
-        sort: [
-          { _score: { order: 'desc' } },
-          { clickCount: { order: 'desc' } },
-        ],
-      },
+    console.log('执行搜索，关键词:', query);
+    
+    // 使用MySQL搜索API
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/search?q=${encodeURIComponent(query)}`, {
+      cache: 'no-store'
     });
     
-    // 提取搜索结果
-    const hits = (response.hits?.hits || []) as SearchHit[];
-    return hits.map((hit) => ({
-      id: hit._source.id,
-      name: hit._source.name,
-      url: hit._source.url,
-      description: hit._source.description,
-      icon: hit._source.icon,
-      clickCount: hit._source.clickCount,
-      categoryId: hit._source.categoryId,
-      categoryName: hit._source.categoryName,
-    }));
+    if (!response.ok) {
+      console.error('搜索请求失败:', response.status, response.statusText);
+      return [];
+    }
+    
+    const data = await response.json();
+    
+    if (!data.success) {
+      console.error('搜索API返回错误:', data.message);
+      return [];
+    }
+    
+    console.log(`搜索结果数量: ${data.data.length}`);
+    return data.data;
   } catch (error) {
     console.error('搜索服务失败:', error);
     return [];
@@ -76,13 +61,19 @@ async function searchServices(query: string): Promise<Service[]> {
 }
 
 // 使用函数参数直接获取searchParams
-export default async function SearchPage() {
-  // 从URL中获取查询参数
-  const url = new URL(globalThis.location?.href || 'http://localhost:3000');
-  const query = url.searchParams.get('q') || '';
+export default async function SearchPage({
+  searchParams,
+}: {
+  searchParams?: { q?: string };
+}) {
+  // 从searchParams获取查询参数
+  const query = searchParams?.q || '';
+  
+  console.log('搜索页面加载，查询参数:', query);
   
   // 如果没有查询参数，重定向到首页
   if (!query) {
+    console.log('没有查询参数，重定向到首页');
     redirect('/');
   }
   

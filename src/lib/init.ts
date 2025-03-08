@@ -1,13 +1,9 @@
 import { PrismaClient } from '@prisma/client';
-import { initElasticsearch } from './elasticsearch';
 import { hash } from 'bcrypt';
 
-// 初始化数据库和Elasticsearch
+// 初始化数据库
 export const initializeSystem = async () => {
   try {
-    // 初始化Elasticsearch
-    await initElasticsearch();
-    
     // 初始化数据库
     const prisma = new PrismaClient();
     

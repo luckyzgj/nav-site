@@ -34,7 +34,7 @@ export async function generateMetadata(
   };
 }
 
-// 获取分类及其服务
+// 获取分类及其网站
 async function getCategoryWithServices(slug: string): Promise<Category | null> {
   const category = await prisma.category.findUnique({
     where: { slug: slug } as { slug: string },
@@ -78,7 +78,7 @@ export default async function CategoryPage(
           </div>
         )}
         
-        <p className="text-gray-600 mt-3">共 {category.services?.length || 0} 个服务</p>
+        <p className="text-gray-600 mt-3">共 {category.services?.length || 0} 个网站</p>
       </div>
       
       {(category.services?.length || 0) > 0 ? (
@@ -89,7 +89,7 @@ export default async function CategoryPage(
         </div>
       ) : (
         <div className="bg-white rounded-lg shadow-md p-6 text-center">
-          <p className="text-gray-500">该分类下暂无服务</p>
+          <p className="text-gray-500">该分类下暂无数据</p>
         </div>
       )}
     </div>

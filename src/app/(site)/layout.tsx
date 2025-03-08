@@ -1,6 +1,7 @@
 import './globals.css';
 import Link from 'next/link';
 import { getSiteSettings } from '@/utils/settings';
+import SearchBox from '@/components/SearchBox';
 
 export default async function SiteLayout({
   children,
@@ -12,29 +13,38 @@ export default async function SiteLayout({
   return (
     <>
       <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold text-blue-600">
-            {settings.siteName || 'AI导航'}
-          </Link>
-          <nav>
-            <ul className="flex space-x-6">
-              <li>
-                <Link href="/" className="text-gray-600 hover:text-blue-600">
-                  首页
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="text-gray-600 hover:text-blue-600">
-                  关于
-                </Link>
-              </li>
-              <li>
-                <Link href="/admin" className="text-gray-600 hover:text-blue-600">
-                  管理
-                </Link>
-              </li>
-            </ul>
-          </nav>
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <Link href="/" className="text-2xl font-bold text-blue-600 mb-4 md:mb-0">
+              {settings.siteName || 'AI导航'}
+            </Link>
+            
+            <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6 w-full md:w-auto">
+              <div className="w-full md:w-auto">
+                <SearchBox />
+              </div>
+              
+              <nav className="mt-4 md:mt-0">
+                <ul className="flex space-x-6">
+                  <li>
+                    <Link href="/" className="text-gray-600 hover:text-blue-600">
+                      首页
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/about" className="text-gray-600 hover:text-blue-600">
+                      关于
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/admin" className="text-gray-600 hover:text-blue-600">
+                      管理
+                    </Link>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
         </div>
       </header>
       <main>{children}</main>
