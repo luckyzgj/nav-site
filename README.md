@@ -7,7 +7,6 @@
 - 前端：Next.js + TypeScript + Tailwind CSS
 - 后台：Ant Design
 - 数据库：MySQL
-- 搜索引擎：Elasticsearch
 
 ## 功能特点
 
@@ -23,7 +22,6 @@
 
 - Node.js 18+
 - MySQL 8.0+
-- Elasticsearch 7.0+
 
 ### 安装依赖
 
@@ -39,14 +37,9 @@ npm install
 # 数据库配置
 DATABASE_URL="mysql://用户名:密码@localhost:3306/数据库名"
 
-# Elasticsearch配置
-ELASTICSEARCH_NODE="http://localhost:9200"
-ELASTICSEARCH_USERNAME=""
-ELASTICSEARCH_PASSWORD=""
-
 # 应用配置
 NEXT_PUBLIC_API_URL="http://localhost:3000/api"
-NEXT_PUBLIC_SITE_NAME="AI导航"
+NEXT_PUBLIC_SITE_NAME="123导航"
 NEXT_PUBLIC_UPLOAD_DIR="uploads"
 ```
 
