@@ -53,16 +53,16 @@ export default async function Home() {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* 分类导航 */}
-      <div className="mb-8 bg-white rounded-lg shadow-sm p-4">
-        <h2 className="font-bold mb-4 text-gray-800 pb-2">
+      <div className="mb-10">
+        <h2 className="font-bold mb-2 text-gray-800 pb-2">
           分类导航
         </h2>
         <div className="flex flex-wrap gap-2">
           {categories.map((category) => (
             <Link
               key={category.id}
-              href={`/category/${category.slug}`}
-              className="px-4 py-2 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 transition-colors"
+              href={`/t/${category.slug}`}
+              className="px-4 py-2 bg-white border-2 border-brand-100 rounded-full hover:border-brand-200 transition-colors"
             >
               {category.name}
             </Link>
@@ -73,7 +73,7 @@ export default async function Home() {
       {/* 热门网站 */}
       {popularServices.length > 0 && (
         <div className="mb-10">
-          <h2 className="font-bold mb-4 text-gray-800 pb-2">
+          <h2 className="font-bold mb-2 text-gray-800 pb-2">
             热门网站
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

@@ -9,6 +9,14 @@ const PUBLIC_PATHS = ['/admin/login'];
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
+  // 处理分类URL重写：将/t/xxx映射到/category/xxx
+  if (pathname.startsWith('/t/')) {
+    const slug = pathname.replace('/t/', '');
+    const url = request.nextUrl.clone();
+    url.pathname = `/category/${slug}`;
+    return NextResponse.rewrite(url);
+  }
+  
   // 检查是否是管理后台路径
   const isAdminPath = PROTECTED_PATHS.some(path => pathname.startsWith(path));
   

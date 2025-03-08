@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import SearchBox from './SearchBox';
@@ -31,12 +32,13 @@ export default function Navbar({ siteName }: NavbarProps) {
   
   return (
     <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-      isScrolled ? 'bg-white shadow-md' : 'bg-white shadow-sm'
+      isScrolled ? 'shadow-md' : 'shadow-sm'
     }`}>
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
-          <Link href="/" className="text-2xl font-bold text-gray-600 mb-4 md:mb-0">
-            {siteName}
+          <Link href="/" className="text-4xl font-bold text-gray-800 mb-4 md:mb-0 flex items-center">
+            <Image src="/logo.svg" alt={siteName} width={48} height={48} className="mr-1" />
+            <div>123<span className="text-normal text-brand-400">.SS</span></div>
           </Link>
           
           <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6 w-full md:w-auto">

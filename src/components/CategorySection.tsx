@@ -14,12 +14,12 @@ export default function CategorySection({ category, services }: CategorySectionP
   
   return (
     <section id={`category-${category.slug}`}>
-      <div className="flex justify-between items-center mb-4 pb-2">
+      <div className="flex justify-between items-center mb-2 pb-2">
         <h2 className="font-bold text-gray-800">
           {category.name}
         </h2>
         <Link 
-          href={`/category/${category.slug}`}
+          href={`/t/${category.slug}`}
           className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
         >
           更多 &raquo;
