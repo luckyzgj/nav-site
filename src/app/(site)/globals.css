@@ -4,7 +4,7 @@
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-rgb: 245, 245, 245;
+  --background-rgb: 249, 250, 251;
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -20,7 +20,7 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
-    --foreground-rgb: 237, 237, 237;
+    --foreground-rgb: 249, 250, 251;
     --background-rgb: 10, 10, 10;
   }
 }

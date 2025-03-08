@@ -1,10 +1,10 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import CategorySection from '@/components/CategorySection';
-import ServiceLink from '@/components/ServiceLink';
+import ServiceCard from '@/components/ServiceCard';
 import { Category, ServiceWithCategory } from '@/types';
 
-// 获取所有分类及其服务
+// 获取所有分类及其网站
 async function getCategoriesWithServices(): Promise<Category[]> {
   const categories = await prisma.category.findMany({
     include: {
@@ -22,10 +22,10 @@ async function getCategoriesWithServices(): Promise<Category[]> {
   return categories as unknown as Category[];
 }
 
-// 获取热门服务
+// 获取热门网站
 async function getPopularServices(): Promise<ServiceWithCategory[]> {
   const popularServices = await prisma.service.findMany({
-    take: 10,
+    take: 12,
     orderBy: {
       clickCount: 'desc',
     },
@@ -53,8 +53,8 @@ export default async function Home() {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* 分类导航 */}
-      <div className="mb-8 bg-white rounded-lg shadow-md p-4">
-        <h2 className="text-xl font-bold mb-4 text-gray-800 border-b pb-2">
+      <div className="mb-8 bg-white rounded-lg shadow-sm p-4">
+        <h2 className="font-bold mb-4 text-gray-800 pb-2">
           分类导航
         </h2>
         <div className="flex flex-wrap gap-2">
@@ -70,40 +70,24 @@ export default async function Home() {
         </div>
       </div>
       
-      {/* 热门服务 */}
+      {/* 热门网站 */}
       {popularServices.length > 0 && (
-        <div className="mb-10 bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-bold mb-4 text-gray-800 border-b pb-2">
-            热门服务
+        <div className="mb-10">
+          <h2 className="font-bold mb-4 text-gray-800 pb-2">
+            热门网站
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {popularServices.map((service) => (
-              <div key={service.id} className="bg-blue-50 rounded-lg p-3">
-                <div className="flex items-center mb-2">
-                  <Link 
-                    href={`/category/${service.categorySlug}`}
-                    className="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200"
-                  >
-                    {service.categoryName}
-                  </Link>
-                  <span className="ml-auto text-xs text-gray-500">
-                    {service.clickCount} 次点击
-                  </span>
-                </div>
-                <ServiceLink 
-                  serviceId={service.id}
-                  url={service.url}
-                  className="font-medium text-blue-600 hover:text-blue-800 block truncate"
-                >
-                  {service.name}
-                </ServiceLink>
-              </div>
+              <ServiceCard 
+                key={service.id} 
+                service={service} 
+              />
             ))}
           </div>
         </div>
       )}
       
-      {/* 所有分类及服务 */}
+      {/* 所有分类及网站 */}
       <div className="space-y-10">
         {categories.map((category) => (
           <CategorySection 

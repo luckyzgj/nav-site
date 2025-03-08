@@ -9,7 +9,7 @@ export interface Category {
   services?: Service[];
 }
 
-// 服务类型定义
+// 网站类型定义
 export interface Service {
   id: number;
   name: string;
@@ -28,7 +28,7 @@ export interface Service {
   categorySlug?: string;
 }
 
-// 带有分类的服务类型
+// 带有分类的网站类型
 export interface ServiceWithCategory extends Service {
   categoryName: string;
   categorySlug: string;

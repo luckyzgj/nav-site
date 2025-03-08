@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   
   return {
-    title: `搜索结果 - ${settings.siteName}`,
+    title: `搜索 - ${settings.siteName}`,
     description: settings.siteDescription,
   };
 }
@@ -33,50 +33,39 @@ async function searchServices(query: string): Promise<Service[]> {
   if (!query) return [];
   
   try {
-    console.log('执行搜索，关键词:', query);
-    
     // 使用MySQL搜索API
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/search?q=${encodeURIComponent(query)}`, {
       cache: 'no-store'
     });
     
     if (!response.ok) {
-      console.error('搜索请求失败:', response.status, response.statusText);
       return [];
     }
     
     const data = await response.json();
     
     if (!data.success) {
-      console.error('搜索API返回错误:', data.message);
       return [];
     }
     
-    console.log(`搜索结果数量: ${data.data.length}`);
     return data.data;
-  } catch (error) {
-    console.error('搜索服务失败:', error);
+  } catch {
     return [];
   }
 }
 
-// 使用函数参数直接获取searchParams
-export default async function SearchPage({
-  searchParams,
-}: {
-  searchParams?: { q?: string };
-}) {
-  // 从searchParams获取查询参数
-  const query = searchParams?.q || '';
-  
-  console.log('搜索页面加载，查询参数:', query);
+// 重写页面组件，使用 searchParams 参数但不指定类型
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default async function SearchPage({ searchParams }: { searchParams: any }) {
+  // 从 searchParams 获取查询参数
+  const query = typeof searchParams?.q === 'string' ? searchParams.q : '';
   
   // 如果没有查询参数，重定向到首页
   if (!query) {
-    console.log('没有查询参数，重定向到首页');
     redirect('/');
   }
   
+  // 直接搜索网站
   const services = await searchServices(query);
   
   // 按分类分组
@@ -94,7 +83,7 @@ export default async function SearchPage({
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">
-            &ldquo;{query}&rdquo; 的搜索结果 ({services.length})
+            &ldquo;{query}&rdquo; 的搜索结果
           </h2>
           <Link href="/" className="text-blue-600 hover:text-blue-800">
             返回首页
