@@ -45,7 +45,6 @@ interface SearchResult {
   url: string;
   description: string;
   icon: string | null;
-  clickCount: number;
   categoryId: number;
   categoryName: string;
   categorySlug: string;
@@ -191,12 +190,21 @@ export default function LiveSearch() {
       
       <div className="relative w-full">
         <form onSubmit={handleSubmit} className="relative w-full">
-          <div className={`flex items-center transition-all duration-200 ${
-            isFocused ? 'bg-white shadow-md' : 'bg-gray-50'
-          } border-2 ${
-            isFocused ? 'border-brand-400' : 'border-gray-200'
-          } rounded-full overflow-hidden`}>
-            <div className="pl-4 text-gray-500">
+          <div 
+            className={`flex items-center ${
+              isFocused || (showResults && results.length > 0) ? 'bg-white shadow-md' : 'bg-gray-50'
+            } border-2 ${
+              isFocused || (showResults && results.length > 0) ? 'border-brand-400' : 'border-gray-200'
+            } ${
+              showResults && results.length > 0 ? 'rounded-tl-lg rounded-tr-lg rounded-bl-none rounded-br-none' : 'rounded-lg'
+            } overflow-hidden relative z-10`}
+            style={{
+              borderBottomWidth: showResults && results.length > 0 ? '0px' : '2px',
+              marginBottom: showResults && results.length > 0 ? '2px' : '0px',
+              transition: 'background-color 0.2s, border-color 0.2s'
+            }}
+          >
+            <div className="pl-3 text-gray-500">
               <SearchIcon className="w-5 h-5" />
             </div>
             <input
@@ -220,7 +228,7 @@ export default function LiveSearch() {
               <button
                 type="button"
                 onClick={handleSearchButtonClick}
-                className="w-20 m-0.5 px-4 py-1.5 rounded-full bg-brand-400 text-white text-sm font-medium hover:bg-brand-500 transition-colors"
+                className="w-20 m-0.5 px-4 py-1.5 rounded-md bg-brand-400 text-white text-sm font-medium hover:bg-brand-500 transition-colors"
               >
                 搜索
               </button>
@@ -228,30 +236,32 @@ export default function LiveSearch() {
           </div>
         </form>
 
-        {/* 搜索结果下拉框 */}
+        {/* 搜索结果下拉框 - 与搜索框完全融合 */}
         {showResults && results.length > 0 && (
           <div 
             ref={resultsRef}
-            className="absolute z-50 w-full mt-2 bg-white border-2 border-brand-400 rounded-xl shadow-xl overflow-hidden custom-scrollbar max-h-80 overflow-y-auto"
+            className="absolute w-full bg-white overflow-hidden custom-scrollbar max-h-80 overflow-y-auto border-2 border-brand-400 rounded-b-lg z-0"
             style={{ 
               boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)',
-              backdropFilter: 'blur(8px)'
+              top: 'calc(100% - 2px)', // 向上偏移2px，与搜索框边框重叠
+              borderTopWidth: '0', // 移除顶部边框
+              transition: 'none' // 禁用任何可能的过渡动画
             }}
           >
-            <div className="py-2">
+            <div>
               {results.map((result, index) => (
                 <div
                   key={result.id}
                   data-result-item
-                  className={`px-4 py-3 cursor-pointer transition-colors duration-150 ${
+                  className={`px-4 py-3 border-y border-transparent cursor-pointer transition-colors duration-150 ${
                     selectedIndex === index 
-                      ? 'bg-brand-50 border-l-4 border-brand-400' 
-                      : 'hover:bg-gray-50 border-l-4 border-transparent'
+                      ? 'bg-brand-50 border-brand-100' 
+                      : 'hover:bg-brand-50'
                   }`}
                   onClick={() => handleResultClick(result)}
                   onMouseEnter={() => setSelectedIndex(index)}
                 >
-                  <div className="flex items-center">
+                  <div className="flex items-center justify-between gap-2">
                     <div className="flex-shrink-0 w-10 h-10 relative">
                       {result.icon ? (
                         <Image
@@ -267,18 +277,14 @@ export default function LiveSearch() {
                         </div>
                       )}
                     </div>
-                    <div className="ml-3 flex-1">
+                    <div className="flex-1">
                       <div className="text-sm font-medium text-gray-900 flex items-center">
                         {result.name}
-                        <span className="ml-2 text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
-                          {result.clickCount}次点击
-                        </span>
                       </div>
-                      <div className="text-xs text-gray-500 line-clamp-1 mt-0.5">{result.description}</div>
-                      <div className="text-xs text-brand-400 mt-1 flex items-center">
-                        <span className="inline-block w-2 h-2 rounded-full bg-brand-400 mr-1"></span>
-                        {result.categoryName}
-                      </div>
+                      <div className="text-xs text-gray-400 line-clamp-1 mt-0.5">{result.description}</div>
+                    </div>
+                    <div className="px-3 py-1 text-xs font-normal text-brand-300 bg-brand-100 rounded-full flex items-center">
+                      {result.categoryName}
                     </div>
                   </div>
                 </div>
