@@ -501,12 +501,6 @@ export default function CategoriesPage() {
       render: (text: string | null) => text || '-',
     },
     {
-      title: '创建时间',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      render: (text: string) => new Date(text).toLocaleString(),
-    },
-    {
       title: '操作',
       key: 'action',
       width: 200,

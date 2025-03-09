@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "seed-test-data": "ts-node scripts/seed-test-data.ts",
-    "clear-services": "ts-node scripts/clear-services.ts"
+    "clear-services": "ts-node scripts/clear-services.ts",
+    "generate-icons": "ts-node scripts/generate-icons.ts",
+    "fetch-brand-icons": "ts-node scripts/fetch-brand-icons.ts",
+    "update-category-descriptions": "ts-node scripts/update-category-descriptions.ts"
   },
   "dependencies": {
     "@ant-design/cssinjs": "^1.23.0",

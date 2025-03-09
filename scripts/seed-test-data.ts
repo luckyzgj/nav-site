@@ -1,4 +1,6 @@
 import { PrismaClient } from '@prisma/client';
+import path from 'path';
+import fs from 'fs';
 
 const prisma = new PrismaClient();
 
@@ -148,13 +150,45 @@ function getDataForCategory(slug: string): Array<{ name: string; url: string; de
   return aiToolsData;
 }
 
+// 定义品牌图标映射的类型
+interface BrandIconData {
+  iconPath: string;
+  category: string;
+  displayName: string;
+}
+
 // 随机图标URL生成函数
 function getRandomIconUrl(category: string, index: number): string | null {
-  // 70%的概率有图标
-  if (Math.random() > 0.3) {
-    return `/icons/${category}/${index}.svg`;
+  try {
+    // 尝试读取品牌图标映射文件
+    const mappingFilePath = path.join('public', 'icons', 'brand-icons-mapping.json');
+    if (fs.existsSync(mappingFilePath)) {
+      const mappingData = JSON.parse(fs.readFileSync(mappingFilePath, 'utf8')) as Record<string, BrandIconData>;
+      
+      // 获取该分类下的所有图标
+      const categoryIcons = Object.entries(mappingData)
+        .filter(([, data]) => data.category === category)
+        .map(([name, data]) => ({ name, iconPath: data.iconPath }));
+      
+      if (categoryIcons.length > 0) {
+        // 使用索引选择图标，确保每个服务使用不同的图标
+        const iconIndex = index % categoryIcons.length;
+        return categoryIcons[iconIndex].iconPath;
+      }
+    }
+    
+    // 如果没有找到品牌图标映射文件或该分类下没有图标，使用生成的图标
+    // 90%的概率有图标
+    if (Math.random() > 0.1) {
+      // 使用已生成的图标，每个分类有20个图标（0-19）
+      const iconIndex = index % 20;
+      return `/icons/${category}/${iconIndex}.svg`;
+    }
+    return null;
+  } catch (error) {
+    console.error('获取图标URL时出错:', error);
+    return null;
   }
-  return null;
 }
 
 // 主函数：添加测试数据
