@@ -34,7 +34,7 @@ export default function Navbar({ siteName }: NavbarProps) {
     <header className={`sticky top-0 z-50 w-full bg-white transition-all duration-300 ${
       isScrolled ? 'shadow-md' : 'shadow-sm'
     }`}>
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-4 py-4 max-w-[960px]">
         <div className="flex flex-col md:flex-row items-center justify-between">
           {/* 左侧Logo */}
           <div className="flex items-center mb-4 md:mb-0 md:w-1/4">

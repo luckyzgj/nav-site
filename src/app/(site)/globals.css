@@ -31,15 +31,10 @@ body {
   @apply text-gray-800 bg-brand-50;
 }
 
-.container {
-  max-width: 960px;
-  margin: 0 auto;
-}
-
 .shadow-sm {
-  box-shadow: 0 0.1rem 0.25rem rgba(240, 133, 100, 0.1);
+  box-shadow: 0 0.15rem 0.35rem rgba(240, 133, 100, 0.075);
 }
 
 .shadow-md {
-  box-shadow: 0 0.25rem 0.75rem rgba(240, 133, 100, 0.1);
+  box-shadow: 0 0.55rem 0.75rem rgba(240, 133, 100, 0.1);
 }

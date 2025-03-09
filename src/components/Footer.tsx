@@ -14,7 +14,7 @@ export default function Footer({ siteName, siteDescription, statisticsCode }: Fo
   return (
     <>
       <footer className="py-6">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 max-w-[960px]">
           <div className="flex space-x-6 items-center justify-center">
             <Link href="/" className="text-gray-600 hover:text-brand-400 transition-colors">
               首页

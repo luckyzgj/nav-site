@@ -57,8 +57,8 @@ export default async function Home() {
   return (
     <div className="relative">
       {/* 左侧分类导航 - 固定在左侧，不影响主内容宽度 */}
-      <div className="hidden xl:block w-30 fixed left-[max(0px,calc(50%-610px))] top-[100px] bg-white bg-opacity-80 backdrop-blur-sm shadow-sm rounded-lg overflow-y-auto max-h-[calc(100vh-120px)] z-10">
-        <h2 className="text-white text-sm px-4 py-2 bg-brand-400 border-b border-brand-50">
+      <div className="hidden xl:block w-30 fixed left-[max(0px,calc(50%-610px))] top-[105px] bg-white bg-opacity-80 backdrop-blur-sm shadow-sm rounded-lg overflow-y-auto max-h-[calc(100vh-120px)] z-10">
+        <h2 className="font-medium text-brand-400 px-3 py-1.5 border-b-2 border-brand-50">
           分类
         </h2>
         <div className="flex flex-col space-y-1 p-2">
@@ -66,30 +66,30 @@ export default async function Home() {
             <a
               key={category.id}
               href={`#category-${category.slug}`}
-                className="category-nav-link text-gray-700 text-sm px-3 py-2 border border-transparent hover:border-brand-100 hover:bg-brand-50 rounded transition-all duration-200 relative group flex items-center"
+                className="category-nav-link text-gray-600 px-3 py-1 border-2 border-transparent hover:border-brand-100 hover:bg-brand-50 rounded transition-all duration-200 relative group flex items-center"
             >
               <CategoryIcon 
                 icon={category.icon} 
                 name={category.name} 
                 size={20}
               />
-              <span className="truncate ml-2.5">{category.name}</span>
+              <span className="truncate ml-2">{category.name}</span>
               <span className="absolute inset-0 bg-brand-50 border-brand-100 opacity-0 group-[.active-category]:opacity-100 rounded transition-opacity -z-10"></span>
             </a>
           ))}
         </div>
 
         {/* 返回顶部链接 */}
-        <div className="border-t border-brand-50 p-2">
-            <BackToTopButton className="flex items-center justify-center text-brand-300 text-sm w-full px-2 py-1.5 border bg-brand-50/50 hover:text-brand-400 border-brand-100 hover:bg-brand-50 hover:border-brand-100 rounded transition-colors">
+        <div className="border-t-2 border-brand-50 p-2">
+            <BackToTopButton className="flex items-center justify-center text-gray-500 text-sm w-full px-2 py-1.5 border-2 bg-gray-50 hover:text-brand-400 border-gray-100 hover:bg-brand-50 hover:border-brand-100 rounded transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
               返回顶部
             </BackToTopButton>
           </div>
       </div>
       
-      {/* 主内容区域 - 保持原有宽度 */}
-      <div className="container mx-auto px-4 py-8">
+      {/* 主内容区域 - 使用Tailwind的container类并设置最大宽度 */}
+      <div className="container mx-auto px-4 py-8 max-w-[960px]">
         {/* 移动端分类导航 */}
         <div className="xl:hidden mb-10">
           <h2 className="text-2xl font-bold mb-2 pb-2">
