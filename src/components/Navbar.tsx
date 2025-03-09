@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import SearchBox from './SearchBox';
+import LiveSearch from './LiveSearch';
 
 type NavbarProps = {
   siteName: string;
@@ -47,7 +47,7 @@ export default function Navbar({ siteName }: NavbarProps) {
           {/* 中间搜索框 */}
           <div className="w-full md:w-2/4 px-4 mb-4 md:mb-0 flex justify-center">
             <div className="w-full max-w-xl">
-              <SearchBox />
+              <LiveSearch />
             </div>
           </div>
           
