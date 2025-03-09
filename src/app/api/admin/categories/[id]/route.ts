@@ -72,7 +72,7 @@ export async function PUT(
     
     // 解析请求数据
     const body = await request.json();
-    const { name, slug, description, icon } = body;
+    const { name, slug, description, icon, sortOrder } = body;
     
     // 验证数据
     if (!name || typeof name !== 'string') {
@@ -113,12 +113,8 @@ export async function PUT(
         name, 
         slug,
         description: description || null,
-        icon: icon || null
-      } as { 
-        name: string; 
-        slug: string; 
-        description: string | null;
-        icon: string | null;
+        icon: icon || null,
+        sortOrder: typeof sortOrder === 'number' ? sortOrder : (sortOrder ? Number(sortOrder) : existingCategory.sortOrder)
       },
     });
     

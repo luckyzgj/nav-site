@@ -12,10 +12,10 @@ export async function GET(request: NextRequest) {
       return unauthorizedResponse();
     }
     
-    // 获取所有分类
+    // 获取所有分类，按sortOrder排序
     const categories = await prisma.category.findMany({
       orderBy: {
-        id: 'asc',
+        sortOrder: 'asc',
       },
     });
     
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     
     // 解析请求数据
     const body = await request.json();
-    const { name, slug, description, icon } = body;
+    const { name, slug, description, icon, sortOrder } = body;
     
     // 验证数据
     if (!name || typeof name !== 'string') {
@@ -70,22 +70,80 @@ export async function POST(request: NextRequest) {
       return errorResponse('英文标识已存在');
     }
     
+    // 获取最大排序值
+    const maxSortOrder = await prisma.category.findFirst({
+      orderBy: {
+        sortOrder: 'desc',
+      },
+      select: {
+        sortOrder: true,
+      },
+    });
+    
+    const newSortOrder = sortOrder !== undefined ? sortOrder : (maxSortOrder?.sortOrder || 0) + 10;
+    
     // 创建分类
     const category = await prisma.category.create({
       data: { 
         name, 
         slug,
         description: description || null,
-        icon: icon || null
+        icon: icon || null,
+        sortOrder: newSortOrder,
       } as { 
         name: string; 
         slug: string; 
         description: string | null;
         icon: string | null;
+        sortOrder: number;
       },
     });
     
     return successResponse(category, '创建分类成功');
+  } catch (error) {
+    return serverErrorResponse(error);
+  }
+}
+
+// 更新分类排序
+export async function PUT(request: NextRequest) {
+  try {
+    // 验证管理员身份
+    const isAdmin = await verifyAdmin(request);
+    if (!isAdmin) {
+      return unauthorizedResponse();
+    }
+    
+    // 解析请求数据
+    const body = await request.json();
+    
+    // 验证数据格式
+    if (!Array.isArray(body)) {
+      return errorResponse('请求数据格式错误，应为数组');
+    }
+    
+    // 批量更新分类排序
+    const updatePromises = body.map(item => {
+      if (!item.id || typeof item.sortOrder !== 'number') {
+        throw new Error('数据格式错误，每个项目必须包含id和sortOrder');
+      }
+      
+      return prisma.category.update({
+        where: { id: item.id },
+        data: { sortOrder: Number(item.sortOrder) },
+      });
+    });
+    
+    await Promise.all(updatePromises);
+    
+    // 获取更新后的分类列表
+    const afterCategories = await prisma.category.findMany({
+      orderBy: {
+        sortOrder: 'asc',
+      },
+    });
+    
+    return successResponse(afterCategories, '更新分类排序成功');
   } catch (error) {
     return serverErrorResponse(error);
   }

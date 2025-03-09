@@ -6,6 +6,7 @@ import SmoothScrollScript from '@/components/SmoothScrollScript';
 import BackToTopButton from '@/components/BackToTopButton';
 import CategoryNavStyles from '@/components/CategoryNavStyles';
 import CategoryIcon from '@/components/CategoryIcon';
+import { Prisma } from '@prisma/client';
 
 // 获取所有分类及其网站
 async function getCategoriesWithServices(): Promise<Category[]> {
@@ -18,8 +19,8 @@ async function getCategoriesWithServices(): Promise<Category[]> {
       },
     },
     orderBy: {
-      id: 'asc',
-    },
+      sortOrder: 'asc',
+    } as Prisma.CategoryOrderByWithRelationInput,
   });
   
   return categories as unknown as Category[];

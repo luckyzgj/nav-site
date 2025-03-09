@@ -2,7 +2,7 @@
 
 // 导入Ant Design的React 19兼容补丁
 import '@ant-design/v5-patch-for-react-19';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useReducer } from 'react';
 import { 
   Table, 
   Button, 
@@ -10,6 +10,7 @@ import {
   Modal, 
   Form, 
   Input, 
+  InputNumber,
   message, 
   Popconfirm,
   Typography,
@@ -19,7 +20,9 @@ import {
   PlusOutlined, 
   EditOutlined, 
   DeleteOutlined,
-  UploadOutlined
+  UploadOutlined,
+  ArrowUpOutlined,
+  ArrowDownOutlined
 } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table';
 import Image from 'next/image';
@@ -35,12 +38,73 @@ interface Category {
   slug: string;
   description: string | null;
   icon: string | null;
+  sortOrder: number;
   createdAt: string;
   updatedAt: string;
 }
 
+// 定义reducer函数
+type CategoriesAction = 
+  | { type: 'SET_CATEGORIES'; payload: Category[] }
+  | { type: 'MOVE_UP'; payload: { currentId: number; prevId: number } }
+  | { type: 'MOVE_DOWN'; payload: { currentId: number; nextId: number } }
+  | { type: 'ADD_CATEGORY'; payload: Category }
+  | { type: 'UPDATE_CATEGORY'; payload: Category }
+  | { type: 'DELETE_CATEGORY'; payload: number };
+
+function categoriesReducer(state: Category[], action: CategoriesAction): Category[] {
+  switch (action.type) {
+    case 'SET_CATEGORIES':
+      return action.payload;
+    case 'MOVE_UP': {
+      const { currentId, prevId } = action.payload;
+      const newState = [...state];
+      const currentIndex = newState.findIndex(item => item.id === currentId);
+      const prevIndex = newState.findIndex(item => item.id === prevId);
+      
+      if (currentIndex !== -1 && prevIndex !== -1) {
+        const tempSortOrder = newState[currentIndex].sortOrder;
+        newState[currentIndex].sortOrder = newState[prevIndex].sortOrder;
+        newState[prevIndex].sortOrder = tempSortOrder;
+        return [...newState].sort((a, b) => a.sortOrder - b.sortOrder);
+      }
+      return state;
+    }
+    case 'MOVE_DOWN': {
+      const { currentId, nextId } = action.payload;
+      const newState = [...state];
+      const currentIndex = newState.findIndex(item => item.id === currentId);
+      const nextIndex = newState.findIndex(item => item.id === nextId);
+      
+      if (currentIndex !== -1 && nextIndex !== -1) {
+        const tempSortOrder = newState[currentIndex].sortOrder;
+        newState[currentIndex].sortOrder = newState[nextIndex].sortOrder;
+        newState[nextIndex].sortOrder = tempSortOrder;
+        return [...newState].sort((a, b) => a.sortOrder - b.sortOrder);
+      }
+      return state;
+    }
+    case 'ADD_CATEGORY':
+      return [...state, action.payload].sort((a, b) => a.sortOrder - b.sortOrder);
+    case 'UPDATE_CATEGORY': {
+      const index = state.findIndex(item => item.id === action.payload.id);
+      if (index !== -1) {
+        const newState = [...state];
+        newState[index] = action.payload;
+        return newState;
+      }
+      return state;
+    }
+    case 'DELETE_CATEGORY':
+      return state.filter(item => item.id !== action.payload);
+    default:
+      return state;
+  }
+}
+
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
+  // 使用useReducer替代useState来管理分类列表
+  const [categories, dispatch] = useReducer(categoriesReducer, []);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [form] = Form.useForm();
@@ -56,7 +120,10 @@ export default function CategoriesPage() {
       const response = await fetch('/api/admin/categories');
       const data = await response.json();
       if (data.success) {
-        setCategories(data.data);
+        // 确保按sortOrder排序
+        const sortedCategories = [...data.data].sort((a, b) => a.sortOrder - b.sortOrder);
+        // 使用dispatch更新状态
+        dispatch({ type: 'SET_CATEGORIES', payload: sortedCategories });
       } else {
         message.error(data.message || '获取分类列表失败');
       }
@@ -124,7 +191,7 @@ export default function CategoriesPage() {
   };
 
   // 添加或更新分类
-  const handleSave = async (values: { name: string, slug: string, description?: string }) => {
+  const handleSave = async (values: { name: string, slug: string, description?: string, sortOrder?: number }) => {
     try {
       setUploading(true);
       
@@ -165,7 +232,8 @@ export default function CategoriesPage() {
         },
         body: JSON.stringify({
           ...values,
-          icon: iconPath
+          icon: iconPath,
+          sortOrder: values.sortOrder !== undefined ? Number(values.sortOrder) : 0
         }),
       });
       
@@ -216,7 +284,8 @@ export default function CategoriesPage() {
     form.setFieldsValue({ 
       name: record.name,
       slug: record.slug,
-      description: record.description || ''
+      description: record.description || '',
+      sortOrder: record.sortOrder
     });
     
     // 如果有图标，设置文件列表
@@ -236,6 +305,129 @@ export default function CategoriesPage() {
     setModalVisible(true);
   };
 
+  // 上移下移函数
+  const handleMoveUp = async (record: Category) => {
+    try {
+      setLoading(true); // 显示加载状态
+      
+      // 获取所有分类
+      const allCategories = [...categories];
+      // 找到当前分类的索引
+      const currentIndex = allCategories.findIndex(item => item.id === record.id);
+      
+      // 如果已经是第一个，则不能再上移
+      if (currentIndex === 0) {
+        message.info('已经是第一个分类，无法上移');
+        setLoading(false);
+        return;
+      }
+      
+      // 获取上一个分类
+      const prevCategory = allCategories[currentIndex - 1];
+      
+      // 交换排序值
+      const tempSortOrder = record.sortOrder;
+      
+      // 使用批量更新API
+      const updateData = [
+        {
+          id: record.id,
+          sortOrder: Number(prevCategory.sortOrder)
+        },
+        {
+          id: prevCategory.id,
+          sortOrder: Number(tempSortOrder)
+        }
+      ];
+      
+      // 发送请求
+      const response = await fetch('/api/admin/categories', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData),
+      });
+      
+      // 解析响应
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        message.success('排序更新成功');
+        // 重新获取分类列表
+        await fetchCategories();
+      } else {
+        message.error(data.message || '排序更新失败');
+      }
+    } catch (error) {
+      console.error('上移分类出错:', error);
+      message.error('上移分类出错');
+    } finally {
+      setLoading(false); // 隐藏加载状态
+    }
+  };
+  
+  const handleMoveDown = async (record: Category) => {
+    try {
+      setLoading(true); // 显示加载状态
+      
+      // 获取所有分类
+      const allCategories = [...categories];
+      // 找到当前分类的索引
+      const currentIndex = allCategories.findIndex(item => item.id === record.id);
+      
+      // 如果已经是最后一个，则不能再下移
+      if (currentIndex === allCategories.length - 1) {
+        message.info('已经是最后一个分类，无法下移');
+        setLoading(false);
+        return;
+      }
+      
+      // 获取下一个分类
+      const nextCategory = allCategories[currentIndex + 1];
+      
+      // 交换排序值
+      const tempSortOrder = record.sortOrder;
+      
+      // 使用批量更新API
+      const updateData = [
+        {
+          id: record.id,
+          sortOrder: Number(nextCategory.sortOrder)
+        },
+        {
+          id: nextCategory.id,
+          sortOrder: Number(tempSortOrder)
+        }
+      ];
+      
+      // 发送请求
+      const response = await fetch('/api/admin/categories', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData),
+      });
+      
+      // 解析响应
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        message.success('排序更新成功');
+        // 重新获取分类列表
+        await fetchCategories();
+      } else {
+        message.error(data.message || '排序更新失败');
+      }
+    } catch (error) {
+      console.error('下移分类出错:', error);
+      message.error('下移分类出错');
+    } finally {
+      setLoading(false); // 隐藏加载状态
+    }
+  };
+
   // 上传按钮
   const uploadButton = (
     <div>
@@ -251,6 +443,22 @@ export default function CategoriesPage() {
       dataIndex: 'id',
       key: 'id',
       width: 80,
+    },
+    {
+      title: '排序',
+      dataIndex: 'sortOrder',
+      key: 'sortOrder',
+      width: 100,
+      sorter: (a, b) => a.sortOrder - b.sortOrder,
+      defaultSortOrder: 'ascend',
+      render: (sortOrder: number, record: Category) => (
+        <InputNumber
+          min={0}
+          value={sortOrder}
+          onChange={(value) => handleSortOrderChange(record.id, value)}
+          style={{ width: '100%' }}
+        />
+      ),
     },
     {
       title: '图标',
@@ -301,13 +509,28 @@ export default function CategoriesPage() {
     {
       title: '操作',
       key: 'action',
-      width: 150,
-      render: (_, record) => (
+      width: 200,
+      render: (_, record, index) => (
         <Space size="middle">
+          <Button 
+            type="text" 
+            icon={<ArrowUpOutlined />} 
+            onClick={() => handleMoveUp(record)}
+            disabled={index === 0}
+            title="上移"
+          />
+          <Button 
+            type="text" 
+            icon={<ArrowDownOutlined />} 
+            onClick={() => handleMoveDown(record)}
+            disabled={index === categories.length - 1}
+            title="下移"
+          />
           <Button 
             type="text" 
             icon={<EditOutlined />} 
             onClick={() => handleEdit(record)}
+            title="编辑"
           />
           <Popconfirm
             title="确定要删除这个分类吗?"
@@ -320,12 +543,56 @@ export default function CategoriesPage() {
               type="text" 
               danger 
               icon={<DeleteOutlined />} 
+              title="删除"
             />
           </Popconfirm>
         </Space>
       ),
     },
   ];
+
+  // 修改sortOrder的函数
+  const handleSortOrderChange = async (id: number, value: number | null) => {
+    if (value === null) return;
+    
+    try {
+      setLoading(true);
+      
+      // 获取当前分类
+      const category = categories.find(c => c.id === id);
+      if (!category) return;
+      
+      // 发送请求
+      const response = await fetch(`/api/admin/categories/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: category.name,
+          slug: category.slug,
+          description: category.description,
+          icon: category.icon,
+          sortOrder: Number(value)
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        message.success('排序更新成功');
+        // 重新获取分类列表
+        await fetchCategories();
+      } else {
+        message.error(data.message || '排序更新失败');
+      }
+    } catch (error) {
+      console.error('修改排序值出错:', error);
+      message.error('修改排序值出错');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -346,6 +613,9 @@ export default function CategoriesPage() {
         rowKey="id" 
         loading={loading}
         pagination={{ pageSize: 10 }}
+        bordered
+        size="middle"
+        scroll={{ x: 'max-content' }}
       />
       
       <Modal
@@ -394,6 +664,15 @@ export default function CategoriesPage() {
               showCount
               maxLength={500}
             />
+          </Form.Item>
+          
+          <Form.Item
+            name="sortOrder"
+            label="排序"
+            rules={[{ required: true, message: '请输入排序数值!' }]}
+            initialValue={0}
+          >
+            <InputNumber min={0} style={{ width: '100%' }} />
           </Form.Item>
           
           <Form.Item
