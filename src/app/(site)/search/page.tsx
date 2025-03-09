@@ -98,31 +98,35 @@ export default async function SearchPage({ searchParams, params }: SearchPagePro
   
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">
-            &ldquo;{query}&rdquo; 的搜索结果
-          </h2>
-          <Link href="/" className="text-blue-600 hover:text-blue-800">
-            返回首页
-          </Link>
-        </div>
-        
+      <div className="mb-4">
+        <Link href="/" className="text-brand-400 hover:text-brand-500 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          返回首页
+        </Link>
+      </div>
+
+      <div className="flex items-center justify-between mb-6 bg-white bg-opacity-60 rounded-lg shadow-sm p-6">
+        <h2 className="text-xl font-semibold">
+          关键词 <span className="text-brand-400">&ldquo;{query}&rdquo;</span> 的搜索结果：
+        </h2>
+      </div>
+
+      <div className="">
         {services.length === 0 ? (
-          <div className="text-center py-10">
+          <div className="bg-white bg-opacity-60 rounded-lg shadow-sm p-6 text-center py-10">
             <p className="text-gray-500">没有找到相关结果</p>
             <p className="mt-2 text-sm text-gray-400">
               请尝试使用其他关键词搜索
             </p>
           </div>
         ) : (
-          <div className="space-y-8">
+          <div className="space-y-6">
             {Object.entries(servicesByCategory).map(([categoryName, categoryServices]) => (
-              <div key={categoryName} className="border-t pt-4 first:border-t-0 first:pt-0">
-                <h3 className="text-lg font-medium mb-3 text-gray-700">
+              <div key={categoryName} className="bg-white bg-opacity-60 rounded-lg shadow-sm p-6">
+                <h3 className="text-xl font-medium mb-3 text-gray-700">
                   {categoryName} ({categoryServices.length})
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {categoryServices.map((service) => (
                     <ServiceCard key={service.id} service={service} />
                   ))}
@@ -131,12 +135,6 @@ export default async function SearchPage({ searchParams, params }: SearchPagePro
             ))}
           </div>
         )}
-      </div>
-      
-      <div className="bg-blue-50 rounded-lg p-4 text-center">
-        <p className="text-gray-600">
-          没有找到您需要的AI服务？请联系管理员添加更多服务。
-        </p>
       </div>
     </div>
   );

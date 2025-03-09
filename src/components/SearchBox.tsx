@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { SearchIcon } from '@/components/icons/SearchIcon';
+import { SearchIcon } from './icons/SearchIcon';
 
 export default function SearchBox() {
   const [query, setQuery] = useState('');
@@ -32,7 +32,7 @@ export default function SearchBox() {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          placeholder="搜索服务..."
+          placeholder="搜索AI服务..."
           className="w-full py-2 px-3 text-sm bg-transparent border-none focus:outline-none focus:ring-0"
         />
         {query && (

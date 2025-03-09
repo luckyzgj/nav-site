@@ -23,7 +23,6 @@ interface ServiceCardProps {
 
 export default function ServiceCard({ service }: ServiceCardProps) {
   const [isLoading, setIsLoading] = useState(true);
-  const [isHovered, setIsHovered] = useState(false);
   const [error, setError] = useState(false);
   const loadingRef = useRef<HTMLDivElement>(null);
   const handleServiceClick = useServiceClick();
@@ -49,16 +48,12 @@ export default function ServiceCard({ service }: ServiceCardProps) {
   
   return (
     <div 
-      className={`bg-white bg-opacity-80 rounded-lg shadow-sm border-2 border-transparent hover:border-brand-200 hover:bg-opacity-90 transition-all duration-300 overflow-hidden cursor-pointer ${
-        isHovered ? 'transform scale-102' : ''
-      }`}
+      className={`bg-white bg-opacity-80 rounded-lg shadow-sm outline-2 outline-none hover:outline-brand-200 hover:bg-opacity-90 transition-all duration-300 overflow-hidden cursor-pointer`}
       onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="p-3 flex items-start space-x-3">
+      <div className="p-3 flex items-center space-x-2">
         {/* 左侧图标 */}
-        <div className="w-12 h-12 relative flex-shrink-0">
+        <div className="w-10 h-10 relative flex-shrink-0">
           {/* 加载中显示loading样式 */}
           {service.icon && (
             <div 
@@ -66,7 +61,7 @@ export default function ServiceCard({ service }: ServiceCardProps) {
               className={`absolute inset-0 flex items-center justify-center rounded-lg z-20 ${isLoading ? 'block' : 'hidden'}`}
               style={{ opacity: isLoading ? 1 : 0 }}
             >
-              <div className="w-10 h-10 border-4 border-brand-50 border-t-brand-100 rounded-full animate-spin"></div>
+              <div className="w-8 h-8 border-4 border-brand-50 border-t-brand-100 rounded-full animate-spin"></div>
             </div>
           )}
           
@@ -88,7 +83,7 @@ export default function ServiceCard({ service }: ServiceCardProps) {
               priority={true}
             />
           ) : (
-            <div className="w-12 h-12 bg-brand-100 rounded-lg flex items-center justify-center text-brand-500 text-xl font-bold">
+            <div className="w-10 h-10 bg-brand-100 rounded-lg flex items-center justify-center text-brand-500 text-xl font-bold">
               {service.name.charAt(0).toUpperCase()}
             </div>
           )}
@@ -105,7 +100,7 @@ export default function ServiceCard({ service }: ServiceCardProps) {
           <h3 className="font-medium text-gray-900 truncate">
             {service.name}
           </h3>
-          <p className="text-sm text-gray-500 mt-1 line-clamp-1">
+          <p className="text-sm text-gray-400 line-clamp-1">
             {service.description}
           </p>
         </div>

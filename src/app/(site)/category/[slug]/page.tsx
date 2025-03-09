@@ -5,6 +5,8 @@ import ServiceCard from '@/components/ServiceCard';
 import Link from 'next/link';
 import { Category } from '@/types';
 import { getSiteSettings } from '@/utils/settings';
+import Image from 'next/image';
+import { NoData } from '@/components/icons/NoData';
 
 // 定义路由参数类型
 export interface CategoryPageProps {
@@ -78,30 +80,54 @@ export default async function CategoryPage(
   
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <Link href="/" className="text-blue-500 hover:text-blue-700">
+      <div className="mb-4">
+        <Link href="/" className="text-brand-400 hover:text-brand-500 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
           返回首页
         </Link>
-        <h1 className="text-3xl font-bold mt-2">{category.name}</h1>
-        
-        {category.description && (
-          <div className="mt-3 bg-gray-50 border border-gray-200 rounded-lg p-4">
-            <p className="text-gray-700 leading-relaxed">{category.description}</p>
+      </div>
+      <div className="bg-white bg-opacity-60 rounded-lg shadow-sm p-6 mb-6">
+        <div className="flex sm:flex-row flex-col items-center justify-center sm:justify-start">
+          <h1 className="text-3xl font-bold flex items-center">
+            {category.icon ? (
+              <div className="relative w-10 h-10 mr-2 flex-shrink-0">
+                <Image
+                  src={category.icon}
+                  alt={category.name}
+                  fill
+                  className="object-contain"
+                  unoptimized={category.icon.endsWith('.svg')}
+                  priority
+                />
+              </div>
+            ) : (
+              <div className="w-10 h-10 mr-2 flex items-center justify-center bg-brand-100 rounded-full flex-shrink-0">
+                <span className="text-lg font-bold text-brand-700">{category.name.charAt(0).toUpperCase()}</span>
+              </div>
+            )}
+            <span className="ml-1">{category.name}</span>
+          </h1>
+
+          {category.description && (
+          <div className="mt-2 sm:mt-0 ml-0 sm:ml-8 text-center">
+            <p className="text-gray-500 leading-relaxed">{category.description}</p>
           </div>
         )}
-        
-        <p className="text-gray-600 mt-3">共 {category.services?.length || 0} 个网站</p>
+        </div>
       </div>
+
+      <h3 className="text-gray-500 mb-4">共 {category.services?.length || 0} 个网站</h3>
       
       {(category.services?.length || 0) > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {category.services?.map((service) => (
             <ServiceCard key={service.id} service={service} />
           ))}
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-md p-6 text-center">
-          <p className="text-gray-500">该分类下暂无数据</p>
+        <div className="bg-white bg-opacity-80 rounded-lg shadow-sm p-10 text-center flex flex-col items-center justify-center">
+          <NoData />
+          <p className="text-gray-400 mt-8">该分类下暂无数据</p>
         </div>
       )}
     </div>

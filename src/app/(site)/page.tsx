@@ -91,23 +91,23 @@ export default async function Home() {
       <div className="container mx-auto px-4 py-8">
         {/* 移动端分类导航 */}
         <div className="xl:hidden mb-10">
-          <h2 className="font-bold mb-2 text-gray-800 pb-2">
-            导航
+          <h2 className="text-2xl font-bold mb-2 pb-2">
+            分类
           </h2>
-          <div className="flex flex-wrap gap-2">
+          <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-3">
             {categories.map((category) => (
               <a
                 key={category.id}
                 href={`#category-${category.slug}`}
-                className="category-nav-link px-4 py-2 bg-white border-2 border-brand-100 hover:border-brand-300 transition-all duration-200 rounded-full text-gray-700 hover:text-gray-900 flex items-center"
+                className="px-4 py-2 bg-white outline-2 outline-none hover:outline-brand-200 transition-all duration-200 rounded-lg shadow-sm text-gray-700 hover:text-gray-900 flex items-center"
                 data-category-id={`category-${category.slug}`}
               >
                 <CategoryIcon 
                   icon={category.icon} 
                   name={category.name} 
-                  size={16}
+                  size={20}
                 />
-                <span className="ml-1">{category.name}</span>
+                <span className="ml-2">{category.name}</span>
               </a>
             ))}
           </div>
@@ -143,7 +143,7 @@ export default async function Home() {
         
         {/* 移动端返回顶部按钮 */}
         <div className="xl:hidden fixed bottom-6 right-6">
-          <BackToTopButton className="flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-lg text-gray-700 hover:bg-gray-100">
+          <BackToTopButton className="flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-lg text-gray-400 hover:text-gray-500">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
             </svg>

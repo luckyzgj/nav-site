@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import ServiceCard from './ServiceCard';
 import { Category, Service } from '@/types';
-
 interface CategorySectionProps {
   category: Category;
   services: Service[];
@@ -19,11 +18,16 @@ export default function CategorySection({ category, services }: CategorySectionP
     >
       <div className="flex justify-between items-center mb-4 pb-2">
         <h2 className="font-bold text-2xl text-gray-800 flex items-center">
-          <span className="ml-2">{category.name}</span>
+          <Link 
+            href={`/t/${category.slug}`}
+            className="flex items-center"
+          >
+            {category.name}
+          </Link>
         </h2>
         <Link 
           href={`/t/${category.slug}`}
-          className="text-sm text-brand-400 hover:text-brand-500 bg-brand-100 px-3 py-1 rounded-full"
+          className="text-sm text-brand-300 hover:text-brand-500 shadow-sm bg-white px-4 py-1.5 rounded-full"
         >
           更多
         </Link>
