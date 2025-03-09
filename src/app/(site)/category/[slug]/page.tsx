@@ -3,10 +3,14 @@ import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import ServiceCard from '@/components/ServiceCard';
 import Link from 'next/link';
-import { Category } from '@/types';
+import { Category, Service } from '@/types';
 import { getSiteSettings } from '@/utils/settings';
 import Image from 'next/image';
 import { NoData } from '@/components/icons/NoData';
+import Pagination from '@/components/Pagination';
+
+// 每页显示的数据条数
+const PAGE_SIZE = 24;
 
 // 定义路由参数类型
 export interface CategoryPageProps {
@@ -45,20 +49,68 @@ export async function generateMetadata(
   };
 }
 
-// 获取分类及其网站
-async function getCategoryWithServices(slug: string): Promise<Category | null> {
+// 获取分类下的服务总数
+async function getServiceCount(categoryId: number): Promise<number> {
+  const count = await prisma.service.count({
+    where: {
+      categoryId: categoryId,
+    },
+  });
+  
+  return count;
+}
+
+// 获取分类及其网站（带分页）
+async function getCategoryWithServices(slug: string, page: number = 1): Promise<{
+  category: Category | null;
+  services: Service[];
+  totalCount: number;
+  totalPages: number;
+}> {
+  // 获取分类信息
   const category = await prisma.category.findUnique({
     where: { slug: slug } as { slug: string },
-    include: {
-      services: {
-        orderBy: {
-          clickCount: 'desc',
-        },
-      },
-    },
   }) as unknown as Category | null;
   
-  return category;
+  if (!category) {
+    return {
+      category: null,
+      services: [],
+      totalCount: 0,
+      totalPages: 0
+    };
+  }
+  
+  // 获取服务总数
+  const totalCount = await getServiceCount(category.id);
+  
+  // 计算总页数
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+  
+  // 确保页码有效
+  const validPage = Math.max(1, Math.min(page, totalPages || 1));
+  
+  // 获取当前页的服务
+  const services = await prisma.service.findMany({
+    where: {
+      categoryId: category.id,
+    },
+    skip: (validPage - 1) * PAGE_SIZE,
+    take: PAGE_SIZE,
+    orderBy: {
+      clickCount: 'desc',
+    },
+  }) as unknown as Service[];
+  
+  return {
+    category: {
+      ...category,
+      services: [],
+    },
+    services,
+    totalCount,
+    totalPages
+  };
 }
 
 export default async function CategoryPage(
@@ -69,9 +121,12 @@ export default async function CategoryPage(
   const slug = resolvedParams.slug;
   
   // 解析searchParams
-  await searchParams;
+  const resolvedSearchParams = await searchParams;
+  const pageParam = resolvedSearchParams.page;
+  const page = pageParam ? parseInt(Array.isArray(pageParam) ? pageParam[0] : pageParam) : 1;
   
-  const category = await getCategoryWithServices(slug);
+  // 获取分类及其服务
+  const { category, services, totalCount, totalPages } = await getCategoryWithServices(slug, page);
   
   // 如果分类不存在，返回404
   if (!category) {
@@ -116,11 +171,11 @@ export default async function CategoryPage(
         </div>
       </div>
 
-      <h3 className="text-gray-500 mb-4">共 {category.services?.length || 0} 个网站</h3>
+      <h3 className="text-gray-500 mb-4">共 {totalCount} 个网站 {totalPages > 1 && `(第 ${page}/${totalPages} 页)`}</h3>
       
-      {(category.services?.length || 0) > 0 ? (
+      {services.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {category.services?.map((service) => (
+          {services.map((service) => (
             <ServiceCard key={service.id} service={service} />
           ))}
         </div>
@@ -128,6 +183,17 @@ export default async function CategoryPage(
         <div className="bg-white bg-opacity-80 rounded-lg shadow-sm p-10 text-center flex flex-col items-center justify-center">
           <NoData />
           <p className="text-gray-400 mt-8">该分类下暂无数据</p>
+        </div>
+      )}
+      
+      {/* 分页控件 */}
+      {totalPages > 1 && (
+        <div className="mt-8 flex justify-center">
+          <Pagination 
+            currentPage={page} 
+            totalPages={totalPages} 
+            baseUrl={`/t/${slug}`} 
+          />
         </div>
       )}
     </div>

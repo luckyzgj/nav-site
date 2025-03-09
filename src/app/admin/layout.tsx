@@ -157,10 +157,10 @@ export default function AdminLayout({
             {children}
           </div>
         </Content>
+        <footer className="p-2 border-t bg-white">
+          <VersionInfo className="text-right" />
+        </footer>
       </Layout>
-      <footer className="p-4 border-t">
-        <VersionInfo className="text-right" />
-      </footer>
     </Layout>
   );
 } 

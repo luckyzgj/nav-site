@@ -19,30 +19,123 @@ const VersionInfo: React.FC<VersionInfoProps> = ({ className }) => {
     buildTime: ''
   });
 
+  // 安全地解析日期
+  const safeParseDate = (dateStr: string): string => {
+    try {
+      // 检查是否是 HTML 内容
+      if (dateStr.includes('<!DOCTYPE html>') || dateStr.includes('<html')) {
+        console.error('收到 HTML 内容而非日期字符串');
+        return '未知时间';
+      }
+
+      // 首先检查是否已经是格式化的日期字符串
+      if (dateStr.includes('-') || dateStr.includes('/')) {
+        return dateStr;
+      }
+      
+      // 尝试将字符串解析为数字
+      const timestamp = parseInt(dateStr, 10);
+      if (isNaN(timestamp)) {
+        return '未知时间';
+      }
+      
+      // 创建日期对象并格式化
+      const date = new Date(timestamp * 1000); // 假设是秒级时间戳
+      
+      // 检查日期是否有效
+      if (isNaN(date.getTime())) {
+        // 尝试毫秒级时间戳
+        const msDate = new Date(timestamp);
+        if (isNaN(msDate.getTime())) {
+          return '未知时间';
+        }
+        return msDate.toLocaleString();
+      }
+      
+      return date.toLocaleString();
+    } catch (error) {
+      console.error('日期解析错误:', error);
+      return '未知时间';
+    }
+  };
+
+  // 检查响应是否为 JSON
+  const isJsonResponse = (text: string): boolean => {
+    try {
+      // 尝试解析为 JSON
+      JSON.parse(text);
+      return true;
+    } catch {
+      // 如果解析失败，检查是否为 HTML
+      return !(text.includes('<!DOCTYPE html>') || text.includes('<html'));
+    }
+  };
+
+  // 获取当前时间作为开发环境的构建时间
+  const getCurrentTime = (): string => {
+    return new Date().toLocaleString();
+  };
+
   // 使用useCallback包装获取版本信息的逻辑，避免在依赖数组中直接使用对象
   const fetchVersionInfo = useCallback(async () => {
+    // 在开发环境中使用当前时间
+    if (process.env.NODE_ENV === 'development') {
+      setBuildInfo(prev => ({
+        ...prev,
+        buildTime: getCurrentTime(),
+        buildId: 'dev-' + Date.now()
+      }));
+      return;
+    }
+
     try {
-      // 尝试从版本信息文件获取信息
-      const res = await fetch('/static/version/info.json');
+      // 尝试从版本信息文件获取信息 - 使用正确的路径
+      const res = await fetch('/_next/static/version/info.json');
       if (!res.ok) {
         throw new Error('版本信息文件不存在');
       }
-      const data = await res.json();
+      
+      const text = await res.text();
+      
+      // 验证响应是否为 JSON
+      if (!isJsonResponse(text)) {
+        throw new Error('版本信息文件格式错误');
+      }
+      
+      const data = JSON.parse(text);
       setBuildInfo(prev => ({
         version: data.version || prev.version,
         buildId: data.buildId || prev.buildId,
-        buildTime: data.buildTime || prev.buildTime
+        buildTime: data.buildTime ? safeParseDate(data.buildTime) : prev.buildTime
       }));
-    } catch {
+    } catch (error) {
+      console.error('获取版本信息文件失败:', error);
       try {
         // 如果版本信息文件不存在，尝试从构建ID获取信息
         const res = await fetch('/_next/build-id');
-        const buildId = await res.text();
+        if (!res.ok) {
+          throw new Error('构建ID不存在');
+        }
+        
+        const text = await res.text();
+        
+        // 验证响应不是 HTML
+        if (text.includes('<!DOCTYPE html>') || text.includes('<html')) {
+          throw new Error('构建ID响应为 HTML');
+        }
+        
+        const buildId = text.trim();
         // 将时间戳转换为可读格式
-        const buildTime = new Date(parseInt(buildId) * 1000).toLocaleString();
+        const buildTime = safeParseDate(buildId);
         setBuildInfo(prev => ({ ...prev, buildId, buildTime }));
       } catch (err) {
         console.error('获取构建ID失败:', err);
+        // 所有方法都失败时，使用当前时间作为回退
+        setBuildInfo(prev => ({
+          ...prev,
+          buildTime: getCurrentTime(),
+          buildId: 'fallback-' + Date.now()
+        }));
       }
     }
   }, []);
@@ -53,11 +146,15 @@ const VersionInfo: React.FC<VersionInfoProps> = ({ className }) => {
   }, [fetchVersionInfo]);
 
   return (
-    <div className={`text-xs text-gray-500 ${className}`}>
-      <div>版本: {buildInfo.version}</div>
-      <div>构建时间: {buildInfo.buildTime || '加载中...'}</div>
+    <div className={`text-xs text-gray-500 flex flex-wrap justify-end items-center space-x-4 ${className}`}>
+      <div className="whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">
+        版本: {buildInfo.version}
+      </div>
+      <div className="whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]">
+        构建时间: {buildInfo.buildTime || '加载中...'}
+      </div>
       {process.env.NODE_ENV === 'development' && (
-        <div className="text-blue-500">开发模式</div>
+        <div className="text-blue-500 whitespace-nowrap">开发模式</div>
       )}
     </div>
   );
