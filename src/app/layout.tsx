@@ -8,12 +8,17 @@ const inter = Inter({ subsets: ["latin"] });
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   
-  // 强制使用数据库中的设置，不使用默认值
+  // 使用 SEO 设置，如果没有则使用默认值
+  const title = settings.seoTitle || settings.siteName;
+  const description = settings.seoDescription || settings.siteDescription;
+  const keywords = settings.seoKeywords;
+  
   return {
     title: {
-      absolute: settings.siteName,
+      absolute: title,
     },
-    description: settings.siteDescription,
+    description: description,
+    keywords: keywords,
   };
 }
 

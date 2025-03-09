@@ -4,6 +4,9 @@ interface SiteSettings {
   siteName: string;
   siteDescription: string;
   statisticsCode: string;
+  seoTitle: string;
+  seoKeywords: string;
+  seoDescription: string;
   [key: string]: string;
 }
 
@@ -32,6 +35,9 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       siteName: settingsObject.siteName || 'AI导航',
       siteDescription: settingsObject.siteDescription || '收录优质AI服务和应用的导航网站',
       statisticsCode: settingsObject.statisticsCode || '',
+      seoTitle: settingsObject.seoTitle || '',
+      seoKeywords: settingsObject.seoKeywords || '',
+      seoDescription: settingsObject.seoDescription || '',
       ...settingsObject,
     };
     
@@ -43,6 +49,9 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       siteName: 'AI导航',
       siteDescription: '收录优质AI服务和应用的导航网站',
       statisticsCode: '',
+      seoTitle: '',
+      seoKeywords: '',
+      seoDescription: '',
     };
   }
 } 

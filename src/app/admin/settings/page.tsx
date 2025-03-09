@@ -10,7 +10,8 @@ import {
   message, 
   Card,
   Typography,
-  Alert
+  Alert,
+  Divider
 } from 'antd';
 
 const { Title } = Typography;
@@ -20,6 +21,9 @@ interface SettingsFormValues {
   siteName: string;
   siteDescription: string;
   statisticsCode: string;
+  seoTitle: string;
+  seoKeywords: string;
+  seoDescription: string;
 }
 
 export default function SettingsPage() {
@@ -105,6 +109,37 @@ export default function SettingsPage() {
               rows={3}
             />
           </Form.Item>
+          
+          <Divider orientation="left">SEO 设置</Divider>
+          
+          <Form.Item
+            name="seoTitle"
+            label="SEO 标题"
+            tooltip="用于网站首页的HTML标题标签，如不填写则使用网站名称"
+          >
+            <Input placeholder="请输入SEO标题" />
+          </Form.Item>
+          
+          <Form.Item
+            name="seoKeywords"
+            label="SEO 关键词"
+            tooltip="用于网站首页的meta keywords标签，多个关键词请用英文逗号分隔"
+          >
+            <Input placeholder="请输入SEO关键词，多个关键词用英文逗号分隔" />
+          </Form.Item>
+          
+          <Form.Item
+            name="seoDescription"
+            label="SEO 描述"
+            tooltip="用于网站首页的meta description标签，如不填写则使用网站描述"
+          >
+            <TextArea 
+              placeholder="请输入SEO描述" 
+              rows={3}
+            />
+          </Form.Item>
+          
+          <Divider orientation="left">统计代码</Divider>
           
           <Form.Item
             name="statisticsCode"
