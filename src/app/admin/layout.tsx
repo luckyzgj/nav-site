@@ -18,6 +18,8 @@ import {
   PictureOutlined,
 } from '@ant-design/icons';
 import Link from 'next/link';
+import React from 'react';
+import VersionInfo from '@/components/VersionInfo';
 
 const { Header, Content, Sider } = Layout;
 
@@ -156,6 +158,9 @@ export default function AdminLayout({
           </div>
         </Content>
       </Layout>
+      <footer className="p-4 border-t">
+        <VersionInfo className="text-right" />
+      </footer>
     </Layout>
   );
 } 

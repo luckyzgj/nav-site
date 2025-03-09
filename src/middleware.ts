@@ -9,6 +9,22 @@ const PUBLIC_PATHS = ['/admin/login'];
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
+  // 为静态资源添加缓存控制头
+  if (
+    pathname.startsWith('/_next/static/') || 
+    pathname.startsWith('/static/') ||
+    pathname.endsWith('.css') || 
+    pathname.endsWith('.js')
+  ) {
+    // 创建响应
+    const response = NextResponse.next();
+    
+    // 添加缓存控制头
+    response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
+    
+    return response;
+  }
+  
   // 处理分类URL重写：将/t/xxx映射到/category/xxx
   if (pathname.startsWith('/t/')) {
     const slug = pathname.replace('/t/', '');
@@ -53,5 +69,6 @@ export const config = {
      * - favicon.ico
      */
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/_next/static/:path*',
   ],
 }; 
