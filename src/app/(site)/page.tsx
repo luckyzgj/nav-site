@@ -81,15 +81,21 @@ export default async function Home() {
 
         {/* 返回顶部链接 */}
         <div className="border-t-2 border-brand-50 p-2">
-            <BackToTopButton className="flex items-center justify-center text-gray-500 text-sm w-full px-2 py-1.5 border-2 bg-gray-50 hover:text-brand-400 border-gray-100 hover:bg-brand-50 hover:border-brand-100 rounded transition-colors">
+            <BackToTopButton className="flex items-center justify-center text-gray-500 text-sm w-full px-2 py-1.5 border-2 bg-brand-50/50 hover:text-brand-400 border-brand-50 hover:bg-brand-50 hover:border-brand-100 rounded transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
               返回顶部
             </BackToTopButton>
           </div>
       </div>
       
-      {/* 主内容区域 - 使用Tailwind的container类并设置最大宽度 */}
+      {/* 主内容区域 */}
       <div className="container mx-auto px-4 py-8 max-w-[960px]">
+        
+        {/* 图片广告位 */}
+        <div className="w-full h-[200px] bg-brand-100 rounded-lg mb-10">
+          {/* <img src="" alt="banner" className="w-full h-auto" /> */}
+        </div>
+
         {/* 移动端分类导航 */}
         <div className="xl:hidden mb-10">
           <h2 className="text-2xl font-bold mb-2 pb-2">
