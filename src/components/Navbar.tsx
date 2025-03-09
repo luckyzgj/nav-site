@@ -56,19 +56,9 @@ export default function Navbar({ siteName }: NavbarProps) {
             <ul className="flex space-x-6">
               <li>
                 <Link 
-                  href="/" 
-                  className={`text-gray-600 hover:text-brand-600 transition-colors ${
-                    pathname === '/' ? 'font-semibold text-brand-600' : ''
-                  }`}
-                >
-                  首页
-                </Link>
-              </li>
-              <li>
-                <Link 
                   href="/about" 
-                  className={`text-gray-600 hover:text-brand-600 transition-colors ${
-                    pathname === '/about' ? 'font-semibold text-brand-600' : ''
+                  className={`hover:text-brand-400 transition-colors ${
+                    pathname === '/about' ? 'font-semibold text-brand-400' : ''
                   }`}
                 >
                   关于
@@ -77,8 +67,8 @@ export default function Navbar({ siteName }: NavbarProps) {
               <li>
                 <Link 
                   href="/admin" 
-                  className={`text-gray-600 hover:text-brand-600 transition-colors ${
-                    pathname === '/admin' ? 'font-semibold text-brand-600' : ''
+                  className={`hover:text-brand-400 transition-colors ${
+                    pathname === '/admin' ? 'font-semibold text-brand-400' : ''
                   }`}
                 >
                   管理
