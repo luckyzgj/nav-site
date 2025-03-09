@@ -56,6 +56,7 @@ export default function LiveSearch() {
       if (!query.trim()) {
         setResults([]);
         setLoading(false);
+        setShowResults(false);
         return;
       }
 
@@ -66,14 +67,17 @@ export default function LiveSearch() {
         
         if (data.success) {
           setResults(data.data || []);
+          setShowResults(true);
         } else {
           setResults([]);
+          setShowResults(false);
           if (process.env.NODE_ENV === 'development') {
             console.error('搜索失败:', data.message);
           }
         }
       } catch (error) {
         setResults([]);
+        setShowResults(false);
         if (process.env.NODE_ENV === 'development') {
           console.error('搜索失败:', error);
         }
@@ -212,7 +216,7 @@ export default function LiveSearch() {
               onChange={(e) => setQuery(e.target.value)}
               onFocus={() => {
                 setIsFocused(true);
-                if (results.length > 0) {
+                if (query.trim() && results.length > 0) {
                   setShowResults(true);
                 }
               }}
