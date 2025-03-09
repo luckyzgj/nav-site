@@ -17,7 +17,10 @@ export const initializeSystem = async () => {
           password: hashedPassword,
         },
       });
-      console.log('已创建默认管理员账户: admin / admin123');
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('已创建默认管理员账户: admin / admin123');
+      }
     }
     
     // 检查是否有分类，如果没有则创建默认分类
@@ -35,7 +38,10 @@ export const initializeSystem = async () => {
           { name: '其他工具', slug: 'other-tools' },
         ],
       });
-      console.log('已创建默认分类');
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('已创建默认分类');
+      }
     }
     
     // 检查是否有系统设置，如果没有则创建默认设置
@@ -47,7 +53,10 @@ export const initializeSystem = async () => {
           { key: 'siteDescription', value: '收录优质AI服务和应用的导航网站' },
         ],
       });
-      console.log('已创建默认系统设置');
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('已创建默认系统设置');
+      }
     }
     
     await prisma.$disconnect();

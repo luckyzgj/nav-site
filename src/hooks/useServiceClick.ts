@@ -24,14 +24,18 @@ export function useServiceClick() {
     
     try {
       // 记录点击
-      await fetch(`/api/services/${serviceId}/click`, { method: 'POST' });
-      // 打开服务网址
-      window.open(url, '_blank');
+      await fetch(`/api/services/${serviceId}/click`, {
+        method: 'POST',
+      });
     } catch (error) {
-      console.error('记录点击失败:', error);
-      // 即使记录失败，仍然打开URL
-      window.open(url, '_blank');
+      if (process.env.NODE_ENV === 'development') {
+        console.error('记录点击失败:', error);
+      }
+      // 在生产环境中静默失败，不影响用户体验
     }
+    
+    // 无论记录是否成功，都打开URL
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
   
   return handleServiceClick;

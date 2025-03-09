@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, FormEvent, KeyboardEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { SearchIcon } from './icons/SearchIcon';
+import { SearchResult } from '@/types/api';
 
 // 添加自定义滚动条样式
 const scrollbarStyles = `
@@ -38,18 +39,6 @@ const scrollbarStyles = `
   }
 `;
 
-// 搜索结果类型定义
-interface SearchResult {
-  id: number;
-  name: string;
-  url: string;
-  description: string;
-  icon: string | null;
-  categoryId: number;
-  categoryName: string;
-  categorySlug: string;
-}
-
 export default function LiveSearch() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -66,19 +55,28 @@ export default function LiveSearch() {
     const fetchResults = async () => {
       if (!query.trim()) {
         setResults([]);
+        setLoading(false);
         return;
       }
 
-      setLoading(true);
       try {
+        setLoading(true);
         const response = await fetch(`/api/live-search?q=${encodeURIComponent(query.trim())}`);
         const data = await response.json();
+        
         if (data.success) {
-          setResults(data.data);
-          setShowResults(true);
+          setResults(data.data || []);
+        } else {
+          setResults([]);
+          if (process.env.NODE_ENV === 'development') {
+            console.error('搜索失败:', data.message);
+          }
         }
       } catch (error) {
-        console.error('搜索失败:', error);
+        setResults([]);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('搜索失败:', error);
+        }
       } finally {
         setLoading(false);
       }
@@ -134,17 +132,17 @@ export default function LiveSearch() {
 
   // 处理结果点击
   const handleResultClick = async (result: SearchResult) => {
-    // 记录点击
     try {
-      await fetch(`/api/services/${result.id}/click`, {
-        method: 'POST',
-      });
+      // 记录点击
+      await fetch(`/api/services/${result.id}/click`, { method: 'POST' });
     } catch (error) {
-      console.error('记录点击失败:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('记录点击失败:', error);
+      }
     }
-
-    // 跳转到URL
-    window.open(result.url, '_blank');
+    
+    // 跳转到网站
+    window.open(result.url, '_blank', 'noopener,noreferrer');
   };
 
   // 点击外部关闭结果列表
