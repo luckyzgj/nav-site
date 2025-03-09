@@ -440,7 +440,18 @@ export default function BannersPage() {
         footer={null}
         onCancel={() => setPreviewImage(null)}
       >
-        <img alt="预览" style={{ width: '100%' }} src={previewImage || ''} />
+        <div className="relative w-full" style={{ height: '500px' }}>
+          {previewImage && (
+            <Image
+              src={previewImage}
+              alt="预览"
+              fill
+              style={{ objectFit: 'contain' }}
+              sizes="100vw"
+              priority
+            />
+          )}
+        </div>
       </Modal>
     </div>
   );

@@ -707,8 +707,18 @@ export default function CategoriesPage() {
         footer={null}
         onCancel={() => setPreviewImage(null)}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt="预览" style={{ width: '100%' }} src={previewImage || ''} />
+        <div className="relative w-full" style={{ height: '500px' }}>
+          {previewImage && (
+            <Image
+              src={previewImage}
+              alt="预览"
+              fill
+              style={{ objectFit: 'contain' }}
+              sizes="100vw"
+              priority
+            />
+          )}
+        </div>
       </Modal>
     </div>
   );
