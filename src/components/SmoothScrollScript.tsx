@@ -38,16 +38,32 @@ export default function SmoothScrollScript() {
           // 当前滚动位置
           const offsetPosition = elementPosition + window.scrollY - navbarHeight - 30;
           
+          // 先立即更新活动状态，不等待滚动事件
+          clearAllActiveStates();
+          updateActiveCategory(targetId.substring(1));
+          
           // 滚动到目标位置，考虑导航栏高度
           window.scrollTo({
             top: offsetPosition,
             behavior: 'smooth'
           });
           
-          // 立即更新活动状态，不等待滚动事件
+          // 防止滚动事件覆盖我们设置的高亮状态
+          const clickedTargetId = targetId;
+          
+          // 临时禁用滚动事件处理
+          const disableScrollHandler = () => {};
+          window.removeEventListener('scroll', handleScroll);
+          window.addEventListener('scroll', disableScrollHandler);
+          
+          // 一段时间后恢复滚动事件处理
           setTimeout(() => {
-            updateActiveCategory(targetId.substring(1));
-          }, 100);
+            window.removeEventListener('scroll', disableScrollHandler);
+            window.addEventListener('scroll', handleScroll);
+            
+            // 再次确保正确的分类被高亮
+            updateActiveCategory(clickedTargetId.substring(1));
+          }, 1000); // 给足够的时间完成滚动
         }
       }
     };
@@ -87,6 +103,17 @@ export default function SmoothScrollScript() {
         activeDesktopLink.classList.add('border-brand-100');
         activeDesktopLink.classList.remove('border-transparent');
         activeDesktopLink.classList.add('font-medium');
+        
+        // 确保只有当前分类被高亮显示
+        const allDesktopLinks = document.querySelectorAll('.hidden.xl\\:block .category-nav-link');
+        allDesktopLinks.forEach(link => {
+          if (link !== activeDesktopLink) {
+            link.classList.remove('active-category');
+            link.classList.remove('border-brand-100');
+            link.classList.add('border-transparent');
+            link.classList.remove('font-medium');
+          }
+        });
       }
       
       // 添加活动状态到移动端导航链接
@@ -95,6 +122,16 @@ export default function SmoothScrollScript() {
         activeMobileLink.classList.add('bg-brand-50');
         activeMobileLink.classList.add('border-brand-300');
         activeMobileLink.classList.add('font-medium');
+        
+        // 确保只有当前分类被高亮显示
+        const allMobileLinks = document.querySelectorAll('.xl\\:hidden .category-nav-link');
+        allMobileLinks.forEach(link => {
+          if (link !== activeMobileLink) {
+            link.classList.remove('bg-brand-50');
+            link.classList.remove('border-brand-300');
+            link.classList.remove('font-medium');
+          }
+        });
       }
     };
     
@@ -131,12 +168,15 @@ export default function SmoothScrollScript() {
       let foundVisibleSection = false;
       let lastVisibleSection = null;
       
+      // 先清除所有高亮状态，确保只有一个分类被高亮
+      clearAllActiveStates();
+      
       for (const section of sections) {
         const rect = section.getBoundingClientRect();
         
-        // 考虑导航栏高度，调整判断条件
-        // 如果区块在视口中或接近视口顶部（考虑导航栏高度）
-        if (rect.top <= navbarHeight + 20 && rect.bottom >= navbarHeight) {
+        // 考虑导航栏高度和滚动偏移量，调整判断条件
+        // 使用与滚动目标位置计算相同的偏移量(navbarHeight + 30)
+        if (rect.top <= navbarHeight + 30 && rect.bottom >= navbarHeight) {
           // 更新活动分类
           updateActiveCategory(section.id);
           foundVisibleSection = true;
@@ -146,7 +186,7 @@ export default function SmoothScrollScript() {
         }
         
         // 记录最后一个已经滚过的分类
-        if (rect.top <= navbarHeight) {
+        if (rect.top <= navbarHeight + 30) {
           lastVisibleSection = section;
         }
       }
