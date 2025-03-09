@@ -13,7 +13,7 @@ export default function Footer({ siteName, siteDescription, statisticsCode }: Fo
   
   return (
     <>
-      <footer className="py-6">
+      <footer className="py-6 text-sm">
         <div className="container mx-auto px-4 max-w-[960px]">
           <div className="flex space-x-4 items-center justify-center">
             <Link href="/" className="text-gray-600 hover:text-brand-400 transition-colors">
@@ -27,7 +27,7 @@ export default function Footer({ siteName, siteDescription, statisticsCode }: Fo
           <div className="text-center text-gray-500 mt-2">
             <p>&copy; {year} {siteName} All Rights Reserved</p>
             {siteDescription && (
-              <p className="mt-1">{siteDescription}</p>
+              <p className="mt-2">{siteDescription}</p>
             )}
           </div>
         </div>
