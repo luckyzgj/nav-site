@@ -26,8 +26,7 @@ export const initializeSystem = async () => {
     // 检查是否有分类，如果没有则创建默认分类
     const categoryCount = await prisma.category.count();
     if (categoryCount === 0) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (prisma.category.createMany as any)({
+      await prisma.category.createMany({
         data: [
           { name: '聊天机器人', slug: 'chatbots' },
           { name: '图像生成', slug: 'image-generation' },
@@ -49,7 +48,7 @@ export const initializeSystem = async () => {
     if (settingCount === 0) {
       await prisma.setting.createMany({
         data: [
-          { key: 'siteName', value: 'AI导航' },
+          { key: 'siteName', value: '123.SS' },
           { key: 'siteDescription', value: '收录优质AI服务和应用的导航网站' },
         ],
       });

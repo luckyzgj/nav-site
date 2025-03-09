@@ -15,7 +15,6 @@ import {
   message, 
   Popconfirm,
   Typography,
-  Image,
   Card,
   Row,
   Col
@@ -29,6 +28,7 @@ import {
 } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table';
 import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
+import Image from 'next/image';
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -279,14 +279,15 @@ export default function ServicesPage() {
       width: 80,
       render: (icon) => (
         icon ? (
-          <Image 
-            src={icon} 
-            alt="图标" 
-            width={40} 
-            height={40} 
-            style={{ objectFit: 'contain' }}
-            preview={{ src: icon }}
-          />
+          <div className="relative w-10 h-10">
+            <Image 
+              src={icon} 
+              alt="图标" 
+              fill
+              style={{ objectFit: 'contain' }}
+              onClick={() => setPreviewImage(icon)}
+            />
+          </div>
         ) : (
           <div className="w-10 h-10 bg-gray-200 flex items-center justify-center rounded">
             无

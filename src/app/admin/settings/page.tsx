@@ -91,6 +91,8 @@ export default function SettingsPage() {
           layout="vertical"
           onFinish={handleSave}
         >
+          <Divider orientation="left">基本设置</Divider>
+
           <Form.Item
             name="siteName"
             label="网站名称"

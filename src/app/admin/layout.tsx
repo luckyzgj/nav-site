@@ -15,6 +15,7 @@ import {
   LogoutOutlined,
   SettingOutlined,
   HomeOutlined,
+  PictureOutlined,
 } from '@ant-design/icons';
 import Link from 'next/link';
 
@@ -103,6 +104,11 @@ export default function AdminLayout({
               key: '/admin/categories',
               icon: <TagsOutlined />,
               label: <Link href="/admin/categories">分类管理</Link>,
+            },
+            {
+              key: '/admin/banners',
+              icon: <PictureOutlined />,
+              label: <Link href="/admin/banners">头图管理</Link>,
             },
             {
               key: '/admin/settings',

@@ -7,6 +7,7 @@ import BackToTopButton from '@/components/BackToTopButton';
 import CategoryNavStyles from '@/components/CategoryNavStyles';
 import CategoryIcon from '@/components/CategoryIcon';
 import { Prisma } from '@prisma/client';
+import Image from 'next/image';
 
 // 获取所有分类及其网站
 async function getCategoriesWithServices(): Promise<Category[]> {
@@ -50,9 +51,41 @@ async function getPopularServices(): Promise<ServiceWithCategory[]> {
   })) as unknown as ServiceWithCategory[];
 }
 
+// 定义Banner类型
+interface Banner {
+  id: number;
+  title: string;
+  url: string;
+  imageUrl: string;
+  isActive: boolean;
+  sortOrder: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// 获取头图数据
+async function getActiveBanner(): Promise<Banner | null> {
+  try {
+    // 获取一个启用状态的头图，按排序和创建时间排序
+    // 由于Prisma客户端尚未更新，使用原始SQL查询
+    const banners = await prisma.$queryRaw<Banner[]>`
+      SELECT * FROM Banner 
+      WHERE isActive = true 
+      ORDER BY sortOrder ASC, createdAt DESC 
+      LIMIT 1
+    `;
+    
+    return banners && banners.length > 0 ? banners[0] : null;
+  } catch (error) {
+    console.error('获取头图失败:', error);
+    return null;
+  }
+}
+
 export default async function Home() {
   const categories = await getCategoriesWithServices();
   const popularServices = await getPopularServices();
+  const banner = await getActiveBanner();
   
   return (
     <div className="relative">
@@ -91,10 +124,26 @@ export default async function Home() {
       {/* 主内容区域 */}
       <div className="container mx-auto px-4 py-8 max-w-[960px]">
         
-        {/* 图片广告位 */}
-        <div className="w-full h-[200px] bg-brand-100 rounded-lg mb-10">
-          {/* <img src="" alt="banner" className="w-full h-auto" /> */}
-        </div>
+        {/* 头图 */}
+        {banner && (
+          <div className="w-full h-[200px] bg-brand-50 rounded-lg mb-10 overflow-hidden">
+            <a href={banner.url} target="_blank" rel="noopener noreferrer" className="block w-full h-full relative">
+              <div className="relative w-full h-full">
+                <Image 
+                  src={banner.imageUrl} 
+                  alt={banner.title} 
+                  fill
+                  sizes="100vw"
+                  priority
+                  className="object-cover transition-transform duration-300 hover:scale-105" 
+                />
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-b from-transparent to-black/50 bg-opacity-50 text-white py-3 px-4">
+                <h3 className="text-lg font-medium">{banner.title}</h3>
+              </div>
+            </a>
+          </div>
+        )}
 
         {/* 移动端分类导航 */}
         <div className="xl:hidden mb-10">
