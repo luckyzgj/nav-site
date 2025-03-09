@@ -5,6 +5,39 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { SearchIcon } from './icons/SearchIcon';
 
+// 添加自定义滚动条样式
+const scrollbarStyles = `
+  /* 滚动条整体样式 */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  /* 滚动条轨道 */
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+  }
+  
+  /* 滚动条滑块 */
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    transition: all 0.2s ease;
+  }
+  
+  /* 滚动条滑块悬停效果 */
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Firefox滚动条样式 */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
+  }
+`;
+
 // 搜索结果类型定义
 interface SearchResult {
   id: number;
@@ -137,101 +170,130 @@ export default function LiveSearch() {
   // 滚动到选中的结果
   useEffect(() => {
     if (selectedIndex >= 0 && resultsRef.current) {
-      const selectedElement = resultsRef.current.children[selectedIndex] as HTMLElement;
+      // 获取结果项元素（考虑到我们添加了包装div）
+      const resultItems = resultsRef.current.querySelectorAll('[data-result-item]');
+      const selectedElement = resultItems[selectedIndex] as HTMLElement;
+      
       if (selectedElement) {
-        selectedElement.scrollIntoView({ block: 'nearest' });
+        // 使用更精确的滚动方式
+        selectedElement.scrollIntoView({
+          block: 'nearest',
+          behavior: 'smooth'
+        });
       }
     }
   }, [selectedIndex]);
 
   return (
-    <div className="relative w-full">
-      <form onSubmit={handleSubmit} className="relative w-full">
-        <div className={`flex items-center transition-all duration-200 ${
-          isFocused ? 'bg-white shadow-md' : 'bg-gray-50'
-        } border-2 ${
-          isFocused ? 'border-brand-400' : 'border-gray-200'
-        } rounded-full overflow-hidden`}>
-          <div className="pl-4 text-gray-500">
-            <SearchIcon className="w-5 h-5" />
-          </div>
-          <input
-            ref={inputRef}
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => {
-              setIsFocused(true);
-              if (results.length > 0) {
-                setShowResults(true);
-              }
-            }}
-            onBlur={() => setIsFocused(false)}
-            onKeyDown={handleKeyDown}
-            placeholder="搜索AI服务..."
-            className="w-full py-2 px-3 text-sm bg-transparent border-none focus:outline-none focus:ring-0"
-            autoComplete="off"
-          />
-          {query && (
-            <button
-              type="button"
-              onClick={handleSearchButtonClick}
-              className="w-20 m-0.5 px-4 py-1.5 rounded-full bg-brand-400 text-white text-sm font-medium hover:bg-brand-500 transition-colors"
-            >
-              搜索
-            </button>
-          )}
-        </div>
-      </form>
-
-      {/* 搜索结果下拉框 */}
-      {showResults && results.length > 0 && (
-        <div 
-          ref={resultsRef}
-          className="absolute z-50 w-full mt-1 bg-white rounded-lg shadow-lg overflow-hidden max-h-80 overflow-y-auto"
-        >
-          {results.map((result, index) => (
-            <div
-              key={result.id}
-              className={`p-3 cursor-pointer hover:bg-gray-50 ${
-                selectedIndex === index ? 'bg-gray-100' : ''
-              }`}
-              onClick={() => handleResultClick(result)}
-              onMouseEnter={() => setSelectedIndex(index)}
-            >
-              <div className="flex items-center">
-                <div className="flex-shrink-0 w-10 h-10 relative">
-                  {result.icon ? (
-                    <Image
-                      src={result.icon}
-                      alt={result.name}
-                      fill
-                      className="rounded object-contain"
-                      unoptimized={result.icon.endsWith('.svg')}
-                    />
-                  ) : (
-                    <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-gray-500">
-                      {result.name.charAt(0)}
-                    </div>
-                  )}
-                </div>
-                <div className="ml-3 flex-1">
-                  <div className="text-sm font-medium text-gray-900">{result.name}</div>
-                  <div className="text-xs text-gray-500 truncate">{result.description}</div>
-                  <div className="text-xs text-brand-400 mt-1">{result.categoryName}</div>
-                </div>
-              </div>
+    <>
+      {/* 注入自定义滚动条样式 */}
+      <style jsx global>{scrollbarStyles}</style>
+      
+      <div className="relative w-full">
+        <form onSubmit={handleSubmit} className="relative w-full">
+          <div className={`flex items-center transition-all duration-200 ${
+            isFocused ? 'bg-white shadow-md' : 'bg-gray-50'
+          } border-2 ${
+            isFocused ? 'border-brand-400' : 'border-gray-200'
+          } rounded-full overflow-hidden`}>
+            <div className="pl-4 text-gray-500">
+              <SearchIcon className="w-5 h-5" />
             </div>
-          ))}
-        </div>
-      )}
+            <input
+              ref={inputRef}
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onFocus={() => {
+                setIsFocused(true);
+                if (results.length > 0) {
+                  setShowResults(true);
+                }
+              }}
+              onBlur={() => setIsFocused(false)}
+              onKeyDown={handleKeyDown}
+              placeholder="搜索AI服务..."
+              className="w-full py-2 px-3 text-sm bg-transparent border-none focus:outline-none focus:ring-0"
+              autoComplete="off"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={handleSearchButtonClick}
+                className="w-20 m-0.5 px-4 py-1.5 rounded-full bg-brand-400 text-white text-sm font-medium hover:bg-brand-500 transition-colors"
+              >
+                搜索
+              </button>
+            )}
+          </div>
+        </form>
 
-      {/* 加载指示器 */}
-      {loading && (
-        <div className="absolute right-24 top-2.5">
-          <div className="w-5 h-5 border-2 border-gray-300 border-t-brand-400 rounded-full animate-spin"></div>
-        </div>
-      )}
-    </div>
+        {/* 搜索结果下拉框 */}
+        {showResults && results.length > 0 && (
+          <div 
+            ref={resultsRef}
+            className="absolute z-50 w-full mt-2 bg-white border-2 border-brand-400 rounded-xl shadow-xl overflow-hidden custom-scrollbar max-h-80 overflow-y-auto"
+            style={{ 
+              boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)',
+              backdropFilter: 'blur(8px)'
+            }}
+          >
+            <div className="py-2">
+              {results.map((result, index) => (
+                <div
+                  key={result.id}
+                  data-result-item
+                  className={`px-4 py-3 cursor-pointer transition-colors duration-150 ${
+                    selectedIndex === index 
+                      ? 'bg-brand-50 border-l-4 border-brand-400' 
+                      : 'hover:bg-gray-50 border-l-4 border-transparent'
+                  }`}
+                  onClick={() => handleResultClick(result)}
+                  onMouseEnter={() => setSelectedIndex(index)}
+                >
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 w-10 h-10 relative">
+                      {result.icon ? (
+                        <Image
+                          src={result.icon}
+                          alt={result.name}
+                          fill
+                          className="rounded-lg object-contain p-0.5"
+                          unoptimized={result.icon.endsWith('.svg')}
+                        />
+                      ) : (
+                        <div className="w-10 h-10 bg-brand-100 rounded-lg flex items-center justify-center text-brand-500 font-medium">
+                          {result.name.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                    <div className="ml-3 flex-1">
+                      <div className="text-sm font-medium text-gray-900 flex items-center">
+                        {result.name}
+                        <span className="ml-2 text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
+                          {result.clickCount}次点击
+                        </span>
+                      </div>
+                      <div className="text-xs text-gray-500 line-clamp-1 mt-0.5">{result.description}</div>
+                      <div className="text-xs text-brand-400 mt-1 flex items-center">
+                        <span className="inline-block w-2 h-2 rounded-full bg-brand-400 mr-1"></span>
+                        {result.categoryName}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 加载指示器 */}
+        {loading && (
+          <div className="absolute right-24 top-2.5">
+            <div className="w-5 h-5 border-2 border-gray-200 border-t-brand-400 rounded-full animate-spin"></div>
+          </div>
+        )}
+      </div>
+    </>
   );
 } 
