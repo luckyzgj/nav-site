@@ -8,9 +8,6 @@ const inter = Inter({ subsets: ["latin"] });
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   
-  // 添加调试日志
-  console.log('Root layout generateMetadata called, siteName:', settings.siteName);
-  
   // 强制使用数据库中的设置，不使用默认值
   return {
     title: {

@@ -14,8 +14,6 @@ export async function GET(request: NextRequest) {
       return errorResponse('搜索关键词不能为空');
     }
     
-    console.log('执行MySQL搜索，关键词:', query);
-    
     // 使用MySQL的LIKE查询搜索服务
     const services = await prisma.service.findMany({
       where: {
@@ -37,8 +35,6 @@ export async function GET(request: NextRequest) {
       },
       take: 50,
     });
-    
-    console.log(`MySQL搜索结果数量: ${services.length}`);
     
     // 格式化结果
     const formattedServices = services.map(service => ({

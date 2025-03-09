@@ -9,8 +9,6 @@ export const setAuthCookie = (response: NextResponse, adminId: number) => {
   // 简单的身份验证令牌，实际项目中应使用JWT或其他更安全的方式
   const token = Buffer.from(`${adminId}:${Date.now()}`).toString('base64');
   
-  console.log('设置认证Cookie:', { adminId, token });
-  
   response.cookies.set({
     name: AUTH_COOKIE_NAME,
     value: token,
@@ -25,14 +23,12 @@ export const setAuthCookie = (response: NextResponse, adminId: number) => {
 
 // 清除身份验证Cookie
 export const clearAuthCookie = (response: NextResponse) => {
-  console.log('清除认证Cookie');
   response.cookies.delete(AUTH_COOKIE_NAME);
 };
 
 // 从请求中获取管理员ID
 export const getAdminIdFromRequest = (request: NextRequest): number | null => {
   const token = request.cookies.get(AUTH_COOKIE_NAME)?.value;
-  console.log('从请求中获取Cookie:', { token });
   
   if (!token) return null;
   
@@ -40,7 +36,6 @@ export const getAdminIdFromRequest = (request: NextRequest): number | null => {
     const decoded = Buffer.from(token, 'base64').toString();
     const [adminId] = decoded.split(':');
     const id = parseInt(adminId, 10);
-    console.log('解析Cookie得到管理员ID:', id);
     return id;
   } catch (error) {
     console.error('解析Cookie失败:', error);
@@ -53,7 +48,6 @@ export const getAdminIdFromRequest = (request: NextRequest): number | null => {
 export const verifyAdminToken = (request: NextRequest): boolean => {
   const adminId = getAdminIdFromRequest(request);
   const isValid = adminId !== null && adminId > 0;
-  console.log('验证管理员Token结果:', { adminId, isValid });
   return isValid;
 };
 
@@ -62,7 +56,6 @@ export const verifyAdminToken = (request: NextRequest): boolean => {
 export const verifyAdmin = async (request: NextRequest): Promise<boolean> => {
   const adminId = getAdminIdFromRequest(request);
   if (!adminId) {
-    console.log('未找到管理员ID');
     return false;
   }
   
@@ -72,7 +65,6 @@ export const verifyAdmin = async (request: NextRequest): Promise<boolean> => {
     });
     
     const isValid = !!admin;
-    console.log('验证管理员结果:', { adminId, isValid });
     return isValid;
   } catch (error) {
     console.error('验证管理员失败:', error);

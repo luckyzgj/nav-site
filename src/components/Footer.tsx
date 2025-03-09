@@ -37,7 +37,7 @@ export default function Footer({ siteName, siteDescription, statisticsCode }: Fo
           </div>
           
           <div className="text-center text-gray-500">
-            <p>&copy; {year} 123.SS All Rights Reserved</p>
+            <p>&copy; {year} {siteName} All Rights Reserved</p>
           </div>
         </div>
       </footer>

@@ -21,17 +21,11 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     // 获取所有设置
     const settings = await prisma.$queryRaw<SettingRecord[]>`SELECT * FROM Setting`;
     
-    // 添加调试日志
-    console.log('Raw settings from database:', settings);
-    
     // 转换为对象格式
     const settingsObject = settings.reduce((acc: Record<string, string>, setting: SettingRecord) => {
       acc[setting.key] = setting.value;
       return acc;
     }, {});
-    
-    // 添加调试日志
-    console.log('Processed settings object:', settingsObject);
     
     // 设置默认值
     const result = {
@@ -40,9 +34,6 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       statisticsCode: settingsObject.statisticsCode || '',
       ...settingsObject,
     };
-    
-    // 添加调试日志
-    console.log('Final settings with defaults:', result);
     
     return result;
   } catch (error) {

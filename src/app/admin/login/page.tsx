@@ -32,7 +32,6 @@ export default function LoginPage() {
     setLoading(true);
     
     try {
-      console.log('开始登录请求...');
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -43,7 +42,6 @@ export default function LoginPage() {
       });
       
       const data = await response.json();
-      console.log('登录响应:', data);
       
       if (data.success) {
         // 登录成功，设置状态触发跳转

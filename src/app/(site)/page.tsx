@@ -58,7 +58,7 @@ export default async function Home() {
       {/* 左侧分类导航 - 固定在左侧，不影响主内容宽度 */}
       <div className="hidden xl:block w-30 fixed left-[max(0px,calc(50%-610px))] top-[100px] bg-white bg-opacity-80 backdrop-blur-sm shadow-sm rounded-lg overflow-y-auto max-h-[calc(100vh-120px)] z-10">
         <h2 className="text-white text-sm px-4 py-2 bg-brand-400 border-b border-brand-50">
-          导航
+          分类
         </h2>
         <div className="flex flex-col space-y-1 p-2">
           {categories.map((category) => (

@@ -27,23 +27,19 @@ export async function middleware(request: NextRequest) {
   
   // 如果是公开路径，直接放行
   if (PUBLIC_PATHS.some(path => pathname === path)) {
-    console.log('公开路径，直接放行:', pathname);
     return NextResponse.next();
   }
   
   // 验证管理员身份 - 只检查Token，不查询数据库
   const isAdmin = verifyAdminToken(request);
-  console.log('验证管理员Token结果:', isAdmin, '路径:', pathname);
   
   // 如果验证失败，重定向到登录页面
   if (!isAdmin) {
-    console.log('验证失败，重定向到登录页面');
     const url = new URL('/admin/login', request.url);
     return NextResponse.redirect(url);
   }
   
   // 验证成功，放行
-  console.log('验证成功，放行');
   return NextResponse.next();
 }
 

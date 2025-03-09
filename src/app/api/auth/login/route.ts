@@ -9,11 +9,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { username, password } = body;
     
-    console.log('登录请求:', { username });
-    
     // 验证请求数据
     if (!username || !password) {
-      console.log('用户名或密码为空');
       return errorResponse('用户名和密码不能为空');
     }
     
@@ -24,18 +21,14 @@ export async function POST(request: NextRequest) {
     
     // 验证管理员存在
     if (!admin) {
-      console.log('管理员不存在:', username);
       return errorResponse('用户名或密码错误');
     }
     
     // 验证密码
     const passwordValid = await compare(password, admin.password);
     if (!passwordValid) {
-      console.log('密码错误:', username);
       return errorResponse('用户名或密码错误');
     }
-    
-    console.log('登录成功:', { id: admin.id, username: admin.username });
     
     // 创建响应
     const response = NextResponse.json({
