@@ -31,6 +31,17 @@ export function unauthorizedResponse(message = '未授权访问') {
   );
 }
 
+// 未找到响应
+export function notFoundResponse(message = '资源不存在') {
+  return NextResponse.json(
+    {
+      success: false,
+      message,
+    },
+    { status: 404 }
+  );
+}
+
 // 服务器错误响应
 export function serverErrorResponse(error: Error | unknown) {
   console.error('服务器错误:', error);

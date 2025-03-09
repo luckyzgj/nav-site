@@ -2,13 +2,13 @@ import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { verifyAdmin } from '@/utils/auth';
 import { successResponse, unauthorizedResponse, errorResponse, serverErrorResponse } from '@/utils/api';
+import { RouteContext } from '../../categories/[id]/route';
 
 // 获取单个服务
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: RouteContext
 ) {
-  const resolvedParams = await params;
   try {
     // 验证管理员身份
     const isAdmin = await verifyAdmin(request);
@@ -16,7 +16,8 @@ export async function GET(
       return unauthorizedResponse();
     }
     
-    // 解析ID
+    // 解析Promise获取参数
+    const resolvedParams = await context.params;
     const id = parseInt(resolvedParams.id, 10);
     if (isNaN(id)) {
       return errorResponse('无效的服务ID');
@@ -53,9 +54,8 @@ export async function GET(
 // 更新服务
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: RouteContext
 ) {
-  const resolvedParams = await params;
   try {
     // 验证管理员身份
     const isAdmin = await verifyAdmin(request);
@@ -63,7 +63,8 @@ export async function PUT(
       return unauthorizedResponse();
     }
     
-    // 解析ID
+    // 解析Promise获取参数
+    const resolvedParams = await context.params;
     const id = parseInt(resolvedParams.id, 10);
     if (isNaN(id)) {
       return errorResponse('无效的服务ID');
@@ -142,9 +143,8 @@ export async function PUT(
 // 删除服务
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: RouteContext
 ) {
-  const resolvedParams = await params;
   try {
     // 验证管理员身份
     const isAdmin = await verifyAdmin(request);
@@ -152,7 +152,8 @@ export async function DELETE(
       return unauthorizedResponse();
     }
     
-    // 解析ID
+    // 解析Promise获取参数
+    const resolvedParams = await context.params;
     const id = parseInt(resolvedParams.id, 10);
     if (isNaN(id)) {
       return errorResponse('无效的服务ID');

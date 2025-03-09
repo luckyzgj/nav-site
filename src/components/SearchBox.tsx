@@ -19,9 +19,9 @@ export default function SearchBox() {
   return (
     <form onSubmit={handleSubmit} className="relative w-full">
       <div className={`flex items-center transition-all duration-200 ${
-        isFocused ? 'bg-white shadow-md' : 'bg-white'
+        isFocused ? 'bg-white shadow-md' : 'bg-gray-50'
       } border-2 ${
-        isFocused ? 'border-brand-400' : 'border-brand-100'
+        isFocused ? 'border-brand-400' : 'border-gray-200'
       } rounded-full overflow-hidden`}>
         <div className="pl-4 text-gray-500">
           <SearchIcon className="w-5 h-5" />

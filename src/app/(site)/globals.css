@@ -27,12 +27,19 @@
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
   font-family: 'Inter', Arial, Helvetica, sans-serif;
+  @apply text-gray-800 bg-brand-50;
 }
 
 .container {
   max-width: 960px;
   margin: 0 auto;
+}
+
+.shadow-sm {
+  box-shadow: 0 0.1rem 0.25rem rgba(240, 133, 100, 0.1);
+}
+
+.shadow-md {
+  box-shadow: 0 0.25rem 0.75rem rgba(240, 133, 100, 0.1);
 }

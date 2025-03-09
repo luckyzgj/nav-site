@@ -4,6 +4,7 @@ export interface Category {
   name: string;
   slug: string;
   description: string | null;
+  icon: string | null;
   createdAt: Date;
   updatedAt: Date;
   services?: Service[];

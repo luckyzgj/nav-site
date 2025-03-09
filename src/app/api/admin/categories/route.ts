@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     
     // 解析请求数据
     const body = await request.json();
-    const { name, slug, description } = body;
+    const { name, slug, description, icon } = body;
     
     // 验证数据
     if (!name || typeof name !== 'string') {
@@ -75,11 +75,13 @@ export async function POST(request: NextRequest) {
       data: { 
         name, 
         slug,
-        description: description || null 
+        description: description || null,
+        icon: icon || null
       } as { 
         name: string; 
         slug: string; 
         description: string | null;
+        icon: string | null;
       },
     });
     

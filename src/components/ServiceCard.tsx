@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useServiceClick } from '@/hooks/useServiceClick';
 
 // 定义Service类型
@@ -24,7 +24,24 @@ interface ServiceCardProps {
 export default function ServiceCard({ service }: ServiceCardProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
+  const [error, setError] = useState(false);
+  const loadingRef = useRef<HTMLDivElement>(null);
   const handleServiceClick = useServiceClick();
+  
+  // 重置加载状态，确保每次图标变化时重新显示loading
+  useEffect(() => {
+    if (service.icon) {
+      setIsLoading(true);
+      setError(false);
+    }
+  }, [service.icon]);
+  
+  // 确保loading样式可见
+  useEffect(() => {
+    if (loadingRef.current && isLoading) {
+      loadingRef.current.style.display = 'flex';
+    }
+  }, [isLoading]);
   
   const onClick = () => {
     handleServiceClick(service.id, service.url);
@@ -32,7 +49,7 @@ export default function ServiceCard({ service }: ServiceCardProps) {
   
   return (
     <div 
-      className={`bg-white bg-opacity-70 rounded-lg shadow-sm border-2 border-transparent hover:border-brand-200 hover:bg-opacity-90 transition-all duration-300 overflow-hidden cursor-pointer ${
+      className={`bg-white bg-opacity-80 rounded-lg shadow-sm border-2 border-transparent hover:border-brand-200 hover:bg-opacity-90 transition-all duration-300 overflow-hidden cursor-pointer ${
         isHovered ? 'transform scale-102' : ''
       }`}
       onClick={onClick}
@@ -42,35 +59,51 @@ export default function ServiceCard({ service }: ServiceCardProps) {
       <div className="p-3 flex items-start space-x-3">
         {/* 左侧图标 */}
         <div className="w-12 h-12 relative flex-shrink-0">
+          {/* 加载中显示loading样式 */}
+          {service.icon && (
+            <div 
+              ref={loadingRef}
+              className={`absolute inset-0 flex items-center justify-center rounded-lg z-20 ${isLoading ? 'block' : 'hidden'}`}
+              style={{ opacity: isLoading ? 1 : 0 }}
+            >
+              <div className="w-10 h-10 border-4 border-brand-50 border-t-brand-100 rounded-full animate-spin"></div>
+            </div>
+          )}
+          
           {service.icon ? (
             <Image
               src={service.icon}
               alt={service.name}
               fill
-              className={`rounded-lg object-contain ${isLoading ? 'opacity-0' : 'opacity-100'}`}
-              onLoad={() => setIsLoading(false)}
-              onError={() => setIsLoading(false)}
+              className={`rounded-lg object-contain ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
+              onLoad={() => {
+                // 延迟一点点再隐藏loading，确保图片已经完全渲染
+                setTimeout(() => setIsLoading(false), 100);
+              }}
+              onError={() => {
+                setIsLoading(false);
+                setError(true);
+              }}
               unoptimized={service.icon.endsWith('.svg')}
+              priority={true}
             />
           ) : (
             <div className="w-12 h-12 bg-brand-100 rounded-lg flex items-center justify-center text-brand-500 text-xl font-bold">
               {service.name.charAt(0).toUpperCase()}
             </div>
           )}
-          {isLoading && service.icon && (
-            <div className="absolute inset-0 flex items-center justify-center bg-brand-100 rounded-lg">
-              <div className="w-6 h-6 border-3 border-gray-300 border-t-brand-500 rounded-full animate-spin"></div>
+          
+          {error && service.icon && (
+            <div className="absolute inset-0 flex items-center justify-center bg-brand-100 rounded-lg z-20">
+              <span className="text-xl font-bold text-brand-500">{service.name.charAt(0).toUpperCase()}</span>
             </div>
           )}
         </div>
         
         {/* 右侧内容 */}
         <div className="flex-1 min-w-0">
-          <h3 className="font-medium text-gray-900 truncate flex items-center justify-between">
+          <h3 className="font-medium text-gray-900 truncate">
             {service.name}
-            {isHovered && (
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-brand-200"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            )}
           </h3>
           <p className="text-sm text-gray-500 mt-1 line-clamp-1">
             {service.description}

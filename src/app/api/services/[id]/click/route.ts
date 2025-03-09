@@ -1,15 +1,17 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { successResponse, errorResponse, serverErrorResponse } from '@/utils/api';
+import { RouteContext } from '../../../admin/categories/[id]/route';
 
 // 增加服务点击次数
-export async function POST(request: NextRequest) {
+export async function POST(
+  request: NextRequest,
+  context: RouteContext
+) {
   try {
-    // 从URL中获取ID参数
-    const url = new URL(request.url);
-    const pathParts = url.pathname.split('/');
-    const idStr = pathParts[pathParts.length - 2]; // 获取倒数第二个部分，即ID
-    const id = parseInt(idStr, 10);
+    // 解析Promise获取参数
+    const resolvedParams = await context.params;
+    const id = parseInt(resolvedParams.id, 10);
     
     if (isNaN(id)) {
       return errorResponse('无效的服务ID');

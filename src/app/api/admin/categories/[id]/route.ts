@@ -1,14 +1,18 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { verifyAdmin } from '@/utils/auth';
-import { successResponse, unauthorizedResponse, errorResponse, serverErrorResponse } from '@/utils/api';
+import { successResponse, unauthorizedResponse, errorResponse, serverErrorResponse, notFoundResponse } from '@/utils/api';
+
+// 定义路由参数类型
+export interface RouteContext {
+  params: Promise<{ id: string }>;
+}
 
 // 获取单个分类
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: RouteContext
 ) {
-  const resolvedParams = await params;
   try {
     // 验证管理员身份
     const isAdmin = await verifyAdmin(request);
@@ -16,19 +20,20 @@ export async function GET(
       return unauthorizedResponse();
     }
     
-    // 解析ID
-    const id = parseInt(resolvedParams.id, 10);
+    // 解析Promise获取参数
+    const resolvedParams = await context.params;
+    const id = parseInt(resolvedParams.id);
     if (isNaN(id)) {
       return errorResponse('无效的分类ID');
     }
     
-    // 查找分类
+    // 获取分类
     const category = await prisma.category.findUnique({
       where: { id },
     });
     
     if (!category) {
-      return errorResponse('分类不存在', 404);
+      return notFoundResponse('分类不存在');
     }
     
     return successResponse(category);
@@ -40,9 +45,8 @@ export async function GET(
 // 更新分类
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: RouteContext
 ) {
-  const resolvedParams = await params;
   try {
     // 验证管理员身份
     const isAdmin = await verifyAdmin(request);
@@ -50,15 +54,25 @@ export async function PUT(
       return unauthorizedResponse();
     }
     
-    // 解析ID
-    const id = parseInt(resolvedParams.id, 10);
+    // 解析Promise获取参数
+    const resolvedParams = await context.params;
+    const id = parseInt(resolvedParams.id);
     if (isNaN(id)) {
       return errorResponse('无效的分类ID');
     }
     
+    // 检查分类是否存在
+    const existingCategory = await prisma.category.findUnique({
+      where: { id },
+    });
+    
+    if (!existingCategory) {
+      return notFoundResponse('分类不存在');
+    }
+    
     // 解析请求数据
     const body = await request.json();
-    const { name, slug, description } = body;
+    const { name, slug, description, icon } = body;
     
     // 验证数据
     if (!name || typeof name !== 'string') {
@@ -74,54 +88,41 @@ export async function PUT(
       return errorResponse('英文标识只能包含小写字母、数字和连字符');
     }
     
-    // 检查分类是否存在
-    const category = await prisma.category.findUnique({
-      where: { id },
+    // 检查分类名称是否已被其他分类使用
+    const existingCategoryByName = await prisma.category.findUnique({
+      where: { name },
     });
     
-    if (!category) {
-      return errorResponse('分类不存在', 404);
-    }
-    
-    // 检查分类名称是否已存在（排除当前分类）
-    const existingCategoryByName = await prisma.category.findFirst({
-      where: {
-        name,
-        id: { not: id },
-      },
-    });
-    
-    if (existingCategoryByName) {
+    if (existingCategoryByName && existingCategoryByName.id !== id) {
       return errorResponse('分类名称已存在');
     }
     
-    // 检查slug是否已存在（排除当前分类）
-    const existingCategoryBySlug = await prisma.category.findFirst({
-      where: {
-        slug,
-        id: { not: id },
-      } as { slug: string; id: { not: number } },
+    // 检查slug是否已被其他分类使用
+    const existingCategoryBySlug = await prisma.category.findUnique({
+      where: { slug } as { slug: string },
     });
     
-    if (existingCategoryBySlug) {
+    if (existingCategoryBySlug && existingCategoryBySlug.id !== id) {
       return errorResponse('英文标识已存在');
     }
     
     // 更新分类
-    const updatedCategory = await prisma.category.update({
+    const category = await prisma.category.update({
       where: { id },
       data: { 
         name, 
         slug,
-        description: description || null 
+        description: description || null,
+        icon: icon || null
       } as { 
         name: string; 
         slug: string; 
         description: string | null;
+        icon: string | null;
       },
     });
     
-    return successResponse(updatedCategory, '更新分类成功');
+    return successResponse(category, '更新分类成功');
   } catch (error) {
     return serverErrorResponse(error);
   }
@@ -130,9 +131,8 @@ export async function PUT(
 // 删除分类
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: RouteContext
 ) {
-  const resolvedParams = await params;
   try {
     // 验证管理员身份
     const isAdmin = await verifyAdmin(request);
@@ -140,31 +140,20 @@ export async function DELETE(
       return unauthorizedResponse();
     }
     
-    // 解析ID
-    const id = parseInt(resolvedParams.id, 10);
+    // 解析Promise获取参数
+    const resolvedParams = await context.params;
+    const id = parseInt(resolvedParams.id);
     if (isNaN(id)) {
       return errorResponse('无效的分类ID');
     }
     
     // 检查分类是否存在
-    const category = await prisma.category.findUnique({
+    const existingCategory = await prisma.category.findUnique({
       where: { id },
-      include: {
-        services: {
-          select: { id: true },
-        },
-      },
     });
     
-    if (!category) {
-      return errorResponse('分类不存在', 404);
-    }
-    
-    // 检查分类下是否有服务
-    if (category.services.length > 0) {
-      // 可以选择返回错误，或者将服务移动到默认分类
-      // 这里我们选择返回错误，要求用户先处理分类下的服务
-      return errorResponse('该分类下还有服务，请先移动或删除这些服务');
+    if (!existingCategory) {
+      return notFoundResponse('分类不存在');
     }
     
     // 删除分类

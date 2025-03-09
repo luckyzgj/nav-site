@@ -7,6 +7,12 @@ export default function SmoothScrollScript() {
     // 为所有锚点链接添加平滑滚动效果
     const anchors = document.querySelectorAll('a[href^="#"]');
     
+    // 获取导航栏高度的函数
+    const getNavbarHeight = () => {
+      const navbar = document.querySelector('header');
+      return navbar ? navbar.getBoundingClientRect().height : 72; // 默认值为72px
+    };
+    
     const handleClick = (e: Event) => {
       e.preventDefault();
       const anchor = e.currentTarget as HTMLAnchorElement;
@@ -24,7 +30,17 @@ export default function SmoothScrollScript() {
       if (targetId) {
         const targetElement = document.querySelector(targetId);
         if (targetElement) {
-          targetElement.scrollIntoView({
+          // 获取当前导航栏高度
+          const navbarHeight = getNavbarHeight();
+          
+          // 获取目标元素的位置
+          const elementPosition = targetElement.getBoundingClientRect().top;
+          // 当前滚动位置
+          const offsetPosition = elementPosition + window.scrollY - navbarHeight - 30;
+          
+          // 滚动到目标位置，考虑导航栏高度
+          window.scrollTo({
+            top: offsetPosition,
             behavior: 'smooth'
           });
           
@@ -47,7 +63,7 @@ export default function SmoothScrollScript() {
       
       desktopNavLinks.forEach(link => {
         link.classList.remove('active-category');
-        link.classList.remove('border-brand-400');
+        link.classList.remove('border-brand-100');
         link.classList.add('border-transparent');
         link.classList.remove('font-medium');
       });
@@ -68,7 +84,7 @@ export default function SmoothScrollScript() {
       const activeDesktopLink = document.querySelector(`.hidden.xl\\:block .category-nav-link[href="#${activeSectionId}"]`);
       if (activeDesktopLink) {
         activeDesktopLink.classList.add('active-category');
-        activeDesktopLink.classList.add('border-brand-400');
+        activeDesktopLink.classList.add('border-brand-100');
         activeDesktopLink.classList.remove('border-transparent');
         activeDesktopLink.classList.add('font-medium');
       }
@@ -84,6 +100,9 @@ export default function SmoothScrollScript() {
     
     // 监听滚动事件，高亮当前可见的分类
     const handleScroll = () => {
+      // 获取当前导航栏高度
+      const navbarHeight = getNavbarHeight();
+      
       // 获取所有分类区块
       const sections = Array.from(document.querySelectorAll('section[id^="category-"]'));
       
@@ -91,21 +110,33 @@ export default function SmoothScrollScript() {
       if (sections.length === 0) return;
       
       // 检查是否在页面顶部
-      const isAtTop = window.scrollY < 100;
+      const isAtTop = window.scrollY < navbarHeight;
       
       // 如果在页面顶部，清除所有高亮状态
-      if (isAtTop && sections[0].getBoundingClientRect().top > 100) {
+      if (isAtTop && sections[0].getBoundingClientRect().top > navbarHeight) {
         clearAllActiveStates();
+        return;
+      }
+      
+      // 检查是否滚动到页面底部
+      const isAtBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 20;
+      
+      // 如果滚动到页面底部，高亮最后一个分类
+      if (isAtBottom && sections.length > 0) {
+        updateActiveCategory(sections[sections.length - 1].id);
         return;
       }
       
       // 找到当前在视口中的分类
       let foundVisibleSection = false;
+      let lastVisibleSection = null;
+      
       for (const section of sections) {
         const rect = section.getBoundingClientRect();
         
-        // 如果区块在视口中或接近视口顶部
-        if (rect.top <= 100 && rect.bottom >= 0) {
+        // 考虑导航栏高度，调整判断条件
+        // 如果区块在视口中或接近视口顶部（考虑导航栏高度）
+        if (rect.top <= navbarHeight + 20 && rect.bottom >= navbarHeight) {
           // 更新活动分类
           updateActiveCategory(section.id);
           foundVisibleSection = true;
@@ -113,11 +144,22 @@ export default function SmoothScrollScript() {
           // 找到第一个可见的区块后就退出循环
           break;
         }
+        
+        // 记录最后一个已经滚过的分类
+        if (rect.top <= navbarHeight) {
+          lastVisibleSection = section;
+        }
       }
       
-      // 如果没有找到可见的分类，但不在页面顶部，高亮第一个分类
-      if (!foundVisibleSection && !isAtTop && sections.length > 0) {
-        updateActiveCategory(sections[0].id);
+      // 如果没有找到可见的分类，但不在页面顶部
+      if (!foundVisibleSection && !isAtTop) {
+        // 如果有最后滚过的分类，高亮它
+        if (lastVisibleSection) {
+          updateActiveCategory(lastVisibleSection.id);
+        } else if (sections.length > 0) {
+          // 否则高亮第一个分类
+          updateActiveCategory(sections[0].id);
+        }
       }
     };
     
@@ -126,6 +168,9 @@ export default function SmoothScrollScript() {
     
     // 添加滚动事件监听
     window.addEventListener('scroll', handleScroll);
+    
+    // 监听窗口大小变化，重新计算
+    window.addEventListener('resize', handleScroll);
     
     // 监听返回顶部按钮的点击事件
     const backToTopButtons = document.querySelectorAll('button[aria-label="返回顶部"]');
@@ -142,6 +187,7 @@ export default function SmoothScrollScript() {
         anchor.removeEventListener('click', handleClick);
       });
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
       backToTopButtons.forEach(button => {
         button.removeEventListener('click', clearAllActiveStates);
       });

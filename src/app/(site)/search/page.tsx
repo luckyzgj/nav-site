@@ -17,13 +17,26 @@ type Service = {
   categorySlug?: string;
 };
 
+// 定义页面参数类型
+interface SearchPageProps {
+  params: Promise<Record<string, never>>; // 空参数对象，因为搜索页面没有路由参数
+  searchParams: Promise<{ q?: string }>;
+}
+
 // 动态生成元数据
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ searchParams, params }: SearchPageProps): Promise<Metadata> {
+  // 解析Promise获取参数
+  await params;
+  
+  // 解析searchParams
+  const resolvedSearchParams = await searchParams;
+  
   // 获取网站设置
   const settings = await getSiteSettings();
+  const query = resolvedSearchParams?.q || '';
   
   return {
-    title: `搜索 - ${settings.siteName}`,
+    title: query ? `${query} - 搜索结果 - ${settings.siteName}` : `搜索 - ${settings.siteName}`,
     description: settings.siteDescription,
   };
 }
@@ -54,11 +67,16 @@ async function searchServices(query: string): Promise<Service[]> {
   }
 }
 
-// 重写页面组件，使用 searchParams 参数但不指定类型
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default async function SearchPage({ searchParams }: { searchParams: any }) {
+// 使用正确的Next.js 15参数类型
+export default async function SearchPage({ searchParams, params }: SearchPageProps) {
+  // 解析Promise获取参数
+  await params;
+  
+  // 解析searchParams
+  const resolvedSearchParams = await searchParams;
+  
   // 从 searchParams 获取查询参数
-  const query = typeof searchParams?.q === 'string' ? searchParams.q : '';
+  const query = typeof resolvedSearchParams?.q === 'string' ? resolvedSearchParams.q : '';
   
   // 如果没有查询参数，重定向到首页
   if (!query) {

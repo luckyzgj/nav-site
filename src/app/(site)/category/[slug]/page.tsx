@@ -6,13 +6,22 @@ import Link from 'next/link';
 import { Category } from '@/types';
 import { getSiteSettings } from '@/utils/settings';
 
+// 定义路由参数类型
+export interface CategoryPageProps {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
 // 动态生成元数据
 export async function generateMetadata(
-  { params }: { params: Promise<{ slug: string }> }
+  { params, searchParams }: CategoryPageProps
 ): Promise<Metadata> {
-  // 确保params是已解析的
+  // 解析Promise获取参数
   const resolvedParams = await params;
   const slug = resolvedParams.slug;
+  
+  // 解析searchParams
+  await searchParams;
   
   // 查找分类
   const category = await prisma.category.findUnique({
@@ -51,11 +60,14 @@ async function getCategoryWithServices(slug: string): Promise<Category | null> {
 }
 
 export default async function CategoryPage(
-  { params }: { params: Promise<{ slug: string }> }
+  { params, searchParams }: CategoryPageProps
 ) {
-  // 确保params是已解析的
+  // 解析Promise获取参数
   const resolvedParams = await params;
   const slug = resolvedParams.slug;
+  
+  // 解析searchParams
+  await searchParams;
   
   const category = await getCategoryWithServices(slug);
   

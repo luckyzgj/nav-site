@@ -31,15 +31,15 @@ export default function Navbar({ siteName }: NavbarProps) {
   }, []);
   
   return (
-    <header className={`w-full transition-all duration-300 ${
+    <header className={`sticky top-0 z-50 w-full bg-white transition-all duration-300 ${
       isScrolled ? 'shadow-md' : 'shadow-sm'
     }`}>
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col md:flex-row items-center justify-between">
           {/* 左侧Logo */}
           <div className="flex items-center mb-4 md:mb-0 md:w-1/4">
-            <Link href="/" className="text-2xl font-bold text-gray-800 flex items-center">
-              <Image src="/logo.svg" alt={siteName} width={40} height={40} className="mr-2" />
+            <Link href="/" className="text-3xl font-bold text-gray-800 flex items-center">
+              <Image src="/logo.svg" alt={siteName} width={40} height={40} className="mr-1.5" />
               <div>123<span className="text-normal text-brand-400">.SS</span></div>
             </Link>
           </div>
@@ -57,8 +57,8 @@ export default function Navbar({ siteName }: NavbarProps) {
               <li>
                 <Link 
                   href="/" 
-                  className={`text-gray-600 hover:text-blue-600 transition-colors ${
-                    pathname === '/' ? 'font-semibold text-blue-600' : ''
+                  className={`text-gray-600 hover:text-brand-600 transition-colors ${
+                    pathname === '/' ? 'font-semibold text-brand-600' : ''
                   }`}
                 >
                   首页
@@ -67,8 +67,8 @@ export default function Navbar({ siteName }: NavbarProps) {
               <li>
                 <Link 
                   href="/about" 
-                  className={`text-gray-600 hover:text-blue-600 transition-colors ${
-                    pathname === '/about' ? 'font-semibold text-blue-600' : ''
+                  className={`text-gray-600 hover:text-brand-600 transition-colors ${
+                    pathname === '/about' ? 'font-semibold text-brand-600' : ''
                   }`}
                 >
                   关于
@@ -77,8 +77,8 @@ export default function Navbar({ siteName }: NavbarProps) {
               <li>
                 <Link 
                   href="/admin" 
-                  className={`text-gray-600 hover:text-blue-600 transition-colors ${
-                    pathname === '/admin' ? 'font-semibold text-blue-600' : ''
+                  className={`text-gray-600 hover:text-brand-600 transition-colors ${
+                    pathname === '/admin' ? 'font-semibold text-brand-600' : ''
                   }`}
                 >
                   管理
