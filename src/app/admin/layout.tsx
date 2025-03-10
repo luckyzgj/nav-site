@@ -7,7 +7,7 @@ import './admin-globals.css';
 // 移除对 globals.css 的导入
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Layout, Menu, Button, theme, Flex, ConfigProvider } from 'antd';
+import { Layout, Menu, Button, theme, Flex } from 'antd';
 import {
   DashboardOutlined,
   AppstoreOutlined,
@@ -22,100 +22,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import React from 'react';
 import VersionInfo from '@/components/VersionInfo';
+import AdminAppProvider from '@/components/AdminAppProvider';
 
 const { Header, Content, Sider } = Layout;
-
-// 自定义主题配置
-const customTheme = {
-  token: {
-    // 品牌色
-    colorPrimary: '#ff734e',
-    // 成功色
-    colorSuccess: '#52c41a',
-    // 警告色
-    colorWarning: '#faad14',
-    // 错误色
-    colorError: '#ff4d4f',
-    // 信息色
-    colorInfo: '#1677ff',
-    
-    // 中性色
-    colorTextBase: '#000000',
-    colorBgBase: '#ffffff',
-    
-    // 字体
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
-    fontSize: 14,
-    
-    // 线条
-    lineWidth: 1,
-    lineType: 'solid',
-    
-    // 圆角
-    borderRadius: 4,
-    
-    // 尺寸
-    sizeUnit: 4,
-    sizeStep: 4,
-    
-    // 动画
-    motionUnit: 0.1,
-    motionBase: 0,
-    
-    // 不透明度
-    opacityImage: 1,
-    
-    // 线框风格
-    wireframe: false,
-  },
-  components: {
-    Menu: {
-      itemBg: 'transparent',
-      itemColor: 'rgba(0, 0, 0, 0.75)',
-      itemSelectedColor: '#fe3911',
-      itemSelectedBg: '#fff3ed',
-      itemHoverColor: '#ff734e',
-      activeBarWidth: 3,
-      activeBarHeight: 40,
-      colorActiveBarBorderSize: 0,
-    },
-    Layout: {
-      headerBg: '#ffffff',
-      bodyBg: '#f0f2f5',
-      triggerBg: '#ffffff',
-      colorTextTrigger: 'rgba(0, 0, 0, 0.65)',
-    },
-    Button: {
-      colorPrimary: '#ff734e',
-      colorPrimaryHover: '#ff734e',
-      colorPrimaryActive: '#ff734e',
-      fontSize: 14,
-    },
-    Card: {
-      colorBgContainer: '#ffffff',
-      colorBorderSecondary: '#f0f0f0',
-      headerBg: '#f8f8f8',
-      boxShadowTertiary: '0 1px 2px 0 rgba(0, 0, 0, 0.03)',
-    },
-    Table: {
-      colorBgContainer: '#ffffff',
-      colorText: 'rgba(0, 0, 0, 0.85)',
-      colorTextHeading: 'rgba(0, 0, 0, 0.85)',
-      colorBorderSecondary: '#f0f0f0',
-      fontSize: 14,
-    },
-    Form: {
-      colorText: 'rgba(0, 0, 0, 0.85)',
-      colorTextHeading: 'rgba(0, 0, 0, 0.85)',
-      colorTextLabel: 'rgba(0, 0, 0, 0.85)',
-      colorTextDescription: 'rgba(0, 0, 0, 0.45)',
-      colorBorder: '#d9d9d9',
-      colorErrorOutline: '#ff4d4f',
-      colorWarningOutline: '#faad14',
-    },
-  },
-  algorithm: theme.defaultAlgorithm, // 使用默认算法
-};
 
 export default function AdminLayout({
   children,
@@ -164,9 +73,9 @@ export default function AdminLayout({
   // 如果是登录页面，直接显示内容
   if (pathname === '/admin/login') {
     return (
-      <ConfigProvider theme={customTheme}>
+      <AdminAppProvider>
         {children}
-      </ConfigProvider>
+      </AdminAppProvider>
     );
   }
 
@@ -176,7 +85,7 @@ export default function AdminLayout({
   }
 
   return (
-    <ConfigProvider theme={customTheme}>
+    <AdminAppProvider>
       <Layout style={{ minHeight: '100vh' }}>
         <Sider
           collapsible
@@ -303,6 +212,6 @@ export default function AdminLayout({
           </div>
         </Layout>
       </Layout>
-    </ConfigProvider>
+    </AdminAppProvider>
   );
 } 

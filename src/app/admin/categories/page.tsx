@@ -2,7 +2,7 @@
 
 // 导入Ant Design的React 19兼容补丁
 import '@ant-design/v5-patch-for-react-19';
-import { useState, useEffect, useReducer } from 'react';
+import { useState, useEffect, useReducer, useCallback } from 'react';
 import { 
   Table, 
   Button, 
@@ -11,7 +11,7 @@ import {
   Form, 
   Input, 
   InputNumber,
-  message, 
+  
   Popconfirm,
   Typography,
   Upload,
@@ -31,6 +31,7 @@ import {
 import { ColumnsType } from 'antd/es/table';
 import Image from 'next/image';
 import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
+import { useAdminApp } from '@/components/AdminAppProvider';
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -125,33 +126,34 @@ export default function CategoriesPage() {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [uploading, setUploading] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const { message: adminMessage } = useAdminApp();
 
   // 获取分类列表
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch('/api/admin/categories');
       const data = await response.json();
+      
       if (data.success) {
-        // 确保按sortOrder排序
+        // 按照 sortOrder 排序
         const sortedCategories = [...data.data].sort((a, b) => a.sortOrder - b.sortOrder);
-        // 使用dispatch更新状态
         dispatch({ type: 'SET_CATEGORIES', payload: sortedCategories });
       } else {
-        message.error(data.message || '获取分类列表失败');
+        adminMessage.error(data.message || '获取分类列表失败');
       }
     } catch (error) {
       console.error('获取分类列表失败:', error);
-      message.error('获取分类列表失败，请稍后重试');
+      adminMessage.error('获取分类列表失败，请稍后重试');
     } finally {
       setLoading(false);
     }
-  };
+  }, [adminMessage, dispatch]);
 
   // 初始加载
   useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [fetchCategories]);
 
   // 添加分类
   const handleAdd = () => {
@@ -174,14 +176,14 @@ export default function CategoriesPage() {
     
     const isValidType = validTypes.includes(file.type);
     if (!isValidType) {
-      message.error('文件类型不支持，请上传图片文件（支持JPG、PNG、GIF、WebP、SVG格式）');
+      adminMessage.error('文件类型不支持，请上传图片文件（支持JPG、PNG、GIF、WebP、SVG格式）');
       return false;
     }
     
     // 检查文件大小
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
-      message.error('图片大小不能超过2MB!');
+      adminMessage.error('图片大小不能超过2MB!');
       return false;
     }
     
@@ -231,7 +233,7 @@ export default function CategoriesPage() {
         if (uploadData.success) {
           iconPath = uploadData.data.path;
         } else {
-          message.error(uploadData.message || '图标上传失败');
+          adminMessage.error(uploadData.message || '图标上传失败');
           setUploading(false);
           return;
         }
@@ -264,18 +266,18 @@ export default function CategoriesPage() {
       const data = await response.json();
       
       if (data.success) {
-        message.success(editingId ? '更新分类成功' : '添加分类成功');
+        adminMessage.success(editingId ? '更新分类成功' : '添加分类成功');
         setModalVisible(false);
         form.resetFields();
         setEditingId(null);
         setFileList([]);
         fetchCategories();
       } else {
-        message.error(data.message || (editingId ? '更新分类失败' : '添加分类失败'));
+        adminMessage.error(data.message || (editingId ? '更新分类失败' : '添加分类失败'));
       }
     } catch (error) {
       console.error(editingId ? '更新分类失败:' : '添加分类失败:', error);
-      message.error(editingId ? '更新分类失败，请稍后重试' : '添加分类失败，请稍后重试');
+      adminMessage.error(editingId ? '更新分类失败，请稍后重试' : '添加分类失败，请稍后重试');
     } finally {
       setUploading(false);
     }
@@ -291,14 +293,14 @@ export default function CategoriesPage() {
       const data = await response.json();
       
       if (data.success) {
-        message.success('删除分类成功');
+        adminMessage.success('删除分类成功');
         fetchCategories();
       } else {
-        message.error(data.message || '删除分类失败');
+        adminMessage.error(data.message || '删除分类失败');
       }
     } catch (error) {
       console.error('删除分类失败:', error);
-      message.error('删除分类失败，请稍后重试');
+      adminMessage.error('删除分类失败，请稍后重试');
     }
   };
 
@@ -344,7 +346,7 @@ export default function CategoriesPage() {
       
       // 如果已经是第一个，则不能再上移
       if (currentIndex === 0) {
-        message.info('已经是第一个分类，无法上移');
+        adminMessage.info('已经是第一个分类，无法上移');
         setLoading(false);
         return;
       }
@@ -380,15 +382,15 @@ export default function CategoriesPage() {
       const data = await response.json();
       
       if (response.ok && data.success) {
-        message.success('排序更新成功');
+        adminMessage.success('排序更新成功');
         // 重新获取分类列表
         await fetchCategories();
       } else {
-        message.error(data.message || '排序更新失败');
+        adminMessage.error(data.message || '排序更新失败');
       }
     } catch (error) {
       console.error('上移分类出错:', error);
-      message.error('上移分类出错');
+      adminMessage.error('上移分类出错');
     } finally {
       setLoading(false); // 隐藏加载状态
     }
@@ -405,7 +407,7 @@ export default function CategoriesPage() {
       
       // 如果已经是最后一个，则不能再下移
       if (currentIndex === allCategories.length - 1) {
-        message.info('已经是最后一个分类，无法下移');
+        adminMessage.info('已经是最后一个分类，无法下移');
         setLoading(false);
         return;
       }
@@ -441,15 +443,15 @@ export default function CategoriesPage() {
       const data = await response.json();
       
       if (response.ok && data.success) {
-        message.success('排序更新成功');
+        adminMessage.success('排序更新成功');
         // 重新获取分类列表
         await fetchCategories();
       } else {
-        message.error(data.message || '排序更新失败');
+        adminMessage.error(data.message || '排序更新失败');
       }
     } catch (error) {
       console.error('下移分类出错:', error);
-      message.error('下移分类出错');
+      adminMessage.error('下移分类出错');
     } finally {
       setLoading(false); // 隐藏加载状态
     }
@@ -623,15 +625,15 @@ export default function CategoriesPage() {
       const data = await response.json();
       
       if (response.ok && data.success) {
-        message.success('排序更新成功');
+        adminMessage.success('排序更新成功');
         // 重新获取分类列表
         await fetchCategories();
       } else {
-        message.error(data.message || '排序更新失败');
+        adminMessage.error(data.message || '排序更新失败');
       }
     } catch (error) {
       console.error('修改排序值出错:', error);
-      message.error('修改排序值出错');
+      adminMessage.error('修改排序值出错');
     } finally {
       setLoading(false);
     }

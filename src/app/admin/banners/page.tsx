@@ -1,7 +1,7 @@
 'use client';
 
 import '@ant-design/v5-patch-for-react-19';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   Table, 
   Button, 
@@ -9,7 +9,7 @@ import {
   Form, 
   Input, 
   Upload, 
-  message, 
+  
   Switch, 
   InputNumber,
   Typography,
@@ -21,6 +21,7 @@ import Image from 'next/image';
 import { PlusOutlined, UploadOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
 import type { ColumnsType } from 'antd/es/table';
+import { useAdminApp } from '@/components/AdminAppProvider';
 
 const { Title } = Typography;
 // const { TextArea } = Input;
@@ -54,30 +55,32 @@ export default function BannersPage() {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [uploading, setUploading] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-  
-  // 初始加载
-  useEffect(() => {
-    fetchBanners();
-  }, []);
+  const { message: adminMessage } = useAdminApp();
   
   // 获取所有头图
-  const fetchBanners = async () => {
+  const fetchBanners = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch('/api/admin/banners');
       const data = await response.json();
+      
       if (data.success) {
         setBanners(data.data);
       } else {
-        message.error(data.message || '获取头图列表失败');
+        adminMessage.error(data.message || '获取头图列表失败');
       }
     } catch (error) {
       console.error('获取头图列表失败:', error);
-      message.error('获取头图列表失败，请稍后重试');
+      adminMessage.error('获取头图列表失败，请稍后重试');
     } finally {
       setLoading(false);
     }
-  };
+  }, [adminMessage]);
+  
+  // 初始加载
+  useEffect(() => {
+    fetchBanners();
+  }, [fetchBanners]);
   
   // 打开添加头图模态框
   const showAddModal = () => {
@@ -128,7 +131,7 @@ export default function BannersPage() {
         if (fileList.length > 0 && fileList[0].response && fileList[0].response.url) {
           values.imageUrl = fileList[0].response.url;
         } else {
-          message.error('图片上传失败，请重新上传');
+          adminMessage.error('图片上传失败，请重新上传');
           return;
         }
       }
@@ -146,11 +149,11 @@ export default function BannersPage() {
         const data = await response.json();
         
         if (data.success) {
-          message.success('头图更新成功');
+          adminMessage.success('头图更新成功');
           setModalVisible(false);
           fetchBanners();
         } else {
-          message.error(data.message || '更新头图失败');
+          adminMessage.error(data.message || '更新头图失败');
         }
       } else {
         // 添加头图
@@ -165,11 +168,11 @@ export default function BannersPage() {
         const data = await response.json();
         
         if (data.success) {
-          message.success('头图添加成功');
+          adminMessage.success('头图添加成功');
           setModalVisible(false);
           fetchBanners();
         } else {
-          message.error(data.message || '添加头图失败');
+          adminMessage.error(data.message || '添加头图失败');
         }
       }
     } catch (error) {
@@ -187,14 +190,14 @@ export default function BannersPage() {
       const data = await response.json();
       
       if (data.success) {
-        message.success('头图删除成功');
+        adminMessage.success('头图删除成功');
         fetchBanners();
       } else {
-        message.error(data.message || '删除头图失败');
+        adminMessage.error(data.message || '删除头图失败');
       }
     } catch (error) {
       console.error('删除头图失败:', error);
-      message.error('删除头图失败，请稍后重试');
+      adminMessage.error('删除头图失败，请稍后重试');
     }
   };
   
@@ -202,13 +205,13 @@ export default function BannersPage() {
   const beforeUpload = (file: File) => {
     const isImage = file.type.startsWith('image/');
     if (!isImage) {
-      message.error('只能上传图片文件!');
+      adminMessage.error('只能上传图片文件!');
       return false;
     }
     
     const isLt5M = file.size / 1024 / 1024 < 5;
     if (!isLt5M) {
-      message.error('图片大小不能超过5MB!');
+      adminMessage.error('图片大小不能超过5MB!');
       return false;
     }
     
@@ -233,7 +236,7 @@ export default function BannersPage() {
       const data = await response.json();
       
       if (data.success) {
-        message.success('图片上传成功');
+        adminMessage.success('图片上传成功');
         // 确保设置的是字符串URL
         const imageUrl = data.data.url;
         form.setFieldsValue({ imageUrl });
@@ -241,14 +244,14 @@ export default function BannersPage() {
           onSuccess({ url: imageUrl });
         }
       } else {
-        message.error(data.message || '图片上传失败');
+        adminMessage.error(data.message || '图片上传失败');
         if (onError) {
           onError(new Error(data.message || '图片上传失败'));
         }
       }
     } catch (error) {
       console.error('图片上传失败:', error);
-      message.error('图片上传失败，请稍后重试');
+      adminMessage.error('图片上传失败，请稍后重试');
       if (onError) {
         onError(error as Error);
       }

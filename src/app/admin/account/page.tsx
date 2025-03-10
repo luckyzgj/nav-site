@@ -2,16 +2,16 @@
 
 // 导入Ant Design的React 19兼容补丁
 import '@ant-design/v5-patch-for-react-19';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   Form, 
   Input, 
   Button, 
   Card, 
-  message, 
   Typography
 } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
+import { useAdminApp } from '@/components/AdminAppProvider';
 
 const { Title, Text } = Typography;
 
@@ -32,9 +32,10 @@ export default function AccountPage() {
   const [loading, setLoading] = useState(false);
   const [adminInfo, setAdminInfo] = useState<AdminInfo | null>(null);
   const [form] = Form.useForm();
+  const { message: adminMessage } = useAdminApp();
 
   // 获取管理员信息
-  const fetchAdminInfo = async () => {
+  const fetchAdminInfo = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/account');
       const data = await response.json();
@@ -42,24 +43,24 @@ export default function AccountPage() {
       if (data.success) {
         setAdminInfo(data.data);
       } else {
-        message.error(data.message || '获取账号信息失败');
+        adminMessage.error(data.message || '获取账号信息失败');
       }
     } catch (error) {
       console.error('获取账号信息失败:', error);
-      message.error('获取账号信息失败，请稍后重试');
+      adminMessage.error('获取账号信息失败，请稍后重试');
     }
-  };
+  }, [adminMessage]);
 
   // 初始加载
   useEffect(() => {
     fetchAdminInfo();
-  }, []);
+  }, [fetchAdminInfo]);
 
   // 修改密码
   const handleChangePassword = async (values: ChangePasswordForm) => {
     // 验证两次输入的密码是否一致
     if (values.newPassword !== values.confirmPassword) {
-      message.error('两次输入的新密码不一致');
+      adminMessage.error('两次输入的新密码不一致');
       return;
     }
     
@@ -80,14 +81,14 @@ export default function AccountPage() {
       const data = await response.json();
       
       if (data.success) {
-        message.success('密码修改成功');
+        adminMessage.success('密码修改成功');
         form.resetFields();
       } else {
-        message.error(data.message || '密码修改失败');
+        adminMessage.error(data.message || '密码修改失败');
       }
     } catch (error) {
       console.error('密码修改失败:', error);
-      message.error('密码修改失败，请稍后重试');
+      adminMessage.error('密码修改失败，请稍后重试');
     } finally {
       setLoading(false);
     }

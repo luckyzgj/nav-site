@@ -7,12 +7,13 @@ import {
   Form, 
   Input, 
   Button, 
-  message, 
+  
   Card,
   Typography,
   Alert,
   Space
 } from 'antd';
+import { useAdminApp } from '@/components/AdminAppProvider';
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -30,6 +31,7 @@ export default function SettingsPage() {
   const [form] = Form.useForm<SettingsFormValues>();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const { message: adminMessage } = useAdminApp();
 
   // 初始加载
   useEffect(() => {
@@ -42,18 +44,18 @@ export default function SettingsPage() {
         if (data.success) {
           form.setFieldsValue(data.data);
         } else {
-          message.error(data.message || '获取设置失败');
+          adminMessage.error(data.message || '获取设置失败');
         }
       } catch (error) {
         console.error('获取设置失败:', error);
-        message.error('获取设置失败，请稍后重试');
+        adminMessage.error('获取设置失败，请稍后重试');
       } finally {
         setLoading(false);
       }
     };
 
     fetchSettings();
-  }, [form]);
+  }, [form, adminMessage]);
 
   // 保存设置
   const handleSave = async (values: SettingsFormValues) => {
@@ -70,13 +72,13 @@ export default function SettingsPage() {
       const data = await response.json();
       
       if (data.success) {
-        message.success('设置保存成功');
+        adminMessage.success('设置保存成功');
       } else {
-        message.error(data.message || '保存设置失败');
+        adminMessage.error(data.message || '保存设置失败');
       }
     } catch (error) {
       console.error('保存设置失败:', error);
-      message.error('保存设置失败，请稍后重试');
+      adminMessage.error('保存设置失败，请稍后重试');
     } finally {
       setSaving(false);
     }

@@ -2,7 +2,7 @@
 
 // 导入Ant Design的React 19兼容补丁
 import '@ant-design/v5-patch-for-react-19';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   Table, 
   Button, 
@@ -12,13 +12,12 @@ import {
   Input, 
   Select,
   Upload,
-  message, 
   Popconfirm,
   Typography,
   Card,
+  Flex,
   Row,
-  Col,
-  Flex
+  Col
 } from 'antd';
 import { 
   PlusOutlined, 
@@ -27,9 +26,9 @@ import {
   EyeOutlined,
   ReloadOutlined
 } from '@ant-design/icons';
-import { ColumnsType } from 'antd/es/table';
 import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
 import Image from 'next/image';
+import { useAdminApp } from '@/components/AdminAppProvider';
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -70,18 +69,20 @@ export default function ServicesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [form] = Form.useForm();
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [form] = Form.useForm();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+  const { message } = useAdminApp();
 
   // 获取网站列表
-  const fetchServices = async () => {
+  const fetchServices = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch('/api/admin/services');
       const data = await response.json();
+      
       if (data.success) {
         setServices(data.data);
         setFilteredServices(data.data);
@@ -94,13 +95,14 @@ export default function ServicesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [message]);
 
   // 获取分类列表
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/categories');
       const data = await response.json();
+      
       if (data.success) {
         setCategories(data.data);
       } else {
@@ -110,13 +112,13 @@ export default function ServicesPage() {
       console.error('获取分类列表失败:', error);
       message.error('获取分类列表失败，请稍后重试');
     }
-  };
+  }, [message]);
 
   // 初始加载
   useEffect(() => {
     fetchServices();
     fetchCategories();
-  }, []);
+  }, [fetchServices, fetchCategories]);
 
   // 筛选网站列表
   const filterServices = (categoryId: number | null) => {
@@ -266,24 +268,24 @@ export default function ServicesPage() {
   };
 
   // 表格列定义
-  const columns: ColumnsType<Service> = [
+  const columns = [
     {
       title: 'ID',
       dataIndex: 'id',
       key: 'id',
-      width: 60,
+      width: 100,
     },
     {
       title: '图标',
       dataIndex: 'icon',
       key: 'icon',
-      width: 80,
-      render: (icon) => (
+      width: 60,
+      render: (icon: string | null) => (
         icon ? (
           <div style={{ position: 'relative', width: 40, height: 40 }}>
             <Image 
-              src={icon} 
-              alt="图标" 
+              src={icon}
+              alt="网站图标"
               fill
               style={{ objectFit: 'contain' }}
               onClick={() => setPreviewImage(icon)}
@@ -309,32 +311,28 @@ export default function ServicesPage() {
       title: '名称',
       dataIndex: 'name',
       key: 'name',
-      width: 150,
+      width: 180,
+      sorter: (a: Service, b: Service) => a.name.localeCompare(b.name),
     },
     {
-      title: '分类',
-      dataIndex: 'categoryName',
-      key: 'categoryName',
-      width: 120,
-    },
-    {
-      title: '点击次数',
+      title: '点击量',
       dataIndex: 'clickCount',
       key: 'clickCount',
-      width: 120,
-      sorter: (a, b) => a.clickCount - b.clickCount,
+      width: 100,
+      sorter: (a: Service, b: Service) => a.clickCount - b.clickCount,
     },
     {
       title: '创建时间',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      render: (text) => new Date(text).toLocaleString(),
+      render: (text: string) => new Date(text).toLocaleString(),
     },
     {
       title: '操作',
       key: 'action',
-      width: 250,
-      render: (_, record) => (
+      width: 150,
+      fixed: 'right' as const,
+      render: (_: unknown, record: Service) => (
         <Space size="middle">
           <Button 
             type="default" 
@@ -375,7 +373,8 @@ export default function ServicesPage() {
   );
 
   return (
-    <div>
+    <div className="admin-services-page">
+      
       <Flex justify="space-between" align="center" style={{ marginBottom: 16 }}>
         <Title level={2} style={{ margin: 0 }}>网站管理</Title>
         <Button 
@@ -386,7 +385,7 @@ export default function ServicesPage() {
           添加网站
         </Button>
       </Flex>
-      
+
       {/* 分类筛选卡片 */}
       <Card style={{ marginBottom: 16, backgroundColor: '#f8f8f8' }}>
         <Row gutter={[10, 10]}>
@@ -417,13 +416,14 @@ export default function ServicesPage() {
           </Col>
         </Row>
       </Card>
-      
+
       <Table 
         columns={columns} 
         dataSource={filteredServices} 
         rowKey="id" 
         loading={loading}
         pagination={{ pageSize: 10 }}
+        scroll={{ x: 'max-content' }}
       />
       
       <Modal
