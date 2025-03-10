@@ -1,6 +1,6 @@
 {
   "name": "nav-site",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "dev": "NEXT_PUBLIC_APP_VERSION=$npm_package_version next dev --turbopack",
@@ -8,8 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
-    "seed-test-data": "ts-node scripts/seed-test-data.ts",
-    "clear-services": "ts-node scripts/clear-services.ts"
+    "clear-services": "node scripts/clear-services.mjs"
   },
   "dependencies": {
     "@ant-design/cssinjs": "^1.23.0",
@@ -23,6 +22,7 @@
     "bcrypt": "^5.1.1",
     "mysql2": "^3.13.0",
     "next": "^15.2.1",
+    "node-fetch": "^3.3.2",
     "prisma": "^6.4.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
