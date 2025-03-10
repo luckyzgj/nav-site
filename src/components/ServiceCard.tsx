@@ -102,11 +102,14 @@ export default function ServiceCard({ service }: ServiceCardProps) {
     <Tooltip 
       title={service.description}
       placement="bottom"
-      mouseEnterDelay={0.25}
+      mouseEnterDelay={0.3}
+      color="rgba(255, 115, 78, 0.95)"
       styles={{
         body: {
           borderRadius: '12px',
-          padding: '8px 12px'
+          padding: '8px 12px',
+          fontSize: '14px',
+          boxShadow: '0 0.2rem 0.4rem rgba(240, 133, 100, 0.25)'
         }
       }}
     >
