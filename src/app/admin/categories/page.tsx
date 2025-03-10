@@ -222,6 +222,7 @@ export default function CategoriesPage() {
       if (fileList.length > 0 && fileList[0].originFileObj) {
         const formData = new FormData();
         formData.append('file', fileList[0].originFileObj as File);
+        formData.append('type', 'category'); // 指定上传类型为分类图标
         
         const uploadResponse = await fetch('/api/admin/upload', {
           method: 'POST',

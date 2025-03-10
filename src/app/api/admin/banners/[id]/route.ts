@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { verifyAdmin } from '@/utils/auth';
 import { successResponse, unauthorizedResponse, errorResponse, serverErrorResponse, notFoundResponse } from '@/utils/api';
 import { RouteContext } from '../../categories/[id]/route';
+import { join } from 'path';
+import { existsSync, unlinkSync } from 'fs';
 
 // 获取单个Banner
 export async function GET(
@@ -118,6 +120,25 @@ export async function DELETE(
     
     if (!existingBanner) {
       return notFoundResponse('头图不存在');
+    }
+    
+    // 删除头图文件（如果存在）
+    if (existingBanner.imageUrl) {
+      try {
+        // 从URL中提取文件路径
+        const imagePath = existingBanner.imageUrl.replace(/^\/uploads\//, '');
+        const filePath = join(process.cwd(), 'public', 'uploads', imagePath);
+        
+        // 检查文件是否存在
+        if (existsSync(filePath)) {
+          // 删除文件
+          unlinkSync(filePath);
+          console.log(`已删除头图文件: ${filePath}`);
+        }
+      } catch (fileError) {
+        // 文件删除失败不影响数据库操作，只记录日志
+        console.error('删除头图文件失败:', fileError);
+      }
     }
     
     // 删除Banner

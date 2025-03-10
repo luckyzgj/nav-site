@@ -16,15 +16,16 @@ export async function POST(request: NextRequest) {
     // 解析FormData
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
+    const type = formData.get('type') as string || 'icon'; // 默认为icon类型
     
     if (!file) {
       return errorResponse('未找到文件');
     }
     
     // 验证文件类型
-    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
     if (!validTypes.includes(file.type)) {
-      return errorResponse('不支持的文件类型，请上传JPG、PNG、GIF或WEBP格式的图片');
+      return errorResponse('不支持的文件类型，请上传JPG、PNG、GIF、WEBP或SVG格式的图片');
     }
     
     // 验证文件大小（最大5MB）
@@ -37,10 +38,35 @@ export async function POST(request: NextRequest) {
     const timestamp = Date.now();
     const originalName = file.name;
     const extension = originalName.split('.').pop() || 'jpg';
-    const fileName = `banner_${timestamp}.${extension}`;
+    
+    // 根据类型确定保存目录和文件名前缀
+    let uploadDir;
+    let filePrefix;
+    let urlPrefix;
+    
+    if (type === 'service' || type === 'icon') {
+      uploadDir = join(process.cwd(), 'public', 'uploads', 'icons');
+      filePrefix = 'icon';
+      urlPrefix = '/uploads/icons';
+    } else if (type === 'category') {
+      uploadDir = join(process.cwd(), 'public', 'uploads', 'categories');
+      filePrefix = 'category';
+      urlPrefix = '/uploads/categories';
+    } else if (type === 'banner') {
+      // 头图类型
+      uploadDir = join(process.cwd(), 'public', 'uploads', 'banners');
+      filePrefix = 'banner';
+      urlPrefix = '/uploads/banners';
+    } else {
+      // 未知类型，默认为icon
+      uploadDir = join(process.cwd(), 'public', 'uploads', 'icons');
+      filePrefix = 'icon';
+      urlPrefix = '/uploads/icons';
+    }
+    
+    const fileName = `${filePrefix}_${timestamp}.${extension}`;
     
     // 确保上传目录存在
-    const uploadDir = join(process.cwd(), 'public', 'uploads', 'banners');
     await mkdir(uploadDir, { recursive: true });
     
     // 保存文件
@@ -49,9 +75,9 @@ export async function POST(request: NextRequest) {
     await writeFile(filePath, buffer);
     
     // 返回文件URL
-    const fileUrl = `/uploads/banners/${fileName}`;
+    const fileUrl = `${urlPrefix}/${fileName}`;
     
-    return successResponse({ url: fileUrl }, '文件上传成功');
+    return successResponse({ url: fileUrl, path: fileUrl }, '文件上传成功');
   } catch (error) {
     return serverErrorResponse(error);
   }

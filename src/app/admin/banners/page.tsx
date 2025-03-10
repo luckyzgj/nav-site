@@ -9,7 +9,6 @@ import {
   Form, 
   Input, 
   Upload, 
-  
   Switch, 
   InputNumber,
   Typography,
@@ -227,6 +226,7 @@ export default function BannersPage() {
     try {
       const formData = new FormData();
       formData.append('file', file as File);
+      formData.append('type', 'banner'); // 指定上传类型为头图
       
       const response = await fetch('/api/admin/upload', {
         method: 'POST',

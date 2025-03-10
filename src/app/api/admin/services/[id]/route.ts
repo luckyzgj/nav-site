@@ -1,8 +1,12 @@
 import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { PrismaClient } from '@prisma/client';
 import { verifyAdmin } from '@/utils/auth';
 import { successResponse, unauthorizedResponse, errorResponse, serverErrorResponse } from '@/utils/api';
 import { RouteContext } from '../../categories/[id]/route';
+import { join } from 'path';
+import { existsSync, unlinkSync } from 'fs';
+
+const prisma = new PrismaClient();
 
 // 获取单个服务
 export async function GET(
@@ -166,6 +170,25 @@ export async function DELETE(
     
     if (!service) {
       return errorResponse('服务不存在', 404);
+    }
+    
+    // 删除服务图标文件（如果存在）
+    if (service.icon) {
+      try {
+        // 从URL中提取文件路径
+        const iconPath = service.icon.replace(/^\/uploads\//, '');
+        const filePath = join(process.cwd(), 'public', 'uploads', iconPath);
+        
+        // 检查文件是否存在
+        if (existsSync(filePath)) {
+          // 删除文件
+          unlinkSync(filePath);
+          console.log(`已删除图标文件: ${filePath}`);
+        }
+      } catch (fileError) {
+        // 文件删除失败不影响数据库操作，只记录日志
+        console.error('删除图标文件失败:', fileError);
+      }
     }
     
     // 删除服务

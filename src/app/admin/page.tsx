@@ -83,34 +83,34 @@ export default function AdminDashboard() {
       render: (_: unknown, record: PopularService) => (
         <Flex align="center">
           {record.icon ? (
-            <div style={{ marginRight: 8, flexShrink: 0 }}>
+            <div style={{ marginRight: 8, flexShrink: 0, display: 'flex', alignItems: 'center' }}>
               {isSvg(record.icon) ? (
                 <Image
                   src={record.icon}
                   alt={record.name}
-                  width={24}
-                  height={24}
-                  style={{ borderRadius: 4 }}
+                  width={32}
+                  height={32}
+                  style={{ borderRadius: 4, display: 'block' }}
                   unoptimized
                 />
               ) : (
                 <Image
                   src={record.icon}
                   alt={record.name}
-                  width={24}
-                  height={24}
-                  style={{ borderRadius: 4 }}
+                  width={32}
+                  height={32}
+                  style={{ borderRadius: 4, display: 'block' }}
                 />
               )}
             </div>
           ) : (
             <Avatar 
               icon={<GlobalOutlined />} 
-              size={24} 
+              size={32} 
               style={{ marginRight: 8, flexShrink: 0 }} 
             />
           )}
-          <span>{record.name}</span>
+          <span style={{ display: 'flex', alignItems: 'center' }}>{record.name}</span>
         </Flex>
       ),
     },
