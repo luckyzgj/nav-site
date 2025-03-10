@@ -209,7 +209,7 @@ export default function AdminLayout({
             
             {!collapsed && (
               <div style={{ 
-                marginLeft: 12,
+                marginLeft: 10,
                 color: '#262626', 
                 fontWeight: 'bold', 
                 fontSize: '16px',
