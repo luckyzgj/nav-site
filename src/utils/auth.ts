@@ -6,19 +6,32 @@ const AUTH_COOKIE_NAME = 'admin_token';
 
 // 设置身份验证Cookie
 export const setAuthCookie = (response: NextResponse, adminId: number) => {
-  // 简单的身份验证令牌，实际项目中应使用JWT或其他更安全的方式
-  const token = Buffer.from(`${adminId}:${Date.now()}`).toString('base64');
-  
-  response.cookies.set({
-    name: AUTH_COOKIE_NAME,
-    value: token,
-    httpOnly: true,
-    path: '/',
-    maxAge: 60 * 60 * 24 * 7, // 7天
-    sameSite: 'strict',
-  });
-  
-  return token;
+  try {
+    // 简单的身份验证令牌，实际项目中应使用JWT或其他更安全的方式
+    const token = Buffer.from(`${adminId}:${Date.now()}`).toString('base64');
+    
+    // 记录Cookie设置信息
+    console.log('准备设置Cookie:', {
+      name: AUTH_COOKIE_NAME,
+      value: '(已加密)',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7,
+    });
+    
+    response.cookies.set({
+      name: AUTH_COOKIE_NAME,
+      value: token,
+      httpOnly: true,
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7, // 7天
+      sameSite: 'strict',
+    });
+    
+    return token;
+  } catch (error) {
+    console.error('设置Cookie时出错:', error);
+    throw new Error('设置认证Cookie失败');
+  }
 };
 
 // 清除身份验证Cookie
