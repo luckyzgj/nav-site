@@ -14,7 +14,6 @@ import {
   Upload,
   Popconfirm,
   Typography,
-  Card,
   Flex,
   Row,
   Col
@@ -74,6 +73,8 @@ export default function ServicesPage() {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const { message } = useAdminApp();
 
   // 获取网站列表
@@ -267,6 +268,20 @@ export default function ServicesPage() {
     }
   };
 
+  // 处理分页变化
+  const handlePageChange = (page: number, size?: number) => {
+    setCurrentPage(page);
+    if (size) {
+      setPageSize(size);
+    }
+  };
+
+  // 处理每页条数变化
+  const handlePageSizeChange = (current: number, size: number) => {
+    setPageSize(size);
+    setCurrentPage(current);
+  };
+
   // 表格列定义
   const columns = [
     {
@@ -296,7 +311,7 @@ export default function ServicesPage() {
             style={{ 
               width: 40, 
               height: 40, 
-              background: '#f0f0f0', 
+              background: '#f5f5f5', 
               borderRadius: 4 
             }} 
             justify="center" 
@@ -387,42 +402,49 @@ export default function ServicesPage() {
       </Flex>
 
       {/* 分类筛选卡片 */}
-      <Card style={{ marginBottom: 16, backgroundColor: '#f8f8f8' }}>
-        <Row gutter={[10, 10]}>
-          <Col>
-            <Button 
-              type={selectedCategoryId === null ? 'primary' : 'default'}
-              onClick={resetFilter}
+
+      <Row gutter={[10, 10]} style={{ marginBottom: 16 }}>
+        <Col>
+          <Button 
+            type={selectedCategoryId === null ? 'primary' : 'default'}
+            onClick={resetFilter}
+          >
+            全部
+          </Button>
+        </Col>
+        {categories.map(category => (
+          <Col key={category.id}>
+            <Button
+              type={selectedCategoryId === category.id ? 'primary' : 'default'}
+              onClick={() => filterServices(category.id)}
             >
-              全部
+              {category.name}
             </Button>
           </Col>
-          {categories.map(category => (
-            <Col key={category.id}>
-              <Button
-                type={selectedCategoryId === category.id ? 'primary' : 'default'}
-                onClick={() => filterServices(category.id)}
-              >
-                {category.name}
-              </Button>
-            </Col>
-          ))}
-          <Col>
-            <Button 
-              icon={<ReloadOutlined />} 
-              onClick={resetFilter}
-              title="重置筛选"
-            />
-          </Col>
-        </Row>
-      </Card>
+        ))}
+        <Col>
+          <Button 
+            icon={<ReloadOutlined />} 
+            onClick={resetFilter}
+            title="重置筛选"
+          />
+        </Col>
+      </Row>
 
       <Table 
         columns={columns} 
         dataSource={filteredServices} 
         rowKey="id" 
         loading={loading}
-        pagination={{ pageSize: 10 }}
+        pagination={{ 
+          current: currentPage,
+          pageSize: pageSize,
+          onChange: handlePageChange,
+          onShowSizeChange: handlePageSizeChange,
+          showSizeChanger: true,
+          pageSizeOptions: ['10', '20', '50', '100'],
+          showTotal: (total) => `共 ${total} 条记录`
+        }}
         scroll={{ x: 'max-content' }}
       />
       

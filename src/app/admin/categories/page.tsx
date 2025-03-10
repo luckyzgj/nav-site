@@ -11,7 +11,6 @@ import {
   Form, 
   Input, 
   InputNumber,
-  
   Popconfirm,
   Typography,
   Upload,
@@ -657,7 +656,7 @@ export default function CategoriesPage() {
         dataSource={categories} 
         rowKey="id" 
         loading={loading}
-        pagination={{ pageSize: 20 }}
+        pagination={{ pageSize: 20, hideOnSinglePage: true }}
         scroll={{ x: 'max-content' }}
       />
       
