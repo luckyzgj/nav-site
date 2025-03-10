@@ -15,7 +15,9 @@ import {
   Popconfirm,
   Typography,
   Upload,
-  Divider
+  Divider,
+  Row,
+  Col
 } from 'antd';
 import { 
   PlusOutlined, 
@@ -635,106 +637,131 @@ export default function CategoriesPage() {
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={null}
-        width={600}
+        width={900}
       >
         <Form
           form={form}
           layout="vertical"
           onFinish={handleSave}
         >
-          <Form.Item
-            name="name"
-            label="分类名称"
-            rules={[{ required: true, message: '请输入分类名称' }]}
-          >
-            <Input placeholder="请输入分类名称" />
-          </Form.Item>
-          
-          <Form.Item
-            name="slug"
-            label="英文标识"
-            rules={[
-              { required: true, message: '请输入英文标识' },
-              { 
-                pattern: /^[a-z0-9-]+$/, 
-                message: '只能包含小写字母、数字和连字符' 
-              }
-            ]}
-            extra="用于URL，只能包含小写字母、数字和连字符，例如：ai-tools"
-          >
-            <Input placeholder="请输入英文标识" />
-          </Form.Item>
-          
-          <Form.Item
-            name="description"
-            label="分类简介"
-            extra="简要描述该分类的特点和包含的内容"
-          >
-            <TextArea 
-              placeholder="请输入分类简介" 
-              rows={4}
-              showCount
-              maxLength={500}
-            />
-          </Form.Item>
-          
-          <Form.Item
-            name="sortOrder"
-            label="排序"
-            rules={[{ required: true, message: '请输入排序数值!' }]}
-            initialValue={0}
-          >
-            <InputNumber min={0} style={{ width: '100%' }} />
-          </Form.Item>
-          
-          <Form.Item
-            label="分类图标"
-            extra="建议上传正方形图标，支持PNG、JPG、GIF、WebP、SVG格式，大小不超过2MB"
-          >
-            <Upload
-              listType="picture-card"
-              fileList={fileList}
-              beforeUpload={beforeUpload}
-              onChange={handleChange}
-              onPreview={handlePreview}
-              maxCount={1}
-              accept=".jpg,.jpeg,.png,.gif,.webp,.svg"
-            >
-              {fileList.length >= 1 ? null : uploadButton}
-            </Upload>
-          </Form.Item>
-          
-          {/* SEO 设置 */}
-          <Divider orientation="left">SEO 设置</Divider>
-          
-          <Form.Item
-            name="seoTitle"
-            label="SEO 标题"
-            extra="用于搜索引擎优化，如不填写则使用默认格式"
-          >
-            <Input placeholder="请输入 SEO 标题" />
-          </Form.Item>
-          
-          <Form.Item
-            name="seoDescription"
-            label="SEO 描述"
-            extra="用于搜索引擎优化，如不填写则使用分类简介"
-          >
-            <TextArea 
-              placeholder="请输入 SEO 描述" 
-              rows={3}
-              showCount
-              maxLength={200}
-            />
-          </Form.Item>
-          
-          <Form.Item
-            name="seoKeywords"
-            label="SEO 关键词"
-            extra="用于搜索引擎优化，多个关键词用英文逗号分隔"
-          >
-            <Input placeholder="请输入 SEO 关键词，多个关键词用英文逗号分隔" />
-          </Form.Item>
+          <Row gutter={24}>
+            {/* 左侧基本信息 */}
+            <Col span={12}>
+              <Divider orientation="left" orientationMargin={0}>基本信息</Divider>
+              
+              {/* 第一行：分类名称、英文标识、排序 */}
+              <Row gutter={16}>
+                <Col span={8}>
+                  <Form.Item
+                    name="name"
+                    label="分类名称"
+                    rules={[{ required: true, message: '请输入分类名称' }]}
+                  >
+                    <Input placeholder="请输入分类名称" />
+                  </Form.Item>
+                </Col>
+                <Col span={16}>
+                  <Row gutter={8}>
+                    <Col span={18}>
+                      <Form.Item
+                        name="slug"
+                        label="英文标识"
+                        rules={[
+                          { required: true, message: '请输入英文标识' },
+                          { 
+                            pattern: /^[a-z0-9-]+$/, 
+                            message: '只能包含小写字母、数字和连字符' 
+                          }
+                        ]}
+                      >
+                        <Input placeholder="请输入英文标识" />
+                      </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                      <Form.Item
+                        name="sortOrder"
+                        label="排序"
+                        rules={[{ required: true, message: '请输入排序数值!' }]}
+                        initialValue={0}
+                      >
+                        <InputNumber min={0} style={{ width: '100%' }} />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+              
+              {/* 第二行：分类图标、分类简介 */}
+              <Row gutter={16}>
+                <Col span={8}>
+                  <Form.Item
+                    label="分类图标"
+                  >
+                    <Upload
+                      listType="picture-card"
+                      fileList={fileList}
+                      beforeUpload={beforeUpload}
+                      onChange={handleChange}
+                      onPreview={handlePreview}
+                      maxCount={1}
+                      accept=".jpg,.jpeg,.png,.gif,.webp,.svg"
+                    >
+                      {fileList.length >= 1 ? null : uploadButton}
+                    </Upload>
+                  </Form.Item>
+                </Col>
+                <Col span={16}>
+                  <Form.Item
+                    name="description"
+                    label="分类简介"
+                  >
+                    <TextArea 
+                      placeholder="请输入分类简介" 
+                      rows={4}
+                      showCount
+                      maxLength={500}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Col>
+            
+            {/* 右侧 SEO 设置 */}
+            <Col span={12}>
+              <div className="pl-4 border-l">
+                <Divider orientation="left" orientationMargin={0}>SEO 设置</Divider>
+                
+                <Form.Item
+                  name="seoTitle"
+                  label="SEO 标题"
+                  extra="用于搜索引擎优化，如不填写则使用默认格式"
+                >
+                  <Input placeholder="请输入 SEO 标题" />
+                </Form.Item>
+                
+                <Form.Item
+                  name="seoDescription"
+                  label="SEO 描述"
+                  extra="用于搜索引擎优化，如不填写则使用分类简介"
+                >
+                  <TextArea 
+                    placeholder="请输入 SEO 描述" 
+                    rows={3}
+                    showCount
+                    maxLength={200}
+                  />
+                </Form.Item>
+                
+                <Form.Item
+                  name="seoKeywords"
+                  label="SEO 关键词"
+                  extra="用于搜索引擎优化，多个关键词用英文逗号分隔"
+                >
+                  <Input placeholder="请输入 SEO 关键词，多个关键词用英文逗号分隔" />
+                </Form.Item>
+              </div>
+            </Col>
+          </Row>
           
           <Form.Item className="mb-0 text-right">
             <Space>
