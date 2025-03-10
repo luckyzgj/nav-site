@@ -31,7 +31,7 @@ export default function Navbar({ siteName }: NavbarProps) {
   }, []);
   
   return (
-    <header className={`sticky top-0 z-50 w-full bg-white transition-all duration-300 ${
+    <header className={`sticky top-0 z-50 w-full bg-white bg-opacity-80 backdrop-blur-lg transition-all duration-300 ${
       isScrolled ? 'shadow-md' : 'shadow-sm'
     }`}>
       <div className="container mx-auto px-4 py-4 max-w-[960px]">
