@@ -48,18 +48,18 @@ export default function Pagination({ currentPage, totalPages, baseUrl }: Paginat
   const pageNumbers = getPageNumbers();
   
   return (
-    <div className="flex items-center justify-center space-x-1">
+    <div className="flex items-center justify-center space-x-2">
       {/* 上一页按钮 */}
       {currentPage > 1 ? (
         <Link
           href={getPageUrl(currentPage - 1)}
-          className="px-3 py-2 rounded-md bg-white text-gray-600 hover:bg-brand-50 hover:text-brand-500 transition-colors"
+          className="px-3 py-2 rounded-md shadow-sm bg-white bg-opacity-80 text-gray-500 hover:bg-opacity-100 hover:text-brand-400 transition-colors"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </Link>
       ) : (
-        <span className="px-3 py-2 rounded-md bg-gray-100 text-gray-400 cursor-not-allowed">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        <span className="px-3 py-2 rounded-md shadow-sm bg-white text-brand-200 cursor-not-allowed">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </span>
       )}
       
@@ -68,12 +68,12 @@ export default function Pagination({ currentPage, totalPages, baseUrl }: Paginat
         <>
           <Link
             href={getPageUrl(1)}
-            className="px-3 py-1 rounded-md bg-white text-gray-600 hover:bg-brand-50 hover:text-brand-500 transition-colors"
+            className="px-3 py-2 rounded-md shadow-sm bg-white bg-opacity-80 text-gray-500 hover:bg-opacity-100 hover:text-brand-400 transition-colors"
           >
             1
           </Link>
           {pageNumbers[0] > 2 && (
-            <span className="px-2 py-1 text-gray-400">...</span>
+            <span className="px-3 py-2 text-gray-400">...</span>
           )}
         </>
       )}
@@ -83,10 +83,10 @@ export default function Pagination({ currentPage, totalPages, baseUrl }: Paginat
         <Link
           key={page}
           href={getPageUrl(page)}
-          className={`px-3 py-1 rounded-md ${
+          className={`px-3 py-2 rounded-md shadow-sm ${
             page === currentPage
-              ? 'bg-brand-500 text-white'
-              : 'bg-white text-gray-600 hover:bg-brand-50 hover:text-brand-500'
+              ? 'font-medium bg-brand-400 text-white'
+              : 'bg-white text-gray-500 hover:text-brand-400'
           } transition-colors`}
         >
           {page}
@@ -101,7 +101,7 @@ export default function Pagination({ currentPage, totalPages, baseUrl }: Paginat
           )}
           <Link
             href={getPageUrl(totalPages)}
-            className="px-3 py-1 rounded-md bg-white text-gray-600 hover:bg-brand-50 hover:text-brand-500 transition-colors"
+            className="px-3 py-2 rounded-md shadow-sm bg-white bg-opacity-80 text-gray-500 hover:bg-opacity-100 hover:text-brand-400 transition-colors"
           >
             {totalPages}
           </Link>
@@ -112,13 +112,13 @@ export default function Pagination({ currentPage, totalPages, baseUrl }: Paginat
       {currentPage < totalPages ? (
         <Link
           href={getPageUrl(currentPage + 1)}
-          className="px-3 py-2 rounded-md bg-white text-gray-600 hover:bg-brand-50 hover:text-brand-500 transition-colors"
+          className="px-3 py-2 rounded-md shadow-sm bg-white bg-opacity-80 text-gray-500 hover:bg-opacity-100 hover:text-brand-400 transition-colors"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
         </Link>
       ) : (
-        <span className="px-3 py-2 rounded-md bg-gray-100 text-gray-400 cursor-not-allowed">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        <span className="px-3 py-2 rounded-md shadow-sm bg-white text-brand-200 cursor-not-allowed">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
         </span>
       )}
     </div>
