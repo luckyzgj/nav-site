@@ -6,9 +6,10 @@ interface PaginationProps {
   currentPage: number;
   totalPages: number;
   baseUrl: string;
+  queryParams?: Record<string, string>;
 }
 
-export default function Pagination({ currentPage, totalPages, baseUrl }: PaginationProps) {
+export default function Pagination({ currentPage, totalPages, baseUrl, queryParams = {} }: PaginationProps) {
   // 如果只有一页，不显示分页
   if (totalPages <= 1) {
     return null;
@@ -39,10 +40,25 @@ export default function Pagination({ currentPage, totalPages, baseUrl }: Paginat
 
   // 构建页面URL
   const getPageUrl = (page: number) => {
-    if (page === 1) {
-      return baseUrl;
+    // 构建查询参数
+    const params = new URLSearchParams();
+    
+    // 添加其他查询参数
+    Object.entries(queryParams).forEach(([key, value]) => {
+      if (value) params.append(key, value);
+    });
+    
+    // 添加页码参数（如果不是第一页）
+    if (page !== 1) {
+      params.append('page', page.toString());
     }
-    return `${baseUrl}?page=${page}`;
+    
+    // 生成最终URL
+    const queryString = params.toString();
+    if (queryString) {
+      return `${baseUrl}?${queryString}`;
+    }
+    return baseUrl;
   };
 
   const pageNumbers = getPageNumbers();

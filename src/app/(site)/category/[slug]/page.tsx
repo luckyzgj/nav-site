@@ -67,7 +67,7 @@ async function getServiceCount(categoryId: number): Promise<number> {
 }
 
 // 获取分类及其网站（带分页）
-async function getCategoryWithServices(slug: string, page: number = 1): Promise<{
+async function getCategoryWithServices(slug: string, page: number = 1, sortBy: 'clicks' | 'createdAt' = 'clicks'): Promise<{
   category: Category | null;
   services: Service[];
   totalCount: number;
@@ -96,6 +96,11 @@ async function getCategoryWithServices(slug: string, page: number = 1): Promise<
   // 确保页码有效
   const validPage = Math.max(1, Math.min(page, totalPages || 1));
   
+  // 根据排序参数设置排序条件
+  const orderBy = sortBy === 'clicks' 
+    ? { clickCount: 'desc' as const } 
+    : { createdAt: 'desc' as const };
+  
   // 获取当前页的服务
   const services = await prisma.service.findMany({
     where: {
@@ -103,9 +108,7 @@ async function getCategoryWithServices(slug: string, page: number = 1): Promise<
     },
     skip: (validPage - 1) * PAGE_SIZE,
     take: PAGE_SIZE,
-    orderBy: {
-      clickCount: 'desc',
-    },
+    orderBy: orderBy,
   }) as unknown as Service[];
   
   return {
@@ -131,8 +134,13 @@ export default async function CategoryPage(
   const pageParam = resolvedSearchParams.page;
   const page = pageParam ? parseInt(Array.isArray(pageParam) ? pageParam[0] : pageParam) : 1;
   
+  // 获取排序参数
+  const sortParam = resolvedSearchParams.sort;
+  const sort = sortParam ? (Array.isArray(sortParam) ? sortParam[0] : sortParam) : 'clicks';
+  const sortBy = sort === 'time' ? 'createdAt' : 'clicks';
+  
   // 获取分类及其服务
-  const { category, services, totalCount, totalPages } = await getCategoryWithServices(slug, page);
+  const { category, services, totalCount, totalPages } = await getCategoryWithServices(slug, page, sortBy as 'clicks' | 'createdAt');
   
   // 如果分类不存在，返回404
   if (!category) {
@@ -141,9 +149,9 @@ export default async function CategoryPage(
   
   return (
     <div className="container mx-auto px-4 py-8 max-w-[960px]">
-      <div className="mb-4">
-        <Link href="/" className="text-brand-400 hover:text-brand-500 flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      <div className="pl-4 relative -bottom-1">
+        <Link href="/" className="text-brand-300 hover:text-brand-400 bg-white bg-opacity-80 pl-2 pr-3.5 py-1 rounded-t-lg text-sm inline-flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" className="text-brand-300" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
           返回首页
         </Link>
       </div>
@@ -177,7 +185,24 @@ export default async function CategoryPage(
         </div>
       </div>
 
-      <h3 className="text-gray-500 mb-4">共 {totalCount} 个网站 {totalPages > 1 && `(第 ${page}/${totalPages} 页)`}</h3>
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-gray-500">共 <span className="font-medium text-brand-400">{totalCount}</span> 个网站 {totalPages > 1 && `(第 ${page}/${totalPages} 页)`}</h3>
+        
+        <div className="flex space-x-2">
+          <Link 
+            href={`/t/${slug}?sort=clicks${page > 1 ? `&page=${page}` : ''}`}
+            className={`px-3 py-1 rounded text-sm shadow-sm ${sortBy === 'clicks' ? 'bg-brand-400 text-white' : 'bg-white bg-opacity-80 text-brand-300 hover:text-brand-400'}`}
+          >
+            按热度排序
+          </Link>
+          <Link 
+            href={`/t/${slug}?sort=time${page > 1 ? `&page=${page}` : ''}`}
+            className={`px-3 py-1 rounded text-sm shadow-sm ${sortBy === 'createdAt' ? 'bg-brand-400 text-white' : 'bg-white bg-opacity-80 text-brand-300 hover:text-brand-400'}`}
+          >
+            按时间排序
+          </Link>
+        </div>
+      </div>
       
       {services.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -199,6 +224,7 @@ export default async function CategoryPage(
             currentPage={page} 
             totalPages={totalPages} 
             baseUrl={`/t/${slug}`} 
+            queryParams={{ sort: sort }}
           />
         </div>
       )}
