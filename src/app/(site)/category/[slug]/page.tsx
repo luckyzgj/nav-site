@@ -43,9 +43,15 @@ export async function generateMetadata(
   // 获取网站设置
   const settings = await getSiteSettings();
   
+  // 使用分类的 SEO 设置，如果没有则使用默认值
+  const title = category.seoTitle || `${category.name} - ${settings.siteName}`;
+  const description = category.seoDescription || category.description || `${category.name}分类下的AI服务和应用`;
+  const keywords = category.seoKeywords || settings.seoKeywords;
+  
   return {
-    title: `${category.name} - ${settings.siteName}`,
-    description: category.description || `${category.name}分类下的AI服务和应用`,
+    title: title,
+    description: description,
+    keywords: keywords,
   };
 }
 

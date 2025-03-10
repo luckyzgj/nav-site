@@ -72,7 +72,16 @@ export async function PUT(
     
     // 解析请求数据
     const body = await request.json();
-    const { name, slug, description, icon, sortOrder } = body;
+    const { 
+      name, 
+      slug, 
+      description, 
+      icon, 
+      sortOrder,
+      seoTitle,
+      seoDescription,
+      seoKeywords
+    } = body;
     
     // 验证数据
     if (!name || typeof name !== 'string') {
@@ -114,7 +123,10 @@ export async function PUT(
         slug,
         description: description || null,
         icon: icon || null,
-        sortOrder: typeof sortOrder === 'number' ? sortOrder : (sortOrder ? Number(sortOrder) : existingCategory.sortOrder)
+        sortOrder: typeof sortOrder === 'number' ? sortOrder : (sortOrder ? Number(sortOrder) : existingCategory.sortOrder),
+        seoTitle: seoTitle || null,
+        seoDescription: seoDescription || null,
+        seoKeywords: seoKeywords || null
       },
     });
     

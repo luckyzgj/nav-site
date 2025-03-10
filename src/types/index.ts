@@ -5,6 +5,10 @@ export interface Category {
   slug: string;
   description: string | null;
   icon: string | null;
+  sortOrder: number;
+  seoTitle: string | null;
+  seoDescription: string | null;
+  seoKeywords: string | null;
   createdAt: Date;
   updatedAt: Date;
   services?: Service[];

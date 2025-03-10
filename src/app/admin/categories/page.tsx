@@ -14,7 +14,8 @@ import {
   message, 
   Popconfirm,
   Typography,
-  Upload
+  Upload,
+  Divider
 } from 'antd';
 import { 
   PlusOutlined, 
@@ -41,6 +42,9 @@ interface Category {
   sortOrder: number;
   createdAt: string;
   updatedAt: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string;
 }
 
 // 定义reducer函数
@@ -191,7 +195,15 @@ export default function CategoriesPage() {
   };
 
   // 添加或更新分类
-  const handleSave = async (values: { name: string, slug: string, description?: string, sortOrder?: number }) => {
+  const handleSave = async (values: { 
+    name: string, 
+    slug: string, 
+    description?: string, 
+    sortOrder?: number,
+    seoTitle?: string,
+    seoDescription?: string,
+    seoKeywords?: string
+  }) => {
     try {
       setUploading(true);
       
@@ -233,7 +245,10 @@ export default function CategoriesPage() {
         body: JSON.stringify({
           ...values,
           icon: iconPath,
-          sortOrder: values.sortOrder !== undefined ? Number(values.sortOrder) : 0
+          sortOrder: values.sortOrder !== undefined ? Number(values.sortOrder) : 0,
+          seoTitle: values.seoTitle || null,
+          seoDescription: values.seoDescription || null,
+          seoKeywords: values.seoKeywords || null
         }),
       });
       
@@ -285,7 +300,10 @@ export default function CategoriesPage() {
       name: record.name,
       slug: record.slug,
       description: record.description || '',
-      sortOrder: record.sortOrder
+      sortOrder: record.sortOrder,
+      seoTitle: record.seoTitle || '',
+      seoDescription: record.seoDescription || '',
+      seoKeywords: record.seoKeywords || ''
     });
     
     // 如果有图标，设置文件列表
@@ -684,6 +702,38 @@ export default function CategoriesPage() {
             >
               {fileList.length >= 1 ? null : uploadButton}
             </Upload>
+          </Form.Item>
+          
+          {/* SEO 设置 */}
+          <Divider orientation="left">SEO 设置</Divider>
+          
+          <Form.Item
+            name="seoTitle"
+            label="SEO 标题"
+            extra="用于搜索引擎优化，如不填写则使用默认格式"
+          >
+            <Input placeholder="请输入 SEO 标题" />
+          </Form.Item>
+          
+          <Form.Item
+            name="seoDescription"
+            label="SEO 描述"
+            extra="用于搜索引擎优化，如不填写则使用分类简介"
+          >
+            <TextArea 
+              placeholder="请输入 SEO 描述" 
+              rows={3}
+              showCount
+              maxLength={200}
+            />
+          </Form.Item>
+          
+          <Form.Item
+            name="seoKeywords"
+            label="SEO 关键词"
+            extra="用于搜索引擎优化，多个关键词用英文逗号分隔"
+          >
+            <Input placeholder="请输入 SEO 关键词，多个关键词用英文逗号分隔" />
           </Form.Item>
           
           <Form.Item className="mb-0 text-right">

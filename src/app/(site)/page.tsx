@@ -91,7 +91,7 @@ export default async function Home() {
   return (
     <div className="relative">
       {/* 左侧分类导航 - 固定在左侧，不影响主内容宽度 */}
-      <div className="hidden xl:block w-30 fixed left-[max(0px,calc(50%-610px))] top-[105px] bg-white bg-opacity-80 backdrop-blur-sm shadow-sm rounded-lg overflow-y-auto max-h-[calc(100vh-120px)] z-10">
+      <div className="hidden xl:block w-30 fixed left-[max(0px,calc(50%-610px))] top-[103px] bg-white bg-opacity-80 backdrop-blur-sm shadow-sm rounded-lg overflow-y-auto max-h-[calc(100vh-120px)] z-10">
         <h2 className="font-medium text-brand-400 px-3 py-1.5 border-b-2 border-brand-50">
           分类
         </h2>
