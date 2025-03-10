@@ -14,7 +14,8 @@ import {
   InputNumber,
   Typography,
   Space,
-  Popconfirm
+  Popconfirm,
+  Flex
 } from 'antd';
 import Image from 'next/image';
 import { PlusOutlined, UploadOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
@@ -347,7 +348,7 @@ export default function BannersPage() {
   
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
+      <Flex justify="space-between" align="center" style={{ marginBottom: 16 }}>
         <Title level={2} style={{ margin: 0 }}>头图管理</Title>
         <Button 
           type="primary" 
@@ -356,7 +357,7 @@ export default function BannersPage() {
         >
           添加头图
         </Button>
-      </div>
+      </Flex>
       
       <Table 
         columns={columns} 
@@ -440,7 +441,7 @@ export default function BannersPage() {
         footer={null}
         onCancel={() => setPreviewImage(null)}
       >
-        <div className="relative w-full" style={{ height: '500px' }}>
+        <div style={{ position: 'relative', width: '100%', height: '500px' }}>
           {previewImage && (
             <Image
               src={previewImage}

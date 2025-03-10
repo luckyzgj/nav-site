@@ -17,7 +17,8 @@ import {
   Typography,
   Card,
   Row,
-  Col
+  Col,
+  Flex
 } from 'antd';
 import { 
   PlusOutlined, 
@@ -279,7 +280,7 @@ export default function ServicesPage() {
       width: 80,
       render: (icon) => (
         icon ? (
-          <div className="relative w-10 h-10">
+          <div style={{ position: 'relative', width: 40, height: 40 }}>
             <Image 
               src={icon} 
               alt="图标" 
@@ -289,9 +290,18 @@ export default function ServicesPage() {
             />
           </div>
         ) : (
-          <div className="w-10 h-10 bg-gray-200 flex items-center justify-center rounded">
+          <Flex 
+            style={{ 
+              width: 40, 
+              height: 40, 
+              background: '#f0f0f0', 
+              borderRadius: 4 
+            }} 
+            justify="center" 
+            align="center"
+          >
             无
-          </div>
+          </Flex>
         )
       ),
     },
@@ -363,7 +373,7 @@ export default function ServicesPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
+      <Flex justify="space-between" align="center" style={{ marginBottom: 16 }}>
         <Title level={2} style={{ margin: 0 }}>网站管理</Title>
         <Button 
           type="primary" 
@@ -372,10 +382,10 @@ export default function ServicesPage() {
         >
           添加网站
         </Button>
-      </div>
+      </Flex>
       
       {/* 分类筛选卡片 */}
-      <Card className="mb-4">
+      <Card style={{ marginBottom: 16 }}>
         <Row gutter={[16, 16]}>
           <Col>
             <Button 
@@ -492,7 +502,7 @@ export default function ServicesPage() {
             </Upload>
           </Form.Item>
           
-          <Form.Item className="mb-0 text-right">
+          <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
             <Space>
               <Button onClick={() => setModalVisible(false)}>取消</Button>
               <Button type="primary" htmlType="submit">
@@ -509,7 +519,7 @@ export default function ServicesPage() {
         footer={null}
         onCancel={() => setPreviewImage(null)}
       >
-        <div className="relative w-full" style={{ height: '500px' }}>
+        <div style={{ position: 'relative', width: '100%', height: '500px' }}>
           {previewImage && (
             <Image
               src={previewImage}

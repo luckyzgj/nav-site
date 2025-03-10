@@ -3,8 +3,11 @@
 // 导入Ant Design的React 19兼容补丁
 import '@ant-design/v5-patch-for-react-19';
 import { useState, useEffect } from 'react';
-import { Form, Input, Button, Card, message } from 'antd';
+import { Form, Input, Button, Card, message, Row, Col, Typography, Space } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import Image from 'next/image';
+
+const { Title } = Typography;
 
 interface LoginFormData {
   username: string;
@@ -57,50 +60,76 @@ export default function LoginPage() {
     }
   };
 
+  // 自定义卡片标题，包含Logo和文字
+  const cardTitle = (
+    <Space align="center" style={{ display: 'flex', justifyContent: 'center', margin: '15px 0' }}>
+      <div style={{ position: 'relative', width: '36px', height: '36px' }}>
+        <Image
+          src="/logo.svg"
+          alt="网站Logo"
+          fill
+          style={{ objectFit: 'contain' }}
+          priority
+        />
+      </div>
+      <Title level={4} style={{ margin: 0 }}>管理员登录</Title>
+    </Space>
+  );
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <Card title="管理员登录" className="w-full max-w-md">
-        <Form
-          name="login"
-          initialValues={{ remember: true }}
-          onFinish={handleLogin}
-          layout="vertical"
+    <Row 
+      justify="center" 
+      align="middle" 
+      style={{ 
+        minHeight: '100vh', 
+        background: '#f0f2f5' 
+      }}
+    >
+      <Col xs={22} sm={16} md={12} lg={8} xl={6}>
+        <Card 
+          title={cardTitle}
+          style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.03), 0 2px 4px rgba(0,0,0,0.03)' }}
         >
-          <Form.Item
-            name="username"
-            rules={[{ required: true, message: '请输入用户名' }]}
+          <Form
+            name="login"
+            initialValues={{ remember: true }}
+            onFinish={handleLogin}
+            layout="vertical"
+            size="large"
           >
-            <Input 
-              prefix={<UserOutlined />} 
-              placeholder="用户名" 
-              size="large" 
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="password"
-            rules={[{ required: true, message: '请输入密码' }]}
-          >
-            <Input.Password
-              prefix={<LockOutlined />}
-              placeholder="密码"
-              size="large"
-            />
-          </Form.Item>
-
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              size="large"
-              loading={loading}
-              block
+            <Form.Item
+              name="username"
+              rules={[{ required: true, message: '请输入用户名' }]}
             >
-              登录
-            </Button>
-          </Form.Item>
-        </Form>
-      </Card>
-    </div>
+              <Input 
+                prefix={<UserOutlined />} 
+                placeholder="用户名" 
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="password"
+              rules={[{ required: true, message: '请输入密码' }]}
+            >
+              <Input.Password
+                prefix={<LockOutlined />}
+                placeholder="密码"
+              />
+            </Form.Item>
+
+            <Form.Item style={{ marginBottom: 0 }}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={loading}
+                block
+              >
+                登录
+              </Button>
+            </Form.Item>
+          </Form>
+        </Card>
+      </Col>
+    </Row>
   );
 } 

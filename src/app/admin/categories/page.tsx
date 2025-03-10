@@ -17,7 +17,8 @@ import {
   Upload,
   Divider,
   Row,
-  Col
+  Col,
+  Flex
 } from 'antd';
 import { 
   PlusOutlined, 
@@ -487,19 +488,40 @@ export default function CategoriesPage() {
       width: 80,
       render: (icon: string | null) => (
         icon ? (
-          <div className="w-10 h-10 relative cursor-pointer" onClick={() => setPreviewImage(icon)}>
+          <div 
+            style={{ 
+              width: 40, 
+              height: 40, 
+              position: 'relative', 
+              cursor: 'pointer' 
+            }} 
+            onClick={() => setPreviewImage(icon)}
+          >
             <Image
               src={icon}
               alt="分类图标"
               fill
-              className="rounded object-contain"
+              style={{ 
+                borderRadius: 4,
+                objectFit: 'contain'
+              }}
               unoptimized={icon.endsWith('.svg')}
             />
           </div>
         ) : (
-          <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center text-gray-400">
+          <Flex 
+            style={{ 
+              width: 40, 
+              height: 40, 
+              background: '#f5f5f5', 
+              borderRadius: 4,
+              color: '#bfbfbf'
+            }} 
+            justify="center" 
+            align="center"
+          >
             <PlusOutlined />
-          </div>
+          </Flex>
         )
       ),
     },
@@ -610,7 +632,7 @@ export default function CategoriesPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
+      <Flex justify="space-between" align="center" style={{ marginBottom: 16 }}>
         <Title level={2} style={{ margin: 0 }}>分类管理</Title>
         <Button 
           type="primary" 
@@ -619,7 +641,7 @@ export default function CategoriesPage() {
         >
           添加分类
         </Button>
-      </div>
+      </Flex>
       
       <Table 
         columns={columns} 
@@ -728,7 +750,7 @@ export default function CategoriesPage() {
             
             {/* 右侧 SEO 设置 */}
             <Col span={12}>
-              <div className="pl-4 border-l">
+              <div style={{ paddingLeft: 16, borderLeft: '1px solid #f0f0f0' }}>
                 <Divider orientation="left" orientationMargin={0}>SEO 设置</Divider>
                 
                 <Form.Item
@@ -763,7 +785,7 @@ export default function CategoriesPage() {
             </Col>
           </Row>
           
-          <Form.Item className="mb-0 text-right">
+          <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
             <Space>
               <Button onClick={() => setModalVisible(false)}>取消</Button>
               <Button 
@@ -784,7 +806,7 @@ export default function CategoriesPage() {
         footer={null}
         onCancel={() => setPreviewImage(null)}
       >
-        <div className="relative w-full" style={{ height: '500px' }}>
+        <div style={{ position: 'relative', width: '100%', height: '500px' }}>
           {previewImage && (
             <Image
               src={previewImage}

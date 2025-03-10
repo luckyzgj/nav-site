@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Card, Row, Col, Statistic, Table, Button, Avatar } from 'antd';
+import { Card, Row, Col, Statistic, Table, Button, Avatar, Typography, Flex } from 'antd';
 import { 
   AppstoreOutlined, 
   TagsOutlined, 
@@ -10,6 +10,8 @@ import {
   GlobalOutlined
 } from '@ant-design/icons';
 import Image from 'next/image';
+
+const { Title } = Typography;
 
 // 统计数据类型
 interface Stats {
@@ -79,16 +81,16 @@ export default function AdminDashboard() {
       dataIndex: 'name',
       key: 'name',
       render: (_: unknown, record: PopularService) => (
-        <div className="flex items-center">
+        <Flex align="center">
           {record.icon ? (
-            <div className="mr-2 flex-shrink-0">
+            <div style={{ marginRight: 8, flexShrink: 0 }}>
               {isSvg(record.icon) ? (
                 <Image
                   src={record.icon}
                   alt={record.name}
                   width={24}
                   height={24}
-                  className="rounded"
+                  style={{ borderRadius: 4 }}
                   unoptimized
                 />
               ) : (
@@ -97,7 +99,7 @@ export default function AdminDashboard() {
                   alt={record.name}
                   width={24}
                   height={24}
-                  className="rounded"
+                  style={{ borderRadius: 4 }}
                 />
               )}
             </div>
@@ -105,11 +107,11 @@ export default function AdminDashboard() {
             <Avatar 
               icon={<GlobalOutlined />} 
               size={24} 
-              className="mr-2 flex-shrink-0" 
+              style={{ marginRight: 8, flexShrink: 0 }} 
             />
           )}
           <span>{record.name}</span>
-        </div>
+        </Flex>
       ),
     },
     {
@@ -140,9 +142,9 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">控制面板</h1>
+      <Title level={2} style={{ marginBottom: 24 }}>控制面板</Title>
       
-      <Row gutter={16} className="mb-8">
+      <Row gutter={16} style={{ marginBottom: 32 }}>
         <Col span={8}>
           <Card>
             <Statistic
@@ -175,7 +177,7 @@ export default function AdminDashboard() {
         </Col>
       </Row>
       
-      <Card title="热门网站" className="mb-8">
+      <Card title="热门网站" style={{ marginBottom: 32 }}>
         <Table
           columns={columns}
           dataSource={popularServices}

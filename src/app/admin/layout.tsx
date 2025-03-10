@@ -2,11 +2,10 @@
 
 // 导入Ant Design的React 19兼容补丁
 import '@ant-design/v5-patch-for-react-19';
-// 导入后台专用的Tailwind基础类
-import './globals.css';
+// 移除对 globals.css 的导入
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Layout, Menu, Button, theme } from 'antd';
+import { Layout, Menu, Button, theme, Flex } from 'antd';
 import {
   DashboardOutlined,
   AppstoreOutlined,
@@ -18,6 +17,7 @@ import {
   PictureOutlined,
 } from '@ant-design/icons';
 import Link from 'next/link';
+import Image from 'next/image';
 import React from 'react';
 import VersionInfo from '@/components/VersionInfo';
 
@@ -78,17 +78,52 @@ export default function AdminLayout({
   }
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout style={{ minHeight: '100vh', borderRadius: '10px' }}>
       <Sider
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
+        theme="light"
       >
-        <div className="h-8 leading-8 m-4 text-white font-bold text-center overflow-hidden">
-          {!collapsed ? `${siteName}管理后台` : siteName.charAt(0)}
-        </div>
+        <Flex 
+          align="center" 
+          style={{ 
+            padding: collapsed ? '16px 8px' : '16px', 
+            borderBottom: '1px solid #f0f0f0'
+          }}
+        >
+          <div style={{ 
+            position: 'relative', 
+            width: '32px', 
+            height: '32px', 
+            flexShrink: 0 
+          }}>
+            <Image
+              src="/logo.svg"
+              alt="网站Logo"
+              fill
+              style={{ objectFit: 'contain' }}
+              priority
+            />
+          </div>
+          
+          {!collapsed && (
+            <div style={{ 
+              marginLeft: 12,
+              color: '#262626', 
+              fontWeight: 'bold', 
+              fontSize: '16px',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}>
+              {siteName}管理后台
+            </div>
+          )}
+        </Flex>
+        
         <Menu
-          theme="dark"
+          theme="light"
           defaultSelectedKeys={[pathname]}
           mode="inline"
           items={[
@@ -127,8 +162,8 @@ export default function AdminLayout({
       </Sider>
       <Layout>
         <Header style={{ padding: 0, background: colorBgContainer }}>
-          <div className="flex justify-end items-center h-full px-4">
-            <Link href="/" className="mr-4">
+          <Flex justify="flex-end" align="center" style={{ height: '100%', paddingLeft: 16, paddingRight: 16 }}>
+            <Link href="/" style={{ marginRight: 16 }}>
               <Button
                 type="text"
                 icon={<HomeOutlined />}
@@ -143,7 +178,7 @@ export default function AdminLayout({
             >
               退出登录
             </Button>
-          </div>
+          </Flex>
         </Header>
         <Content style={{ margin: '16px' }}>
           <div
@@ -157,9 +192,10 @@ export default function AdminLayout({
             {children}
           </div>
         </Content>
-        <footer className="p-2 border-t bg-white">
-          <VersionInfo className="text-right" />
-        </footer>
+
+        <div style={{ textAlign: 'center' }}>
+          <VersionInfo />
+        </div>
       </Layout>
     </Layout>
   );

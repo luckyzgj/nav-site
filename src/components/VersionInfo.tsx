@@ -1,6 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { Typography, Flex } from 'antd';
+
+const { Text } = Typography;
 
 interface VersionInfoProps {
   className?: string;
@@ -146,17 +149,36 @@ const VersionInfo: React.FC<VersionInfoProps> = ({ className }) => {
   }, [fetchVersionInfo]);
 
   return (
-    <div className={`text-xs text-gray-500 flex flex-wrap justify-end items-center space-x-4 ${className}`}>
-      <div className="whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">
-        版本: {buildInfo.version}
+    <Flex 
+      justify="center" 
+      align="center" 
+      wrap="wrap" 
+      gap="small" 
+      className={className}
+      style={{ paddingTop: 8, paddingBottom: 8 }}
+    >
+      <div style={{ 
+        whiteSpace: 'nowrap', 
+        overflow: 'hidden', 
+        textOverflow: 'ellipsis',
+        maxWidth: 150
+      }}>
+        <Text style={{ fontSize: 12, color: '#999' }}>版本: {buildInfo.version}</Text>
       </div>
-      <div className="whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]">
-        构建时间: {buildInfo.buildTime || '加载中...'}
+      <div style={{ 
+        whiteSpace: 'nowrap', 
+        overflow: 'hidden', 
+        textOverflow: 'ellipsis',
+        maxWidth: 200
+      }}>
+        <Text style={{ fontSize: 12, color: '#999' }}>构建时间: {buildInfo.buildTime || '加载中...'}</Text>
       </div>
       {process.env.NODE_ENV === 'development' && (
-        <div className="text-blue-500 whitespace-nowrap">开发模式</div>
+        <div style={{ whiteSpace: 'nowrap' }}>
+          <Text style={{ fontSize: 12 }} type="success">开发模式</Text>
+        </div>
       )}
-    </div>
+    </Flex>
   );
 };
 

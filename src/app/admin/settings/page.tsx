@@ -11,7 +11,7 @@ import {
   Card,
   Typography,
   Alert,
-  Divider
+  Space
 } from 'antd';
 
 const { Title } = Typography;
@@ -85,84 +85,100 @@ export default function SettingsPage() {
   return (
     <div>
       <Title level={2}>系统设置</Title>
-      <Card loading={loading}>
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSave}
-        >
-          <Divider orientation="left">基本设置</Divider>
-
-          <Form.Item
-            name="siteName"
-            label="网站名称"
-            rules={[{ required: true, message: '请输入网站名称' }]}
+      
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSave}
+      >
+        <Space direction="vertical" size="large" style={{ width: '100%' }}>
+          {/* 基本设置卡片 */}
+          <Card 
+            title="基本设置" 
+            loading={loading}
+            variant="outlined"
           >
-            <Input placeholder="请输入网站名称" />
-          </Form.Item>
+            <Form.Item
+              name="siteName"
+              label="网站名称"
+              rules={[{ required: true, message: '请输入网站名称' }]}
+            >
+              <Input placeholder="请输入网站名称" />
+            </Form.Item>
+            
+            <Form.Item
+              name="siteDescription"
+              label="网站描述"
+              rules={[{ required: true, message: '请输入网站描述' }]}
+            >
+              <TextArea 
+                placeholder="请输入网站描述" 
+                rows={3}
+              />
+            </Form.Item>
+          </Card>
           
-          <Form.Item
-            name="siteDescription"
-            label="网站描述"
-            rules={[{ required: true, message: '请输入网站描述' }]}
+          {/* SEO 设置卡片 */}
+          <Card 
+            title="SEO 设置" 
+            loading={loading}
+            variant="outlined"
           >
-            <TextArea 
-              placeholder="请输入网站描述" 
-              rows={3}
+            <Form.Item
+              name="seoTitle"
+              label="SEO 标题"
+              tooltip="用于网站首页的HTML标题标签，如不填写则使用网站名称"
+            >
+              <Input placeholder="请输入SEO标题" />
+            </Form.Item>
+            
+            <Form.Item
+              name="seoKeywords"
+              label="SEO 关键词"
+              tooltip="用于网站首页的meta keywords标签，多个关键词请用英文逗号分隔"
+            >
+              <Input placeholder="请输入SEO关键词，多个关键词用英文逗号分隔" />
+            </Form.Item>
+            
+            <Form.Item
+              name="seoDescription"
+              label="SEO 描述"
+              tooltip="用于网站首页的meta description标签，如不填写则使用网站描述"
+            >
+              <TextArea 
+                placeholder="请输入SEO描述" 
+                rows={3}
+              />
+            </Form.Item>
+          </Card>
+          
+          {/* 统计代码卡片 */}
+          <Card 
+            title="统计代码" 
+            loading={loading}
+            variant="outlined"
+          >
+            <Form.Item
+              name="statisticsCode"
+              label="统计代码"
+              tooltip="添加第三方统计代码，如Google Analytics、百度统计等，将显示在前台页面底部"
+              extra="请输入完整的JavaScript代码，包括<script>标签"
+            >
+              <TextArea 
+                placeholder="请输入统计代码，例如：<script>...</script>" 
+                rows={6}
+                style={{ fontFamily: 'monospace', fontSize: '14px' }}
+              />
+            </Form.Item>
+            
+            <Alert
+              message="安全提示"
+              description="请确保添加的统计代码来自可信任的来源，恶意代码可能会影响网站安全和用户体验。"
+              type="warning"
+              showIcon
+              style={{ marginBottom: 16 }}
             />
-          </Form.Item>
-          
-          <Divider orientation="left">SEO 设置</Divider>
-          
-          <Form.Item
-            name="seoTitle"
-            label="SEO 标题"
-            tooltip="用于网站首页的HTML标题标签，如不填写则使用网站名称"
-          >
-            <Input placeholder="请输入SEO标题" />
-          </Form.Item>
-          
-          <Form.Item
-            name="seoKeywords"
-            label="SEO 关键词"
-            tooltip="用于网站首页的meta keywords标签，多个关键词请用英文逗号分隔"
-          >
-            <Input placeholder="请输入SEO关键词，多个关键词用英文逗号分隔" />
-          </Form.Item>
-          
-          <Form.Item
-            name="seoDescription"
-            label="SEO 描述"
-            tooltip="用于网站首页的meta description标签，如不填写则使用网站描述"
-          >
-            <TextArea 
-              placeholder="请输入SEO描述" 
-              rows={3}
-            />
-          </Form.Item>
-          
-          <Divider orientation="left">统计代码</Divider>
-          
-          <Form.Item
-            name="statisticsCode"
-            label="统计代码"
-            tooltip="添加第三方统计代码，如Google Analytics、百度统计等，将显示在前台页面底部"
-            extra="请输入完整的JavaScript代码，包括<script>标签"
-          >
-            <TextArea 
-              placeholder="请输入统计代码，例如：<script>...</script>" 
-              rows={6}
-              className="font-mono text-sm"
-            />
-          </Form.Item>
-          
-          <Alert
-            message="安全提示"
-            description="请确保添加的统计代码来自可信任的来源，恶意代码可能会影响网站安全和用户体验。"
-            type="warning"
-            showIcon
-            className="mb-4"
-          />
+          </Card>
           
           <Form.Item>
             <Button 
@@ -173,8 +189,8 @@ export default function SettingsPage() {
               保存设置
             </Button>
           </Form.Item>
-        </Form>
-      </Card>
+        </Space>
+      </Form>
     </div>
   );
 } 

@@ -13,7 +13,7 @@ import {
 } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 // 管理员信息类型
 interface AdminInfo {
@@ -94,13 +94,13 @@ export default function AccountPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div style={{ maxWidth: 672, margin: '0 auto' }}>
       <Title level={2}>账号设置</Title>
       
-      <Card title="账号信息" className="mb-6">
+      <Card title="账号信息" style={{ marginBottom: 24 }}>
         <div>
           <p>
-            <strong>当前用户：</strong> <strong className="text-green-600">{adminInfo?.username || '加载中...'}</strong>
+            <strong>当前用户：</strong> <Text strong type="success">{adminInfo?.username || '加载中...'}</Text>
           </p>
         </div>
       </Card>
@@ -157,7 +157,7 @@ export default function AccountPage() {
             />
           </Form.Item>
           
-          <Form.Item className="mb-0 text-right">
+          <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
             <Button 
               type="primary" 
               htmlType="submit" 
