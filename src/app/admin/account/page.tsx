@@ -94,14 +94,12 @@ export default function AccountPage() {
   };
 
   return (
-    <div style={{ maxWidth: 672, margin: '0 auto' }}>
-      <Title level={2}>账号设置</Title>
+    <div>
+      <Title level={2} style={{ marginTop: 0 }}>账号设置</Title>
       
       <Card title="账号信息" style={{ marginBottom: 24 }}>
         <div>
-          <p>
-            <strong>当前用户：</strong> <Text strong type="success">{adminInfo?.username || '加载中...'}</Text>
-          </p>
+          <strong>当前用户：</strong> <Text strong>{adminInfo?.username || '加载中...'}</Text>
         </div>
       </Card>
       

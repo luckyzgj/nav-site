@@ -109,6 +109,12 @@ function categoriesReducer(state: Category[], action: CategoriesAction): Categor
   }
 }
 
+// 文本截断辅助函数
+const truncateText = (text: string | null, maxLength: number = 30): string => {
+  if (!text) return '-';
+  return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
+};
+
 export default function CategoriesPage() {
   // 使用useReducer替代useState来管理分类列表
   const [categories, dispatch] = useReducer(categoriesReducer, []);
@@ -463,13 +469,13 @@ export default function CategoriesPage() {
       title: 'ID',
       dataIndex: 'id',
       key: 'id',
-      width: 80,
+      width: 60,
     },
     {
       title: '排序',
       dataIndex: 'sortOrder',
       key: 'sortOrder',
-      width: 100,
+      width: 90,
       sorter: (a, b) => a.sortOrder - b.sortOrder,
       defaultSortOrder: 'ascend',
       render: (sortOrder: number, record: Category) => (
@@ -485,7 +491,7 @@ export default function CategoriesPage() {
       title: '图标',
       dataIndex: 'icon',
       key: 'icon',
-      width: 80,
+      width: 60,
       render: (icon: string | null) => (
         icon ? (
           <div 
@@ -529,18 +535,19 @@ export default function CategoriesPage() {
       title: '分类名称',
       dataIndex: 'name',
       key: 'name',
+      width: 100,
     },
     {
       title: '英文标识',
       dataIndex: 'slug',
       key: 'slug',
+      width: 100,
     },
     {
       title: '简介',
       dataIndex: 'description',
       key: 'description',
-      ellipsis: true,
-      render: (text: string | null) => text || '-',
+      render: (text: string | null) => truncateText(text, 30),
     },
     {
       title: '操作',
@@ -648,9 +655,7 @@ export default function CategoriesPage() {
         dataSource={categories} 
         rowKey="id" 
         loading={loading}
-        pagination={{ pageSize: 10 }}
-        bordered
-        size="middle"
+        pagination={{ pageSize: 20 }}
         scroll={{ x: 'max-content' }}
       />
       

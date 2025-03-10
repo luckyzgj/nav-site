@@ -84,7 +84,7 @@ export default function SettingsPage() {
 
   return (
     <div>
-      <Title level={2}>系统设置</Title>
+      <Title level={2} style={{ marginTop: 0 }}>系统设置</Title>
       
       <Form
         form={form}
@@ -160,9 +160,6 @@ export default function SettingsPage() {
           >
             <Form.Item
               name="statisticsCode"
-              label="统计代码"
-              tooltip="添加第三方统计代码，如Google Analytics、百度统计等，将显示在前台页面底部"
-              extra="请输入完整的JavaScript代码，包括<script>标签"
             >
               <TextArea 
                 placeholder="请输入统计代码，例如：<script>...</script>" 
@@ -180,7 +177,7 @@ export default function SettingsPage() {
             />
           </Card>
           
-          <Form.Item>
+          <Form.Item style={{ marginBottom: 0 }}>
             <Button 
               type="primary" 
               htmlType="submit" 

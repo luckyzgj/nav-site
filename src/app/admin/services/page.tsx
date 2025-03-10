@@ -309,16 +309,19 @@ export default function ServicesPage() {
       title: '名称',
       dataIndex: 'name',
       key: 'name',
+      width: 150,
     },
     {
       title: '分类',
       dataIndex: 'categoryName',
       key: 'categoryName',
+      width: 120,
     },
     {
       title: '点击次数',
       dataIndex: 'clickCount',
       key: 'clickCount',
+      width: 120,
       sorter: (a, b) => a.clickCount - b.clickCount,
     },
     {
@@ -334,14 +337,14 @@ export default function ServicesPage() {
       render: (_, record) => (
         <Space size="middle">
           <Button 
-            type="primary" 
+            type="default" 
             icon={<EyeOutlined />}
             onClick={() => window.open(record.url, '_blank')}
           >
             访问
           </Button>
           <Button 
-            type="primary" 
+            type="default" 
             icon={<EditOutlined />} 
             onClick={() => handleEdit(record)}
           >
@@ -385,8 +388,8 @@ export default function ServicesPage() {
       </Flex>
       
       {/* 分类筛选卡片 */}
-      <Card style={{ marginBottom: 16 }}>
-        <Row gutter={[16, 16]}>
+      <Card style={{ marginBottom: 16, backgroundColor: '#f8f8f8' }}>
+        <Row gutter={[10, 10]}>
           <Col>
             <Button 
               type={selectedCategoryId === null ? 'primary' : 'default'}

@@ -1,0 +1,40 @@
+/* 后台管理界面全局样式 */
+
+/* 重置浏览器默认样式 */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 确保所有元素的盒模型一致 */
+* {
+  box-sizing: border-box;
+}
+
+/* 移除列表样式 */
+ul,
+ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* 移除链接下划线 */
+a {
+  text-decoration: none;
+}
+
+/* 确保图片不会超出容器 */
+img {
+  max-width: 100%;
+  height: auto;
+}

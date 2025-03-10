@@ -130,7 +130,7 @@ export default function AdminDashboard() {
       key: 'action',
       render: (_: unknown, record: PopularService) => (
         <Button 
-          type="link" 
+          type="default" 
           icon={<EyeOutlined />}
           onClick={() => window.open(record.url, '_blank')}
         >
@@ -142,7 +142,7 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <Title level={2} style={{ marginBottom: 24 }}>控制面板</Title>
+      <Title level={2} style={{ marginBottom: 24, marginTop: 0 }}>控制面板</Title>
       
       <Row gutter={16} style={{ marginBottom: 32 }}>
         <Col span={8}>
@@ -176,16 +176,17 @@ export default function AdminDashboard() {
           </Card>
         </Col>
       </Row>
-      
-      <Card title="热门网站" style={{ marginBottom: 32 }}>
-        <Table
-          columns={columns}
-          dataSource={popularServices}
-          rowKey="id"
-          loading={loading}
-          pagination={{ pageSize: 5 }}
-        />
-      </Card>
+
+      <Title level={4} style={{ marginBottom: 24, marginTop: 0 }}>热门网站</Title>
+
+      <Table
+        columns={columns}
+        dataSource={popularServices}
+        rowKey="id"
+        bordered
+        loading={loading}
+        pagination={{ pageSize: 10, hideOnSinglePage: true }}
+      />
     </div>
   );
 } 
