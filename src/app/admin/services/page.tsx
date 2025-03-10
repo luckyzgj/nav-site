@@ -311,7 +311,6 @@ export default function ServicesPage() {
       title: '名称',
       dataIndex: 'name',
       key: 'name',
-      width: 180,
       sorter: (a: Service, b: Service) => a.name.localeCompare(b.name),
     },
     {
@@ -325,6 +324,7 @@ export default function ServicesPage() {
       title: '创建时间',
       dataIndex: 'createdAt',
       key: 'createdAt',
+      width: 180,
       render: (text: string) => new Date(text).toLocaleString(),
     },
     {

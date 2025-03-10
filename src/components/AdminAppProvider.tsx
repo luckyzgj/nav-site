@@ -17,7 +17,7 @@ const customTheme = {
     // 警告色
     colorWarning: '#faad14',
     // 错误色
-    colorError: '#ff4d4f',
+    colorError: '#ff734e',
     // 信息色
     colorInfo: '#1677ff',
     
