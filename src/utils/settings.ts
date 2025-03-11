@@ -23,13 +23,16 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   try {
     // 获取所有设置
     const settings = await prisma.$queryRaw<SettingRecord[]>`SELECT * FROM Setting`;
-    
+
     // 转换为对象格式
-    const settingsObject = settings.reduce((acc: Record<string, string>, setting: SettingRecord) => {
-      acc[setting.key] = setting.value;
-      return acc;
-    }, {});
-    
+    const settingsObject = settings.reduce(
+      (acc: Record<string, string>, setting: SettingRecord) => {
+        acc[setting.key] = setting.value;
+        return acc;
+      },
+      {}
+    );
+
     // 设置默认值
     const result = {
       siteName: settingsObject.siteName || 'AI导航',
@@ -40,7 +43,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       seoDescription: settingsObject.seoDescription || '',
       ...settingsObject,
     };
-    
+
     return result;
   } catch (error) {
     console.error('获取设置失败:', error);
@@ -54,4 +57,4 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       seoDescription: '',
     };
   }
-} 
+}

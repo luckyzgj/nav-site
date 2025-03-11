@@ -12,15 +12,10 @@ export default function BackToTopButton({ children, className }: BackToTopButton
     e.preventDefault();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-  
+
   return (
-    <button
-      type="button"
-      className={className}
-      onClick={handleClick}
-      aria-label="返回顶部"
-    >
+    <button type="button" className={className} onClick={handleClick} aria-label="返回顶部">
       {children}
     </button>
   );
-} 
+}

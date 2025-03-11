@@ -7,11 +7,9 @@ export async function POST() {
     success: true,
     message: '登出成功',
   });
-  
+
   // 清除认证Cookie
   clearAuthCookie(response);
-  
+
   return response;
 }
-
- 

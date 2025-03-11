@@ -62,6 +62,7 @@ npm run dev
 首次运行时，访问 [http://localhost:3000/api/init](http://localhost:3000/api/init) 初始化系统，这将创建默认的管理员账户和分类。
 
 默认管理员账户：
+
 - 用户名：admin
 - 密码：admin123
 

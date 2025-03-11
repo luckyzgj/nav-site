@@ -3,13 +3,7 @@
 // 导入Ant Design的React 19兼容补丁
 import '@ant-design/v5-patch-for-react-19';
 import { useState, useEffect, useCallback } from 'react';
-import { 
-  Form, 
-  Input, 
-  Button, 
-  Card, 
-  Typography
-} from 'antd';
+import { Form, Input, Button, Card, Typography } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
 import { useAdminApp } from '@/components/AdminAppProvider';
 
@@ -39,7 +33,7 @@ export default function AccountPage() {
     try {
       const response = await fetch('/api/admin/account');
       const data = await response.json();
-      
+
       if (data.success) {
         setAdminInfo(data.data);
       } else {
@@ -63,9 +57,9 @@ export default function AccountPage() {
       adminMessage.error('两次输入的新密码不一致');
       return;
     }
-    
+
     setLoading(true);
-    
+
     try {
       const response = await fetch('/api/admin/account/password', {
         method: 'PUT',
@@ -77,9 +71,9 @@ export default function AccountPage() {
           newPassword: values.newPassword,
         }),
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         adminMessage.success('密码修改成功');
         form.resetFields();
@@ -96,45 +90,37 @@ export default function AccountPage() {
 
   return (
     <div>
-      <Title level={2} style={{ marginTop: 0 }}>账号设置</Title>
-      
+      <Title level={2} style={{ marginTop: 0 }}>
+        账号设置
+      </Title>
+
       <Card title="账号信息" style={{ marginBottom: 24 }}>
         <div>
           <strong>当前用户：</strong> <Text strong>{adminInfo?.username || '加载中...'}</Text>
         </div>
       </Card>
-      
+
       <Card title="修改密码">
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleChangePassword}
-        >
+        <Form form={form} layout="vertical" onFinish={handleChangePassword}>
           <Form.Item
             name="oldPassword"
             label="当前密码"
             rules={[{ required: true, message: '请输入当前密码' }]}
           >
-            <Input.Password 
-              prefix={<LockOutlined />} 
-              placeholder="请输入当前密码" 
-            />
+            <Input.Password prefix={<LockOutlined />} placeholder="请输入当前密码" />
           </Form.Item>
-          
+
           <Form.Item
             name="newPassword"
             label="新密码"
             rules={[
               { required: true, message: '请输入新密码' },
-              { min: 6, message: '密码长度不能少于6个字符' }
+              { min: 6, message: '密码长度不能少于6个字符' },
             ]}
           >
-            <Input.Password 
-              prefix={<LockOutlined />} 
-              placeholder="请输入新密码" 
-            />
+            <Input.Password prefix={<LockOutlined />} placeholder="请输入新密码" />
           </Form.Item>
-          
+
           <Form.Item
             name="confirmPassword"
             label="确认新密码"
@@ -150,18 +136,11 @@ export default function AccountPage() {
               }),
             ]}
           >
-            <Input.Password 
-              prefix={<LockOutlined />} 
-              placeholder="请再次输入新密码" 
-            />
+            <Input.Password prefix={<LockOutlined />} placeholder="请再次输入新密码" />
           </Form.Item>
-          
+
           <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
-            <Button 
-              type="primary" 
-              htmlType="submit" 
-              loading={loading}
-            >
+            <Button type="primary" htmlType="submit" loading={loading}>
               修改密码
             </Button>
           </Form.Item>
@@ -169,4 +148,4 @@ export default function AccountPage() {
       </Card>
     </div>
   );
-} 
+}

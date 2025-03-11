@@ -3,16 +3,7 @@
 // 导入Ant Design的React 19兼容补丁
 import '@ant-design/v5-patch-for-react-19';
 import { useState, useEffect } from 'react';
-import { 
-  Form, 
-  Input, 
-  Button, 
-  
-  Card,
-  Typography,
-  Alert,
-  Space
-} from 'antd';
+import { Form, Input, Button, Card, Typography, Alert, Space } from 'antd';
 import { useAdminApp } from '@/components/AdminAppProvider';
 
 const { Title } = Typography;
@@ -68,9 +59,9 @@ export default function SettingsPage() {
         },
         body: JSON.stringify(values),
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         adminMessage.success('设置保存成功');
       } else {
@@ -86,20 +77,14 @@ export default function SettingsPage() {
 
   return (
     <div>
-      <Title level={2} style={{ marginTop: 0 }}>系统设置</Title>
-      
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleSave}
-      >
+      <Title level={2} style={{ marginTop: 0 }}>
+        系统设置
+      </Title>
+
+      <Form form={form} layout="vertical" onFinish={handleSave}>
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
           {/* 基本设置卡片 */}
-          <Card 
-            title="基本设置" 
-            loading={loading}
-            variant="outlined"
-          >
+          <Card title="基本设置" loading={loading} variant="outlined">
             <Form.Item
               name="siteName"
               label="网站名称"
@@ -107,25 +92,18 @@ export default function SettingsPage() {
             >
               <Input placeholder="请输入网站名称" />
             </Form.Item>
-            
+
             <Form.Item
               name="siteDescription"
               label="网站描述"
               rules={[{ required: true, message: '请输入网站描述' }]}
             >
-              <TextArea 
-                placeholder="请输入网站描述" 
-                rows={3}
-              />
+              <TextArea placeholder="请输入网站描述" rows={3} />
             </Form.Item>
           </Card>
-          
+
           {/* SEO 设置卡片 */}
-          <Card 
-            title="SEO 设置" 
-            loading={loading}
-            variant="outlined"
-          >
+          <Card title="SEO 设置" loading={loading} variant="outlined">
             <Form.Item
               name="seoTitle"
               label="SEO 标题"
@@ -133,7 +111,7 @@ export default function SettingsPage() {
             >
               <Input placeholder="请输入SEO标题" />
             </Form.Item>
-            
+
             <Form.Item
               name="seoKeywords"
               label="SEO 关键词"
@@ -141,35 +119,26 @@ export default function SettingsPage() {
             >
               <Input placeholder="请输入SEO关键词，多个关键词用英文逗号分隔" />
             </Form.Item>
-            
+
             <Form.Item
               name="seoDescription"
               label="SEO 描述"
               tooltip="用于网站首页的meta description标签，如不填写则使用网站描述"
             >
-              <TextArea 
-                placeholder="请输入SEO描述" 
-                rows={3}
-              />
+              <TextArea placeholder="请输入SEO描述" rows={3} />
             </Form.Item>
           </Card>
-          
+
           {/* 统计代码卡片 */}
-          <Card 
-            title="统计代码" 
-            loading={loading}
-            variant="outlined"
-          >
-            <Form.Item
-              name="statisticsCode"
-            >
-              <TextArea 
-                placeholder="请输入统计代码，例如：<script>...</script>" 
+          <Card title="统计代码" loading={loading} variant="outlined">
+            <Form.Item name="statisticsCode">
+              <TextArea
+                placeholder="请输入统计代码，例如：<script>...</script>"
                 rows={6}
                 style={{ fontFamily: 'monospace', fontSize: '14px' }}
               />
             </Form.Item>
-            
+
             <Alert
               message="安全提示"
               description="请确保添加的统计代码来自可信任的来源，恶意代码可能会影响网站安全和用户体验。"
@@ -178,13 +147,9 @@ export default function SettingsPage() {
               style={{ marginBottom: 16 }}
             />
           </Card>
-          
+
           <Form.Item style={{ marginBottom: 0 }}>
-            <Button 
-              type="primary" 
-              htmlType="submit" 
-              loading={saving}
-            >
+            <Button type="primary" htmlType="submit" loading={saving}>
               保存设置
             </Button>
           </Form.Item>
@@ -192,4 +157,4 @@ export default function SettingsPage() {
       </Form>
     </div>
   );
-} 
+}

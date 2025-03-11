@@ -20,33 +20,34 @@ const customTheme = {
     colorError: '#ff734e',
     // 信息色
     colorInfo: '#1677ff',
-    
+
     // 中性色
     colorTextBase: '#000000',
     colorBgBase: '#ffffff',
-    
+
     // 字体
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
+    fontFamily:
+      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
     fontSize: 14,
-    
+
     // 线条
     lineWidth: 1,
     lineType: 'solid',
-    
+
     // 圆角
     borderRadius: 4,
-    
+
     // 尺寸
     sizeUnit: 4,
     sizeStep: 4,
-    
+
     // 动画
     motionUnit: 0.1,
     motionBase: 0,
-    
+
     // 不透明度
     opacityImage: 1,
-    
+
     // 线框风格
     wireframe: false,
   },
@@ -111,9 +112,7 @@ interface AdminAppProviderProps {
 export default function AdminAppProvider({ children }: AdminAppProviderProps) {
   return (
     <ConfigProvider theme={customTheme} locale={zhCN}>
-      <App>
-        {children}
-      </App>
+      <App>{children}</App>
     </ConfigProvider>
   );
-} 
+}

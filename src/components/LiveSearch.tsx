@@ -64,7 +64,7 @@ export default function LiveSearch() {
         setLoading(true);
         const response = await fetch(`/api/live-search?q=${encodeURIComponent(query.trim())}`);
         const data = await response.json();
-        
+
         if (data.success) {
           setResults(data.data || []);
           setShowResults(true);
@@ -144,7 +144,7 @@ export default function LiveSearch() {
         console.error('记录点击失败:', error);
       }
     }
-    
+
     // 跳转到网站
     window.open(result.url, '_blank', 'noopener,noreferrer');
   };
@@ -153,7 +153,7 @@ export default function LiveSearch() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        resultsRef.current && 
+        resultsRef.current &&
         !resultsRef.current.contains(event.target as Node) &&
         inputRef.current &&
         !inputRef.current.contains(event.target as Node)
@@ -174,12 +174,12 @@ export default function LiveSearch() {
       // 获取结果项元素（考虑到我们添加了包装div）
       const resultItems = resultsRef.current.querySelectorAll('[data-result-item]');
       const selectedElement = resultItems[selectedIndex] as HTMLElement;
-      
+
       if (selectedElement) {
         // 使用更精确的滚动方式
         selectedElement.scrollIntoView({
           block: 'nearest',
-          behavior: 'smooth'
+          behavior: 'smooth',
         });
       }
     }
@@ -188,22 +188,28 @@ export default function LiveSearch() {
   return (
     <>
       {/* 注入自定义滚动条样式 */}
-      <style jsx global>{scrollbarStyles}</style>
-      
+      <style jsx global>
+        {scrollbarStyles}
+      </style>
+
       <div className="relative w-full">
         <form onSubmit={handleSubmit} className="relative w-full">
-          <div 
+          <div
             className={`flex items-center ${
               isFocused || (showResults && results.length > 0) ? 'bg-white shadow-md' : 'bg-gray-50'
             } border-2 ${
-              isFocused || (showResults && results.length > 0) ? 'border-brand-400' : 'border-gray-200'
+              isFocused || (showResults && results.length > 0)
+                ? 'border-brand-400'
+                : 'border-gray-200'
             } ${
-              showResults && results.length > 0 ? 'rounded-tl-lg rounded-tr-lg rounded-bl-none rounded-br-none' : 'rounded-lg'
+              showResults && results.length > 0
+                ? 'rounded-tl-lg rounded-tr-lg rounded-bl-none rounded-br-none'
+                : 'rounded-lg'
             } overflow-hidden relative z-10`}
             style={{
               borderBottomWidth: showResults && results.length > 0 ? '0px' : '2px',
               marginBottom: showResults && results.length > 0 ? '2px' : '0px',
-              transition: 'background-color 0.2s, border-color 0.2s'
+              transition: 'background-color 0.2s, border-color 0.2s',
             }}
           >
             <div className="pl-3 text-gray-500">
@@ -213,7 +219,7 @@ export default function LiveSearch() {
               ref={inputRef}
               type="text"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={e => setQuery(e.target.value)}
               onFocus={() => {
                 setIsFocused(true);
                 if (query.trim() && results.length > 0) {
@@ -240,14 +246,14 @@ export default function LiveSearch() {
 
         {/* 搜索结果下拉框 - 与搜索框完全融合 */}
         {showResults && results.length > 0 && (
-          <div 
+          <div
             ref={resultsRef}
             className="absolute w-full bg-white overflow-hidden custom-scrollbar max-h-80 overflow-y-auto border-2 border-brand-400 rounded-b-lg z-0"
-            style={{ 
+            style={{
               boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)',
               top: 'calc(100% - 2px)', // 向上偏移2px，与搜索框边框重叠
               borderTopWidth: '0', // 移除顶部边框
-              transition: 'none' // 禁用任何可能的过渡动画
+              transition: 'none', // 禁用任何可能的过渡动画
             }}
           >
             <div>
@@ -256,9 +262,7 @@ export default function LiveSearch() {
                   key={result.id}
                   data-result-item
                   className={`px-4 py-3 border-y border-transparent cursor-pointer transition-colors duration-150 ${
-                    selectedIndex === index 
-                      ? 'bg-brand-50 border-brand-100' 
-                      : 'hover:bg-brand-50'
+                    selectedIndex === index ? 'bg-brand-50 border-brand-100' : 'hover:bg-brand-50'
                   }`}
                   onClick={() => handleResultClick(result)}
                   onMouseEnter={() => setSelectedIndex(index)}
@@ -283,7 +287,9 @@ export default function LiveSearch() {
                       <div className="text-sm font-medium text-gray-900 flex items-center">
                         {result.name}
                       </div>
-                      <div className="text-xs text-gray-400 line-clamp-1 mt-0.5">{result.description}</div>
+                      <div className="text-xs text-gray-400 line-clamp-1 mt-0.5">
+                        {result.description}
+                      </div>
                     </div>
                     <div className="px-3 py-1 text-xs font-normal text-brand-300 bg-brand-100 rounded-full flex items-center">
                       {result.categoryName}
@@ -304,4 +310,4 @@ export default function LiveSearch() {
       </div>
     </>
   );
-} 
+}

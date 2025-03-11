@@ -19,7 +19,7 @@ const VersionInfo: React.FC<VersionInfoProps> = ({ className }) => {
   const [buildInfo, setBuildInfo] = useState<BuildInfo>({
     version: process.env.NEXT_PUBLIC_APP_VERSION || '0.1.0',
     buildId: '',
-    buildTime: ''
+    buildTime: '',
   });
 
   // 安全地解析日期
@@ -35,16 +35,16 @@ const VersionInfo: React.FC<VersionInfoProps> = ({ className }) => {
       if (dateStr.includes('-') || dateStr.includes('/')) {
         return dateStr;
       }
-      
+
       // 尝试将字符串解析为数字
       const timestamp = parseInt(dateStr, 10);
       if (isNaN(timestamp)) {
         return '未知时间';
       }
-      
+
       // 创建日期对象并格式化
       const date = new Date(timestamp * 1000); // 假设是秒级时间戳
-      
+
       // 检查日期是否有效
       if (isNaN(date.getTime())) {
         // 尝试毫秒级时间戳
@@ -54,7 +54,7 @@ const VersionInfo: React.FC<VersionInfoProps> = ({ className }) => {
         }
         return msDate.toLocaleString();
       }
-      
+
       return date.toLocaleString();
     } catch (error) {
       console.error('日期解析错误:', error);
@@ -86,7 +86,7 @@ const VersionInfo: React.FC<VersionInfoProps> = ({ className }) => {
       setBuildInfo(prev => ({
         ...prev,
         buildTime: getCurrentTime(),
-        buildId: 'dev-' + Date.now()
+        buildId: 'dev-' + Date.now(),
       }));
       return;
     }
@@ -97,19 +97,19 @@ const VersionInfo: React.FC<VersionInfoProps> = ({ className }) => {
       if (!res.ok) {
         throw new Error('版本信息文件不存在');
       }
-      
+
       const text = await res.text();
-      
+
       // 验证响应是否为 JSON
       if (!isJsonResponse(text)) {
         throw new Error('版本信息文件格式错误');
       }
-      
+
       const data = JSON.parse(text);
       setBuildInfo(prev => ({
         version: data.version || prev.version,
         buildId: data.buildId || prev.buildId,
-        buildTime: data.buildTime ? safeParseDate(data.buildTime) : prev.buildTime
+        buildTime: data.buildTime ? safeParseDate(data.buildTime) : prev.buildTime,
       }));
     } catch (error) {
       console.error('获取版本信息文件失败:', error);
@@ -119,14 +119,14 @@ const VersionInfo: React.FC<VersionInfoProps> = ({ className }) => {
         if (!res.ok) {
           throw new Error('构建ID不存在');
         }
-        
+
         const text = await res.text();
-        
+
         // 验证响应不是 HTML
         if (text.includes('<!DOCTYPE html>') || text.includes('<html')) {
           throw new Error('构建ID响应为 HTML');
         }
-        
+
         const buildId = text.trim();
         // 将时间戳转换为可读格式
         const buildTime = safeParseDate(buildId);
@@ -137,7 +137,7 @@ const VersionInfo: React.FC<VersionInfoProps> = ({ className }) => {
         setBuildInfo(prev => ({
           ...prev,
           buildTime: getCurrentTime(),
-          buildId: 'fallback-' + Date.now()
+          buildId: 'fallback-' + Date.now(),
         }));
       }
     }
@@ -149,37 +149,45 @@ const VersionInfo: React.FC<VersionInfoProps> = ({ className }) => {
   }, [fetchVersionInfo]);
 
   return (
-    <Flex 
-      justify="center" 
-      align="center" 
-      wrap="wrap" 
-      gap="small" 
+    <Flex
+      justify="center"
+      align="center"
+      wrap="wrap"
+      gap="small"
       className={className}
       style={{ paddingTop: 8, paddingBottom: 8 }}
     >
-      <div style={{ 
-        whiteSpace: 'nowrap', 
-        overflow: 'hidden', 
-        textOverflow: 'ellipsis',
-        maxWidth: 150
-      }}>
+      <div
+        style={{
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          maxWidth: 150,
+        }}
+      >
         <Text style={{ fontSize: 12, color: '#999' }}>版本: {buildInfo.version}</Text>
       </div>
-      <div style={{ 
-        whiteSpace: 'nowrap', 
-        overflow: 'hidden', 
-        textOverflow: 'ellipsis',
-        maxWidth: 200
-      }}>
-        <Text style={{ fontSize: 12, color: '#999' }}>构建时间: {buildInfo.buildTime || '加载中...'}</Text>
+      <div
+        style={{
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          maxWidth: 200,
+        }}
+      >
+        <Text style={{ fontSize: 12, color: '#999' }}>
+          构建时间: {buildInfo.buildTime || '加载中...'}
+        </Text>
       </div>
       {process.env.NODE_ENV === 'development' && (
         <div style={{ whiteSpace: 'nowrap' }}>
-          <Text style={{ fontSize: 12 }} type="success">开发模式</Text>
+          <Text style={{ fontSize: 12 }} type="success">
+            开发模式
+          </Text>
         </div>
       )}
     </Flex>
   );
 };
 
-export default VersionInfo; 
+export default VersionInfo;

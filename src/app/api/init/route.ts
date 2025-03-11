@@ -9,4 +9,4 @@ export async function GET() {
   } catch (error) {
     return serverErrorResponse(error);
   }
-} 
+}

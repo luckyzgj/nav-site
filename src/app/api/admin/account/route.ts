@@ -11,13 +11,13 @@ export async function GET(request: NextRequest) {
     if (!isAdmin) {
       return unauthorizedResponse();
     }
-    
+
     // 获取管理员ID
     const adminId = getAdminIdFromRequest(request);
     if (!adminId) {
       return unauthorizedResponse('无法获取管理员信息');
     }
-    
+
     // 查询管理员信息
     const admin = await prisma.admin.findUnique({
       where: { id: adminId },
@@ -28,13 +28,13 @@ export async function GET(request: NextRequest) {
         updatedAt: true,
       },
     });
-    
+
     if (!admin) {
       return unauthorizedResponse('管理员不存在');
     }
-    
+
     return successResponse(admin);
   } catch (error) {
     return serverErrorResponse(error);
   }
-} 
+}

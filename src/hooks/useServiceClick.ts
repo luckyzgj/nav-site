@@ -10,7 +10,7 @@ export function useServiceClick() {
    * @param options 可选配置项
    */
   const handleServiceClick = async (
-    serviceId: number, 
+    serviceId: number,
     url: string,
     options?: {
       preventDefault?: boolean;
@@ -21,7 +21,7 @@ export function useServiceClick() {
     if (options?.preventDefault && options.event) {
       options.event.preventDefault();
     }
-    
+
     try {
       // 记录点击
       await fetch(`/api/services/${serviceId}/click`, {
@@ -33,10 +33,10 @@ export function useServiceClick() {
       }
       // 在生产环境中静默失败，不影响用户体验
     }
-    
+
     // 无论记录是否成功，都打开URL
     window.open(url, '_blank', 'noopener,noreferrer');
   };
-  
+
   return handleServiceClick;
-} 
+}

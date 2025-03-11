@@ -60,11 +60,11 @@ export function handleApiError(error: unknown): ApiResponse<null> {
   if (process.env.NODE_ENV === 'development') {
     console.error('服务器错误:', error);
   }
-  
+
   // 记录到服务器日志但不在生产环境暴露详细错误
   return {
     success: false,
     message: '服务器处理请求时出错',
     data: null,
   };
-} 
+}

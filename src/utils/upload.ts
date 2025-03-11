@@ -14,10 +14,7 @@ export const ensureUploadDir = async () => {
 };
 
 // 保存上传的文件
-export const saveFile = async (
-  file: File,
-  customFilename?: string
-): Promise<string> => {
+export const saveFile = async (file: File, customFilename?: string): Promise<string> => {
   await ensureUploadDir();
 
   // 生成文件名
@@ -45,4 +42,4 @@ export const getFileUrl = (path: string): string => {
   if (path.startsWith('http')) return path;
   if (path.startsWith('/')) return path;
   return `/${UPLOAD_DIR}/${path}`;
-}; 
+};

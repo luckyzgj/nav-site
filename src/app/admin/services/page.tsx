@@ -3,27 +3,27 @@
 // 导入Ant Design的React 19兼容补丁
 import '@ant-design/v5-patch-for-react-19';
 import { useState, useEffect, useCallback } from 'react';
-import { 
-  Table, 
-  Button, 
-  Space, 
-  Modal, 
-  Form, 
-  Input, 
+import {
+  Table,
+  Button,
+  Space,
+  Modal,
+  Form,
+  Input,
   Select,
   Upload,
   Popconfirm,
   Typography,
   Flex,
   Row,
-  Col
+  Col,
 } from 'antd';
-import { 
-  PlusOutlined, 
-  EditOutlined, 
+import {
+  PlusOutlined,
+  EditOutlined,
   DeleteOutlined,
   EyeOutlined,
-  ReloadOutlined
+  ReloadOutlined,
 } from '@ant-design/icons';
 import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
 import Image from 'next/image';
@@ -83,7 +83,7 @@ export default function ServicesPage() {
     try {
       const response = await fetch('/api/admin/services');
       const data = await response.json();
-      
+
       if (data.success) {
         setServices(data.data);
         setFilteredServices(data.data);
@@ -103,7 +103,7 @@ export default function ServicesPage() {
     try {
       const response = await fetch('/api/admin/categories');
       const data = await response.json();
-      
+
       if (data.success) {
         setCategories(data.data);
       } else {
@@ -147,12 +147,12 @@ export default function ServicesPage() {
         const formData = new FormData();
         formData.append('file', fileList[0].originFileObj);
         formData.append('type', 'service'); // 指定上传类型为服务图标
-        
+
         const uploadResponse = await fetch('/api/admin/upload', {
           method: 'POST',
           body: formData,
         });
-        
+
         const uploadData = await uploadResponse.json();
         if (uploadData.success) {
           iconPath = uploadData.data.path;
@@ -161,19 +161,17 @@ export default function ServicesPage() {
           return;
         }
       }
-      
+
       // 准备请求数据
       const serviceData = {
         ...values,
         icon: iconPath,
       };
-      
+
       // 发送请求
-      const url = editingId 
-        ? `/api/admin/services/${editingId}` 
-        : '/api/admin/services';
+      const url = editingId ? `/api/admin/services/${editingId}` : '/api/admin/services';
       const method = editingId ? 'PUT' : 'POST';
-      
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -181,9 +179,9 @@ export default function ServicesPage() {
         },
         body: JSON.stringify(serviceData),
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         message.success(editingId ? '更新网站成功' : '添加网站成功');
         setModalVisible(false);
@@ -206,9 +204,9 @@ export default function ServicesPage() {
       const response = await fetch(`/api/admin/services/${id}`, {
         method: 'DELETE',
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         message.success('删除网站成功');
         fetchServices();
@@ -231,7 +229,7 @@ export default function ServicesPage() {
       categoryId: record.categoryId,
       icon: record.icon,
     });
-    
+
     // 设置图标预览
     if (record.icon) {
       setFileList([
@@ -245,7 +243,7 @@ export default function ServicesPage() {
     } else {
       setFileList([]);
     }
-    
+
     setModalVisible(true);
   };
 
@@ -296,10 +294,10 @@ export default function ServicesPage() {
       dataIndex: 'icon',
       key: 'icon',
       width: 60,
-      render: (icon: string | null) => (
+      render: (icon: string | null) =>
         icon ? (
           <div style={{ position: 'relative', width: 40, height: 40 }}>
-            <Image 
+            <Image
               src={icon}
               alt="网站图标"
               fill
@@ -308,20 +306,19 @@ export default function ServicesPage() {
             />
           </div>
         ) : (
-          <Flex 
-            style={{ 
-              width: 40, 
-              height: 40, 
-              background: '#f5f5f5', 
-              borderRadius: 4 
-            }} 
-            justify="center" 
+          <Flex
+            style={{
+              width: 40,
+              height: 40,
+              background: '#f5f5f5',
+              borderRadius: 4,
+            }}
+            justify="center"
             align="center"
           >
             无
           </Flex>
-        )
-      ),
+        ),
     },
     {
       title: '名称',
@@ -357,18 +354,14 @@ export default function ServicesPage() {
       fixed: 'right' as const,
       render: (_: unknown, record: Service) => (
         <Space size="middle">
-          <Button 
-            type="default" 
+          <Button
+            type="default"
             icon={<EyeOutlined />}
             onClick={() => window.open(record.url, '_blank')}
           >
             访问
           </Button>
-          <Button 
-            type="default" 
-            icon={<EditOutlined />} 
-            onClick={() => handleEdit(record)}
-          >
+          <Button type="default" icon={<EditOutlined />} onClick={() => handleEdit(record)}>
             编辑
           </Button>
           <Popconfirm
@@ -397,14 +390,11 @@ export default function ServicesPage() {
 
   return (
     <div className="admin-services-page">
-      
       <Flex justify="space-between" align="center" style={{ marginBottom: 16 }}>
-        <Title level={2} style={{ margin: 0 }}>网站管理</Title>
-        <Button 
-          type="primary" 
-          icon={<PlusOutlined />} 
-          onClick={handleAdd}
-        >
+        <Title level={2} style={{ margin: 0 }}>
+          网站管理
+        </Title>
+        <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
           添加网站
         </Button>
       </Flex>
@@ -413,10 +403,7 @@ export default function ServicesPage() {
 
       <Row gutter={[10, 10]} style={{ marginBottom: 16 }}>
         <Col>
-          <Button 
-            type={selectedCategoryId === null ? 'primary' : 'default'}
-            onClick={resetFilter}
-          >
+          <Button type={selectedCategoryId === null ? 'primary' : 'default'} onClick={resetFilter}>
             全部
           </Button>
         </Col>
@@ -431,31 +418,27 @@ export default function ServicesPage() {
           </Col>
         ))}
         <Col>
-          <Button 
-            icon={<ReloadOutlined />} 
-            onClick={resetFilter}
-            title="重置筛选"
-          />
+          <Button icon={<ReloadOutlined />} onClick={resetFilter} title="重置筛选" />
         </Col>
       </Row>
 
-      <Table 
-        columns={columns} 
-        dataSource={filteredServices} 
-        rowKey="id" 
+      <Table
+        columns={columns}
+        dataSource={filteredServices}
+        rowKey="id"
         loading={loading}
-        pagination={{ 
+        pagination={{
           current: currentPage,
           pageSize: pageSize,
           onChange: handlePageChange,
           onShowSizeChange: handlePageSizeChange,
           showSizeChanger: true,
           pageSizeOptions: ['10', '20', '50', '100'],
-          showTotal: (total) => `共 ${total} 条记录`
+          showTotal: total => `共 ${total} 条记录`,
         }}
         scroll={{ x: 'max-content' }}
       />
-      
+
       <Modal
         title={editingId ? '编辑网站' : '添加网站'}
         open={modalVisible}
@@ -476,31 +459,26 @@ export default function ServicesPage() {
           >
             <Input placeholder="请输入网站名称" />
           </Form.Item>
-          
+
           <Form.Item
             name="url"
             label="网站网址"
             rules={[
               { required: true, message: '请输入网站网址' },
-              { type: 'url', message: '请输入有效的URL' }
+              { type: 'url', message: '请输入有效的URL' },
             ]}
           >
             <Input placeholder="请输入网站网址，例如：https://example.com" />
           </Form.Item>
-          
+
           <Form.Item
             name="description"
             label="网站简介"
             rules={[{ required: true, message: '请输入网站简介' }]}
           >
-            <TextArea 
-              placeholder="请输入网站简介" 
-              rows={4} 
-              showCount 
-              maxLength={500} 
-            />
+            <TextArea placeholder="请输入网站简介" rows={4} showCount maxLength={500} />
           </Form.Item>
-          
+
           <Form.Item
             name="categoryId"
             label="所属分类"
@@ -514,12 +492,12 @@ export default function ServicesPage() {
               ))}
             </Select>
           </Form.Item>
-          
+
           <Form.Item
             name="icon"
             label="网站图标"
             valuePropName="file"
-            getValueFromEvent={(e) => e?.file}
+            getValueFromEvent={e => e?.file}
             extra="建议上传正方形图片，支持JPG、PNG、GIF、WebP、SVG格式，大小不超过2MB"
           >
             <Upload
@@ -534,7 +512,7 @@ export default function ServicesPage() {
               {fileList.length >= 1 ? null : uploadButton}
             </Upload>
           </Form.Item>
-          
+
           <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
             <Space>
               <Button onClick={() => setModalVisible(false)}>取消</Button>
@@ -545,13 +523,9 @@ export default function ServicesPage() {
           </Form.Item>
         </Form>
       </Modal>
-      
+
       {/* 图片预览 */}
-      <Modal
-        open={!!previewImage}
-        footer={null}
-        onCancel={() => setPreviewImage(null)}
-      >
+      <Modal open={!!previewImage} footer={null} onCancel={() => setPreviewImage(null)}>
         <div style={{ position: 'relative', width: '100%', height: '500px' }}>
           {previewImage && (
             <Image
@@ -567,4 +541,4 @@ export default function ServicesPage() {
       </Modal>
     </div>
   );
-} 
+}

@@ -43,7 +43,7 @@ export default function AdminLayout({
   // 处理客户端渲染
   useEffect(() => {
     setIsClient(true);
-    
+
     // 获取网站设置
     const fetchSettings = async () => {
       try {
@@ -56,7 +56,7 @@ export default function AdminLayout({
         console.error('获取设置失败:', error);
       }
     };
-    
+
     fetchSettings();
   }, []);
 
@@ -72,11 +72,7 @@ export default function AdminLayout({
 
   // 如果是登录页面，直接显示内容
   if (pathname === '/admin/login') {
-    return (
-      <AdminAppProvider>
-        {children}
-      </AdminAppProvider>
-    );
+    return <AdminAppProvider>{children}</AdminAppProvider>;
   }
 
   // 服务器端渲染时不显示内容
@@ -90,23 +86,25 @@ export default function AdminLayout({
         <Sider
           collapsible
           collapsed={collapsed}
-          onCollapse={(value) => setCollapsed(value)}
+          onCollapse={value => setCollapsed(value)}
           theme="light"
         >
-          <Flex 
-            align="center" 
-            justify={collapsed ? "center" : "flex-start"}
-            style={{ 
-              padding: collapsed ? '16px 0' : '16px', 
-              borderBottom: '1px solid #f0f0f0'
+          <Flex
+            align="center"
+            justify={collapsed ? 'center' : 'flex-start'}
+            style={{
+              padding: collapsed ? '16px 0' : '16px',
+              borderBottom: '1px solid #f0f0f0',
             }}
           >
-            <div style={{ 
-              position: 'relative', 
-              width: '32px', 
-              height: '32px', 
-              flexShrink: 0 
-            }}>
+            <div
+              style={{
+                position: 'relative',
+                width: '32px',
+                height: '32px',
+                flexShrink: 0,
+              }}
+            >
               <Image
                 src="/logo.svg"
                 alt="网站Logo"
@@ -115,22 +113,24 @@ export default function AdminLayout({
                 priority
               />
             </div>
-            
+
             {!collapsed && (
-              <div style={{ 
-                marginLeft: 10,
-                color: '#262626', 
-                fontWeight: 'bold', 
-                fontSize: '16px',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-              }}>
+              <div
+                style={{
+                  marginLeft: 10,
+                  color: '#262626',
+                  fontWeight: 'bold',
+                  fontSize: '16px',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
                 {siteName}管理后台
               </div>
             )}
           </Flex>
-          
+
           <Menu
             theme="light"
             defaultSelectedKeys={[pathname]}
@@ -174,21 +174,20 @@ export default function AdminLayout({
           />
         </Sider>
         <Layout>
-          <Header style={{ padding: 0, background: colorBgContainer, borderBottom: '1px solid #f0f0f0' }}>
-            <Flex justify="flex-end" align="center" style={{ height: '100%', paddingLeft: 16, paddingRight: 16 }}>
+          <Header
+            style={{ padding: 0, background: colorBgContainer, borderBottom: '1px solid #f0f0f0' }}
+          >
+            <Flex
+              justify="flex-end"
+              align="center"
+              style={{ height: '100%', paddingLeft: 16, paddingRight: 16 }}
+            >
               <Link href="/" style={{ marginRight: 16 }}>
-                <Button
-                  type="text"
-                  icon={<HomeOutlined />}
-                >
+                <Button type="text" icon={<HomeOutlined />}>
                   访问首页
                 </Button>
               </Link>
-              <Button
-                type="text"
-                icon={<LogoutOutlined />}
-                onClick={handleLogout}
-              >
+              <Button type="text" icon={<LogoutOutlined />} onClick={handleLogout}>
                 退出登录
               </Button>
             </Flex>
@@ -214,4 +213,4 @@ export default function AdminLayout({
       </Layout>
     </AdminAppProvider>
   );
-} 
+}

@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     if (!isAdmin) {
       return unauthorizedResponse();
     }
-    
+
     // 获取点击量最高的10个网站
     const popularServices = await prisma.service.findMany({
       take: 10,
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
         },
       },
     });
-    
+
     // 格式化数据
     const formattedServices = popularServices.map((service: ServiceWithCategory) => ({
       id: service.id,
@@ -52,10 +52,10 @@ export async function GET(request: NextRequest) {
       clickCount: service.clickCount,
       categoryName: service.category.name,
     }));
-    
+
     // 返回热门网站
     return successResponse(formattedServices);
   } catch (error) {
     return serverErrorResponse(error);
   }
-} 
+}

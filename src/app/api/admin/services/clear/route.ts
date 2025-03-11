@@ -24,4 +24,4 @@ export async function DELETE(request: NextRequest) {
   } finally {
     await prisma.$disconnect();
   }
-} 
+}

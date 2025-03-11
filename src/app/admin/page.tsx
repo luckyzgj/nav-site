@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { Card, Row, Col, Statistic, Table, Button, Avatar, Typography, Flex } from 'antd';
-import { 
-  AppstoreOutlined, 
-  TagsOutlined, 
+import {
+  AppstoreOutlined,
+  TagsOutlined,
   BarChartOutlined,
   EyeOutlined,
-  GlobalOutlined
+  GlobalOutlined,
 } from '@ant-design/icons';
 import Image from 'next/image';
 
@@ -46,15 +46,15 @@ export default function AdminDashboard() {
         // 获取统计数据
         const statsResponse = await fetch('/api/admin/stats');
         const statsData = await statsResponse.json();
-        
+
         if (statsData.success) {
           setStats(statsData.data);
         }
-        
+
         // 获取热门网站
         const popularResponse = await fetch('/api/admin/popular-services');
         const popularData = await popularResponse.json();
-        
+
         if (popularData.success) {
           setPopularServices(popularData.data);
         }
@@ -64,7 +64,7 @@ export default function AdminDashboard() {
         setLoading(false);
       }
     };
-    
+
     fetchData();
   }, []);
 
@@ -104,11 +104,7 @@ export default function AdminDashboard() {
               )}
             </div>
           ) : (
-            <Avatar 
-              icon={<GlobalOutlined />} 
-              size={32} 
-              style={{ marginRight: 8, flexShrink: 0 }} 
-            />
+            <Avatar icon={<GlobalOutlined />} size={32} style={{ marginRight: 8, flexShrink: 0 }} />
           )}
           <span style={{ display: 'flex', alignItems: 'center' }}>{record.name}</span>
         </Flex>
@@ -129,8 +125,8 @@ export default function AdminDashboard() {
       title: '操作',
       key: 'action',
       render: (_: unknown, record: PopularService) => (
-        <Button 
-          type="default" 
+        <Button
+          type="default"
           icon={<EyeOutlined />}
           onClick={() => window.open(record.url, '_blank')}
         >
@@ -142,8 +138,10 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <Title level={2} style={{ marginBottom: 24, marginTop: 0 }}>控制面板</Title>
-      
+      <Title level={2} style={{ marginBottom: 24, marginTop: 0 }}>
+        控制面板
+      </Title>
+
       <Row gutter={16} style={{ marginBottom: 32 }}>
         <Col span={8}>
           <Card>
@@ -177,7 +175,9 @@ export default function AdminDashboard() {
         </Col>
       </Row>
 
-      <Title level={4} style={{ marginBottom: 24, marginTop: 0 }}>热门网站</Title>
+      <Title level={4} style={{ marginBottom: 24, marginTop: 0 }}>
+        热门网站
+      </Title>
 
       <Table
         columns={columns}
@@ -189,4 +189,4 @@ export default function AdminDashboard() {
       />
     </div>
   );
-} 
+}

@@ -31,8 +31,8 @@ const tooltipStyles = {
     borderRadius: '12px',
     padding: '8px 12px',
     fontSize: '14px',
-    boxShadow: '0 0.2rem 0.4rem rgba(240, 133, 100, 0.25)'
-  }
+    boxShadow: '0 0.2rem 0.4rem rgba(240, 133, 100, 0.25)',
+  },
 } as const;
 
 export default function ServiceCard({ service }: ServiceCardProps) {
@@ -109,14 +109,14 @@ export default function ServiceCard({ service }: ServiceCardProps) {
   );
 
   return (
-    <Tooltip 
+    <Tooltip
       title={service.description}
       placement="bottom"
       mouseEnterDelay={0.3}
       color="rgba(255, 115, 78, 0.95)"
       styles={tooltipStyles}
     >
-      <div 
+      <div
         className="bg-white bg-opacity-80 rounded-lg shadow-sm outline-2 outline-none hover:outline-brand-200 hover:bg-opacity-90 transition-all duration-300 overflow-hidden cursor-pointer"
         onClick={onClick}
       >
@@ -129,10 +129,12 @@ export default function ServiceCard({ service }: ServiceCardProps) {
                 <div className="w-8 h-8 border-4 border-brand-50 border-t-brand-100 rounded-full animate-spin"></div>
               </div>
             )}
-            
+
             {/* 图标显示 */}
             {service.icon && !hasError ? (
-              <div className={`absolute inset-0 transition-opacity duration-300 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}>
+              <div
+                className={`absolute inset-0 transition-opacity duration-300 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+              >
                 <Image
                   src={service.icon}
                   alt={service.name}
@@ -141,20 +143,18 @@ export default function ServiceCard({ service }: ServiceCardProps) {
                   unoptimized={service.icon.endsWith('.svg')}
                 />
               </div>
-            ) : renderInitial()}
+            ) : (
+              renderInitial()
+            )}
           </div>
-          
+
           {/* 右侧内容 */}
           <div className="flex-1 min-w-0">
-            <h3 className="font-medium text-gray-900 truncate">
-              {service.name}
-            </h3>
-            <p className="text-sm text-gray-400 line-clamp-1">
-              {service.description}
-            </p>
+            <h3 className="font-medium text-gray-900 truncate">{service.name}</h3>
+            <p className="text-sm text-gray-400 line-clamp-1">{service.description}</p>
           </div>
         </div>
       </div>
     </Tooltip>
   );
-} 
+}

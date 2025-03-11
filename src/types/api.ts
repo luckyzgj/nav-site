@@ -38,4 +38,4 @@ export interface Setting {
 export interface PaginationParams {
   page?: number;
   pageSize?: number;
-} 
+}

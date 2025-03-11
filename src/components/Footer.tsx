@@ -10,7 +10,7 @@ type FooterProps = {
 
 export default function Footer({ siteName, siteDescription, statisticsCode }: FooterProps) {
   const year = new Date().getFullYear();
-  
+
   return (
     <>
       <footer className="py-6 text-sm">
@@ -25,18 +25,16 @@ export default function Footer({ siteName, siteDescription, statisticsCode }: Fo
             </Link>
           </div>
           <div className="text-center text-gray-500 mt-2">
-            <p>&copy; {year} {siteName} All Rights Reserved</p>
-            {siteDescription && (
-              <p className="mt-2">{siteDescription}</p>
-            )}
+            <p>
+              &copy; {year} {siteName} All Rights Reserved
+            </p>
+            {siteDescription && <p className="mt-2">{siteDescription}</p>}
           </div>
         </div>
       </footer>
-      
+
       {/* 统计代码 */}
-      {statisticsCode && (
-        <div dangerouslySetInnerHTML={{ __html: statisticsCode }} />
-      )}
+      {statisticsCode && <div dangerouslySetInnerHTML={{ __html: statisticsCode }} />}
     </>
   );
-} 
+}

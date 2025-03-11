@@ -37,4 +37,4 @@ export interface Service {
 export interface ServiceWithCategory extends Service {
   categoryName: string;
   categorySlug: string;
-} 
+}

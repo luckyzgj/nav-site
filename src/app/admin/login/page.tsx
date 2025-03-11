@@ -35,7 +35,7 @@ export default function LoginPage() {
 
   const handleLogin = async (values: LoginFormData) => {
     setLoading(true);
-    
+
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
@@ -45,9 +45,9 @@ export default function LoginPage() {
         body: JSON.stringify(values),
         credentials: 'include', // 确保包含Cookie
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         // 登录成功，设置状态触发跳转
         setLoginSuccess(true);
@@ -66,29 +66,25 @@ export default function LoginPage() {
   const cardTitle = (
     <Space align="center" style={{ display: 'flex', justifyContent: 'center', margin: '15px 0' }}>
       <div style={{ position: 'relative', width: '36px', height: '36px' }}>
-        <Image
-          src="/logo.svg"
-          alt="网站Logo"
-          fill
-          style={{ objectFit: 'contain' }}
-          priority
-        />
+        <Image src="/logo.svg" alt="网站Logo" fill style={{ objectFit: 'contain' }} priority />
       </div>
-      <Title level={4} style={{ margin: 0 }}>管理员登录</Title>
+      <Title level={4} style={{ margin: 0 }}>
+        管理员登录
+      </Title>
     </Space>
   );
 
   return (
-    <Row 
-      justify="center" 
-      align="middle" 
-      style={{ 
-        minHeight: '100vh', 
-        background: '#f0f2f5' 
+    <Row
+      justify="center"
+      align="middle"
+      style={{
+        minHeight: '100vh',
+        background: '#f0f2f5',
       }}
     >
       <Col xs={22} sm={16} md={12} lg={8} xl={6}>
-        <Card 
+        <Card
           title={cardTitle}
           style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.03), 0 2px 4px rgba(0,0,0,0.03)' }}
         >
@@ -99,33 +95,16 @@ export default function LoginPage() {
             layout="vertical"
             size="large"
           >
-            <Form.Item
-              name="username"
-              rules={[{ required: true, message: '请输入用户名' }]}
-            >
-              <Input 
-                prefix={<UserOutlined />} 
-                placeholder="用户名" 
-              />
+            <Form.Item name="username" rules={[{ required: true, message: '请输入用户名' }]}>
+              <Input prefix={<UserOutlined />} placeholder="用户名" />
             </Form.Item>
 
-            <Form.Item
-              name="password"
-              rules={[{ required: true, message: '请输入密码' }]}
-            >
-              <Input.Password
-                prefix={<LockOutlined />}
-                placeholder="密码"
-              />
+            <Form.Item name="password" rules={[{ required: true, message: '请输入密码' }]}>
+              <Input.Password prefix={<LockOutlined />} placeholder="密码" />
             </Form.Item>
 
             <Form.Item style={{ marginBottom: 0 }}>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={loading}
-                block
-              >
+              <Button type="primary" htmlType="submit" loading={loading} block>
                 登录
               </Button>
             </Form.Item>
@@ -134,4 +113,4 @@ export default function LoginPage() {
       </Col>
     </Row>
   );
-} 
+}

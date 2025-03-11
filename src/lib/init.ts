@@ -6,7 +6,7 @@ export const initializeSystem = async () => {
   try {
     // 初始化数据库
     const prisma = new PrismaClient();
-    
+
     // 检查是否有管理员账户，如果没有则创建默认管理员
     const adminCount = await prisma.admin.count();
     if (adminCount === 0) {
@@ -17,12 +17,12 @@ export const initializeSystem = async () => {
           password: hashedPassword,
         },
       });
-      
+
       if (process.env.NODE_ENV === 'development') {
         console.log('已创建默认管理员账户: admin / admin123');
       }
     }
-    
+
     // 检查是否有分类，如果没有则创建默认分类
     const categoryCount = await prisma.category.count();
     if (categoryCount === 0) {
@@ -37,12 +37,12 @@ export const initializeSystem = async () => {
           { name: '其他工具', slug: 'other-tools' },
         ],
       });
-      
+
       if (process.env.NODE_ENV === 'development') {
         console.log('已创建默认分类');
       }
     }
-    
+
     // 检查是否有系统设置，如果没有则创建默认设置
     const settingCount = await prisma.setting.count();
     if (settingCount === 0) {
@@ -52,14 +52,14 @@ export const initializeSystem = async () => {
           { key: 'siteDescription', value: '收录优质AI服务和应用的导航网站' },
         ],
       });
-      
+
       if (process.env.NODE_ENV === 'development') {
         console.log('已创建默认系统设置');
       }
     }
-    
+
     await prisma.$disconnect();
   } catch (error) {
     console.error('系统初始化失败:', error);
   }
-}; 
+};
