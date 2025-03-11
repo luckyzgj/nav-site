@@ -296,13 +296,14 @@ export default function ServicesPage() {
       width: 60,
       render: (icon: string | null) =>
         icon ? (
-          <div style={{ position: 'relative', width: 40, height: 40 }}>
+          <div style={{ position: 'relative', width: 40, height: 40, cursor: 'pointer' }}>
             <Image
               src={icon}
               alt="网站图标"
               fill
               style={{ objectFit: 'contain' }}
               onClick={() => setPreviewImage(icon)}
+              unoptimized
             />
           </div>
         ) : (
@@ -535,6 +536,7 @@ export default function ServicesPage() {
               style={{ objectFit: 'contain' }}
               sizes="100vw"
               priority
+              unoptimized
             />
           )}
         </div>

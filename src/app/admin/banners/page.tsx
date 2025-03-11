@@ -106,7 +106,7 @@ export default function BannersPage() {
     setFileList([
       {
         uid: '-1',
-        name: 'image.png',
+        name: banner.imageUrl.split('/').pop() || 'image.png',
         status: 'done',
         url: banner.imageUrl,
       },
@@ -126,13 +126,24 @@ export default function BannersPage() {
       const values = await form.validateFields();
 
       // 确保imageUrl是字符串
-      if (values.imageUrl && typeof values.imageUrl !== 'string') {
+      if (!values.imageUrl || typeof values.imageUrl !== 'string') {
         if (fileList.length > 0 && fileList[0].response && fileList[0].response.url) {
           values.imageUrl = fileList[0].response.url;
+        } else if (fileList.length > 0 && fileList[0].url) {
+          values.imageUrl = fileList[0].url;
         } else {
           adminMessage.error('图片上传失败，请重新上传');
           return;
         }
+      }
+
+      // 确保URL是绝对路径
+      if (
+        values.imageUrl &&
+        !values.imageUrl.startsWith('/') &&
+        !values.imageUrl.startsWith('http')
+      ) {
+        values.imageUrl = `/${values.imageUrl}`;
       }
 
       if (editingId) {
@@ -312,7 +323,7 @@ export default function BannersPage() {
           style={{ width: 100, height: 50, position: 'relative', cursor: 'pointer' }}
           onClick={() => setPreviewImage(imageUrl)}
         >
-          <Image src={imageUrl} alt="头图" fill style={{ objectFit: 'cover' }} />
+          <Image src={imageUrl} alt="头图" fill style={{ objectFit: 'cover' }} unoptimized />
         </div>
       ),
     },
@@ -418,6 +429,7 @@ export default function BannersPage() {
               style={{ objectFit: 'contain' }}
               sizes="100vw"
               priority
+              unoptimized
             />
           )}
         </div>

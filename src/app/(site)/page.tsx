@@ -8,7 +8,7 @@ import CategoryNavStyles from '@/components/CategoryNavStyles';
 import CategoryIcon from '@/components/CategoryIcon';
 import { Prisma } from '@prisma/client';
 import Image from 'next/image';
-
+import Link from 'next/link';
 // 获取所有分类及其网站
 async function getCategoriesWithServices(): Promise<Category[]> {
   const categories = await prisma.category.findMany({
@@ -130,6 +130,24 @@ export default async function Home() {
 
       {/* 主内容区域 */}
       <div className="container mx-auto px-4 py-8 max-w-[960px]">
+        {/* 头图 New */}
+        <div className="flex justify-between items-center mb-10 p-4 bg-white bg-opacity-80 rounded-lg shadow-sm">
+          <div className="p-4">
+            <Link
+              href="/t/claude"
+              className="text-2xl font-bold text-gray-800 hover:text-brand-500"
+            >
+              Claude 3.7 Sonnet and Claude Code
+            </Link>
+            <p className="text-gray-500 text-sm">
+              Claude 3.7 Sonnet and Claude Code 是 Claude 3.7 的两个版本，分别是 Sonnet 和 Code。
+            </p>
+          </div>
+          <div>
+            <Image src="/public/claude3.7.png" alt="Claude" width={450} height={150} />
+          </div>
+        </div>
+
         {/* 头图 */}
         {banner && (
           <div className="w-full h-[200px] bg-brand-50 rounded-lg mb-10 overflow-hidden">
