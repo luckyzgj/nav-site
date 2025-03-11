@@ -25,6 +25,16 @@ interface ServiceCardProps {
 // 创建一个图片缓存对象
 const imageCache: Record<string, boolean> = {};
 
+// Tooltip 样式配置
+const tooltipStyles = {
+  body: {
+    borderRadius: '12px',
+    padding: '8px 12px',
+    fontSize: '14px',
+    boxShadow: '0 0.2rem 0.4rem rgba(240, 133, 100, 0.25)'
+  }
+} as const;
+
 export default function ServiceCard({ service }: ServiceCardProps) {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -104,14 +114,7 @@ export default function ServiceCard({ service }: ServiceCardProps) {
       placement="bottom"
       mouseEnterDelay={0.3}
       color="rgba(255, 115, 78, 0.95)"
-      styles={{
-        body: {
-          borderRadius: '12px',
-          padding: '8px 12px',
-          fontSize: '14px',
-          boxShadow: '0 0.2rem 0.4rem rgba(240, 133, 100, 0.25)'
-        }
-      }}
+      styles={tooltipStyles}
     >
       <div 
         className="bg-white bg-opacity-80 rounded-lg shadow-sm outline-2 outline-none hover:outline-brand-200 hover:bg-opacity-90 transition-all duration-300 overflow-hidden cursor-pointer"
