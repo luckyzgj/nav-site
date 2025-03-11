@@ -58,6 +58,7 @@ interface Banner {
   title: string;
   url: string;
   imageUrl: string;
+  description?: string;
   isActive: boolean;
   sortOrder: number;
   createdAt: Date;
@@ -130,47 +131,49 @@ export default async function Home() {
 
       {/* 主内容区域 */}
       <div className="container mx-auto px-4 py-8 max-w-[960px]">
-        {/* 头图 New */}
-        <div className="flex justify-between items-center mb-10 p-4 bg-white bg-opacity-80 rounded-lg shadow-sm">
-          <div className="p-4">
-            <Link
-              href="/t/claude"
-              className="text-2xl font-bold text-gray-800 hover:text-brand-500"
-            >
-              Claude 3.7 Sonnet and Claude Code
-            </Link>
-            <p className="text-gray-500 text-sm">
-              Claude 3.7 Sonnet and Claude Code 是 Claude 3.7 的两个版本，分别是 Sonnet 和 Code。
-            </p>
-          </div>
-          <div>
-            <Image src="/public/claude3.7.png" alt="Claude" width={450} height={150} />
-          </div>
-        </div>
-
-        {/* 头图 */}
+        {/* 头图区域 */}
         {banner && (
-          <div className="w-full h-[200px] bg-brand-50 rounded-lg mb-10 overflow-hidden">
-            <a
-              href={banner.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full h-full relative"
-            >
-              <div className="relative w-full h-full">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-10 p-4 bg-white bg-opacity-80 rounded-lg shadow-sm">
+            {/* 在移动端显示在上方的图片 */}
+            <div className="w-full md:hidden mb-4">
+              <Link href={banner.url}>
                 <Image
                   src={banner.imageUrl}
                   alt={banner.title}
-                  fill
-                  sizes="100vw"
-                  priority
-                  className="object-cover transition-transform duration-300 hover:scale-105"
+                  width={450}
+                  height={150}
+                  className="rounded-md object-cover shadow-sm w-full"
+                  unoptimized
                 />
-              </div>
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-b from-transparent to-black/50 bg-opacity-50 text-white py-3 px-4">
-                <h3 className="text-lg font-medium">{banner.title}</h3>
-              </div>
-            </a>
+              </Link>
+            </div>
+
+            {/* 标题和描述 */}
+            <div className="p-4 w-full md:w-auto">
+              <Link
+                href={banner.url}
+                className="text-2xl font-bold text-brand-400 hover:text-gray-800 hover:underline transition-all duration-200 block"
+              >
+                {banner.title}
+              </Link>
+              {banner.description && (
+                <p className="text-gray-500 text-sm mt-2 leading-6">{banner.description}</p>
+              )}
+            </div>
+
+            {/* 在桌面端显示在右侧的图片 */}
+            <div className="hidden md:block">
+              <Link href={banner.url}>
+                <Image
+                  src={banner.imageUrl}
+                  alt={banner.title}
+                  width={450}
+                  height={150}
+                  className="rounded-md object-cover shadow-sm"
+                  unoptimized
+                />
+              </Link>
+            </div>
           </div>
         )}
 
@@ -193,16 +196,14 @@ export default async function Home() {
         </div>
 
         {/* 热门网站 */}
-        {popularServices.length > 0 && (
-          <div className="mb-10">
-            <h2 className="font-bold text-2xl mb-2 text-gray-800 pb-2">热门</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {popularServices.map(service => (
-                <ServiceCard key={service.id} service={service} />
-              ))}
-            </div>
+        <div className="mb-10">
+          <h2 className="font-bold text-2xl mb-2 text-gray-800 pb-2">热门</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {popularServices.map(service => (
+              <ServiceCard key={service.id} service={service} />
+            ))}
           </div>
-        )}
+        </div>
 
         {/* 所有分类及网站 */}
         <div className="space-y-10">

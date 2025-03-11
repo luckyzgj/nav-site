@@ -22,9 +22,15 @@ npx prisma generate
 echo "清理缓存..."
 ./clear-cache.sh
 
-# 应用数据库迁移（如果需要）
-# echo "应用数据库迁移..."
-# npx prisma migrate deploy
+# 应用数据库迁移
+echo "应用数据库迁移..."
+# 选择以下两种方式之一：
+
+# 方式一：使用手动SQL迁移（推荐，适用于有迁移问题的情况）
+./scripts/deploy-db.sh
+
+# 方式二：使用Prisma官方迁移（适用于迁移历史正常的情况）
+# ./scripts/prisma-deploy.sh
 
 # 构建应用
 echo "构建应用..."

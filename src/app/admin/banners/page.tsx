@@ -30,6 +30,7 @@ interface Banner {
   title: string;
   url: string;
   imageUrl: string;
+  description?: string;
   isActive: boolean;
   sortOrder: number;
   createdAt: string;
@@ -40,6 +41,7 @@ interface BannerFormValues {
   title: string;
   url: string;
   imageUrl: string;
+  description?: string;
   isActive: boolean;
   sortOrder: number;
 }
@@ -98,6 +100,7 @@ export default function BannersPage() {
       title: banner.title,
       url: banner.url,
       imageUrl: banner.imageUrl,
+      description: banner.description,
       isActive: banner.isActive,
       sortOrder: banner.sortOrder,
     });
@@ -303,6 +306,14 @@ export default function BannersPage() {
       ellipsis: true,
     },
     {
+      title: '描述',
+      dataIndex: 'description',
+      key: 'description',
+      ellipsis: true,
+      width: 200,
+      render: text => text || '-',
+    },
+    {
       title: '链接',
       dataIndex: 'url',
       key: 'url',
@@ -384,6 +395,14 @@ export default function BannersPage() {
             rules={[{ required: true, message: '请输入链接地址' }]}
           >
             <Input placeholder="请输入链接地址" />
+          </Form.Item>
+
+          <Form.Item
+            name="description"
+            label="描述"
+            rules={[{ required: false, message: '请输入描述' }]}
+          >
+            <Input.TextArea placeholder="请输入描述" rows={3} showCount maxLength={200} />
           </Form.Item>
 
           <Form.Item

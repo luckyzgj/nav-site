@@ -51,6 +51,7 @@ export async function POST(request: NextRequest) {
         title: body.title,
         url: body.url,
         imageUrl: body.imageUrl,
+        description: body.description || null,
         isActive: body.isActive !== undefined ? body.isActive : true,
         sortOrder: body.sortOrder || 0,
       },

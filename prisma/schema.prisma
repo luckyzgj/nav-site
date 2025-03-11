@@ -54,12 +54,13 @@ model Setting {
 }
 
 model Banner {
-  id        Int      @id @default(autoincrement())
-  title     String
-  url       String
-  imageUrl  String
-  isActive  Boolean  @default(true)
-  sortOrder Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  title       String
+  url         String
+  imageUrl    String
+  description String?  @db.Text
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
