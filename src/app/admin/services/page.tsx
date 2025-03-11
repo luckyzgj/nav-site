@@ -330,6 +330,13 @@ export default function ServicesPage() {
       sorter: (a: Service, b: Service) => a.name.localeCompare(b.name),
     },
     {
+      title: '分类',
+      dataIndex: 'categoryName',
+      key: 'categoryName',
+      width: 120,
+      sorter: (a: Service, b: Service) => a.categoryName?.localeCompare(b.categoryName || '') || 0,
+    },
+    {
       title: '点击量',
       dataIndex: 'clickCount',
       key: 'clickCount',
