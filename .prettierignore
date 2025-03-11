@@ -26,4 +26,8 @@ yarn-error.log*
 .DS_Store
 *.pem
 coverage/
-.vercel 
+.vercel
+
+# 第三方代码和生成的文件
+public/
+prisma/migrations/ 

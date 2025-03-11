@@ -10,6 +10,12 @@ echo "版本: $VERSION"
 echo "构建时间: $BUILD_TIME"
 echo "构建ID: $BUILD_ID"
 
+# 设置脚本执行权限
+echo "设置脚本执行权限..."
+chmod +x *.sh
+chmod +x scripts/*.sh
+echo "脚本权限设置完成"
+
 # 安装依赖
 echo "安装依赖..."
 npm install
@@ -22,15 +28,9 @@ npx prisma generate
 echo "清理缓存..."
 ./clear-cache.sh
 
-# 应用数据库迁移
-echo "应用数据库迁移..."
-# 选择以下两种方式之一：
-
-# 方式一：使用手动SQL迁移（推荐，适用于有迁移问题的情况）
-./scripts/deploy-db.sh
-
-# 方式二：使用Prisma官方迁移（适用于迁移历史正常的情况）
-# ./scripts/prisma-deploy.sh
+# 格式化代码（修复格式问题）
+echo "格式化代码..."
+npm run format
 
 # 构建应用
 echo "构建应用..."

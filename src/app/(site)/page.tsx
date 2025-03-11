@@ -136,7 +136,7 @@ export default async function Home() {
           <div className="flex flex-col md:flex-row justify-between items-center mb-10 p-4 bg-white bg-opacity-80 rounded-lg shadow-sm">
             {/* 在移动端显示在上方的图片 */}
             <div className="w-full md:hidden mb-4">
-              <Link href={banner.url}>
+              <Link href={banner.url} target="_blank">
                 <Image
                   src={banner.imageUrl}
                   alt={banner.title}
@@ -153,6 +153,7 @@ export default async function Home() {
               <Link
                 href={banner.url}
                 className="text-2xl font-bold text-brand-400 hover:text-gray-800 hover:underline transition-all duration-200 block"
+                target="_blank"
               >
                 {banner.title}
               </Link>

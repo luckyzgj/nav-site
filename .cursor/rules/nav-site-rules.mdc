@@ -1,5 +1,5 @@
 ---
-description: Help to better understand the technical architecture of the project and set some constraints
+description: 
 globs: 
 alwaysApply: false
 ---
@@ -7,4 +7,3 @@ alwaysApply: false
 
 - Frontend framework: "/app/(site)" uses Tailwind, "/app/admin" uses Ant Design, please do not use Tailwind in "/app/admin" as much as possible
 - Due to compatibility issues between Ant Design 5.0 and React 19, it is necessary to reference compatibility packages in the application entry under /app/admin: import '@ant-design/v5-patch-for-react-19'
-- Please kill the previous dev port before running "npm run dev", as I always use port 3000 for local dev debugging
