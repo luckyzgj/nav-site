@@ -45,7 +45,7 @@ export async function generateMetadata({ params, searchParams }: TagPageProps): 
   const settings = await getSiteSettings();
 
   // 使用标签的名称生成标题和描述
-  const title = `${tag.name}相关的AI应用和服务 - ${settings.siteName}`;
+  const title = `${tag.name}相关的AI应用和服务，${tag.name}相关网站 - ${settings.siteName}`;
   const description = `"${tag.name}"相关的所有AI应用和服务`;
 
   return {

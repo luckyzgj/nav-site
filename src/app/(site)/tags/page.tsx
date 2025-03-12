@@ -19,8 +19,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: `标签列表 - ${settings.siteName}`,
-    description: `浏览${settings.siteName}上的所有标签分类`,
-    keywords: `标签,分类,服务,应用,${settings.siteKeywords || ''}`,
+    description: `浏览${settings.siteName}上的所有AI标签分类`,
+    keywords: `标签,分类,AI,应用,${settings.siteKeywords || ''}`,
   };
 }
 
@@ -88,73 +88,73 @@ export default async function TagsPage() {
         </Link>
       </div>
 
-      <div className="bg-white bg-opacity-60 rounded-lg shadow-sm p-6 mb-6">
-        <div className="mb-4">
-          <h1 className="text-2xl font-bold text-gray-700 mb-2">标签列表</h1>
-          <p className="text-gray-600">
-            共 <span className="font-medium">{tags.length}</span> 个标签
-          </p>
-        </div>
-
-        {/* 热门标签 */}
-        {popularTags.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold text-gray-700 mb-4">热门标签</h2>
-            <div className="flex flex-wrap gap-3">
-              {popularTags.map(tag => (
-                <Link
-                  key={tag.id}
-                  href={`/tag/${encodeURIComponent(tag.name)}`}
-                  className="px-4 py-2 bg-brand-50 text-brand-600 rounded-full hover:bg-brand-100 transition-colors flex items-center"
-                >
-                  <span>{tag.name}</span>
-                  <span className="ml-2 bg-brand-100 text-brand-700 text-xs px-2 py-1 rounded-full">
-                    {tag.serviceCount}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* 常规标签 */}
-        {regularTags.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold text-gray-700 mb-4">其他标签</h2>
-            <div className="flex flex-wrap gap-3">
-              {regularTags.map(tag => (
-                <Link
-                  key={tag.id}
-                  href={`/tag/${encodeURIComponent(tag.name)}`}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition-colors flex items-center"
-                >
-                  <span>{tag.name}</span>
-                  <span className="ml-2 bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                    {tag.serviceCount}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* 未使用的标签 */}
-        {unusedTags.length > 0 && (
-          <div>
-            <h2 className="text-xl font-semibold text-gray-700 mb-4">未使用的标签</h2>
-            <div className="flex flex-wrap gap-3">
-              {unusedTags.map(tag => (
-                <span
-                  key={tag.id}
-                  className="px-4 py-2 bg-gray-50 text-gray-400 rounded-full cursor-not-allowed"
-                >
-                  {tag.name}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
+      <div className="bg-white bg-opacity-60 rounded-lg shadow-sm p-6 mb-6 flex items-center">
+        <h1 className="text-3xl font-bold text-gray-700">标签列表</h1>
+        <p className="text-gray-500 ml-4">
+          共 <span className="font-medium">{tags.length}</span> 个标签
+        </p>
       </div>
+
+      {/* 热门标签 */}
+      {popularTags.length > 0 && (
+        <div className="bg-white bg-opacity-60 rounded-lg shadow-sm p-6 mb-6">
+          <h2 className="text-xl font-semibold text-gray-700 mb-4">热门标签</h2>
+          <div className="flex flex-wrap gap-3">
+            {popularTags.map(tag => (
+              <Link
+                key={tag.id}
+                href={`/tag/${encodeURIComponent(tag.name)}`}
+                className="px-4 py-2 bg-white border-2 border-brand-100 text-brand-400 shadow-sm rounded-full hover:border-brand-200 transition-colors flex items-center"
+              >
+                <span className="text-brand-200 mr-2">#</span>
+                <span>{tag.name}</span>
+                <span className="ml-2 bg-brand-100 text-brand-400 text-xs px-2 py-1 rounded-full">
+                  {tag.serviceCount}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 常规标签 */}
+      {regularTags.length > 0 && (
+        <div className="bg-white bg-opacity-60 rounded-lg shadow-sm p-6 mb-6">
+          <h2 className="text-xl font-semibold text-gray-700 mb-4">其他标签</h2>
+          <div className="flex flex-wrap gap-3">
+            {regularTags.map(tag => (
+              <Link
+                key={tag.id}
+                href={`/tag/${encodeURIComponent(tag.name)}`}
+                className="px-4 py-2 bg-white text-gray-700 rounded-full shadow-sm border-2 border-gray-200 hover:border-gray-300 transition-colors flex items-center"
+              >
+                <span className="text-gray-300 mr-2">#</span>
+                <span>{tag.name}</span>
+                <span className="ml-2 bg-gray-200 text-gray-500 text-xs px-2 py-1 rounded-full">
+                  {tag.serviceCount}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 未使用的标签 */}
+      {unusedTags.length > 0 && (
+        <div>
+          <h2 className="text-xl font-semibold text-gray-700 mb-4">未使用的标签</h2>
+          <div className="flex flex-wrap gap-3">
+            {unusedTags.map(tag => (
+              <span
+                key={tag.id}
+                className="px-4 py-2 bg-gray-50 text-gray-400 rounded-full cursor-not-allowed"
+              >
+                {tag.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -62,7 +62,7 @@ export default function Navbar({ siteName }: NavbarProps) {
                 <Link
                   href="/tags"
                   className={`hover:text-brand-400 transition-colors ${
-                    pathname === '/tags' ? 'font-semibold text-brand-400' : ''
+                    pathname === '/tags' ? 'font-medium text-brand-400' : ''
                   }`}
                 >
                   标签
@@ -72,7 +72,7 @@ export default function Navbar({ siteName }: NavbarProps) {
                 <Link
                   href="/admin"
                   className={`hover:text-brand-400 transition-colors ${
-                    pathname === '/admin' ? 'font-semibold text-brand-400' : ''
+                    pathname === '/admin' ? 'font-medium text-brand-400' : ''
                   }`}
                 >
                   管理
