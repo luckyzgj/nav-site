@@ -1,8 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import { getSiteSettings } from '@/utils/settings';
-
-const inter = Inter({ subsets: ['latin'] });
 
 // 使用动态元数据
 export async function generateMetadata(): Promise<Metadata> {
@@ -29,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
-      <body className={inter.className}>{children}</body>
+      <body>{children}</body>
     </html>
   );
 }

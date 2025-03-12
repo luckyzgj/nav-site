@@ -1,8 +1,12 @@
 import React from 'react';
 
-export function NoData() {
+interface NoDataProps {
+  className?: string;
+}
+
+export function NoData({ className = '' }: NoDataProps) {
   return (
-    <svg width="252" height="294">
+    <svg width="252" height="294" className={className}>
       <title>No Found</title>
       <defs>
         <path d="M0 .387h251.772v251.772H0z"></path>

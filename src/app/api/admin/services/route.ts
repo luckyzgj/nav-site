@@ -17,27 +17,75 @@ export async function GET(request: NextRequest) {
       return unauthorizedResponse();
     }
 
-    // 获取所有服务，包括分类信息
+    // 获取分页参数
+    const searchParams = request.nextUrl.searchParams;
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const pageSize = parseInt(searchParams.get('pageSize') || '0', 10); // 默认为0表示不分页
+    const categoryId = searchParams.get('categoryId');
+
+    // 构建查询条件
+    const where = categoryId ? { categoryId: parseInt(categoryId, 10) } : {};
+
+    // 获取总数
+    const total = await prisma.service.count({ where });
+
+    // 获取数据（如果 pageSize 为 0 则不分页）
     const services = await prisma.service.findMany({
-      include: {
+      where,
+      select: {
+        id: true,
+        name: true,
+        url: true,
+        description: true,
+        icon: true,
+        clickCount: true,
+        categoryId: true,
+        createdAt: true,
+        updatedAt: true,
         category: {
           select: {
             name: true,
+          },
+        },
+        tags: {
+          select: {
+            tag: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
           },
         },
       },
       orderBy: {
         id: 'desc',
       },
+      ...(pageSize > 0
+        ? {
+            skip: (page - 1) * pageSize,
+            take: pageSize,
+          }
+        : {}),
     });
 
-    // 格式化数据，添加分类名称
+    // 格式化数据，添加分类名称和标签
     const formattedServices = services.map(service => ({
       ...service,
       categoryName: service.category.name,
+      tags: service.tags.map(st => st.tag),
     }));
 
-    return successResponse(formattedServices);
+    return successResponse({
+      data: {
+        data: formattedServices,
+        pagination: {
+          current: page,
+          pageSize,
+          total,
+        },
+      },
+    });
   } catch (error) {
     return serverErrorResponse(error);
   }

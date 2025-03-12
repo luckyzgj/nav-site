@@ -12,13 +12,13 @@ export default function AboutPage() {
       <div className="pl-4 relative -bottom-1">
         <Link
           href="/"
-          className="text-brand-300 hover:text-brand-400 bg-white bg-opacity-80 pl-2 pr-3.5 py-1 rounded-t-lg text-sm inline-flex items-center"
+          className="text-brand-300 hover:text-brand-400 bg-white bg-opacity-80 pl-2 pr-3.5 py-2 rounded-t-lg text-sm inline-flex items-center"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="text-brand-300"
-            width="24"
-            height="24"
+            width="20"
+            height="20"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"

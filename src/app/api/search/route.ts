@@ -1,36 +1,84 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { successResponse, errorResponse, serverErrorResponse } from '@/utils/api';
+import { successResponse, serverErrorResponse } from '@/utils/api';
+import { Prisma } from '@prisma/client';
+import { redisHelper } from '@/lib/redis';
+
+// 缓存时间（秒）
+const CACHE_TTL = 60 * 5; // 5分钟
 
 // 基于MySQL的搜索API
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
-    // 获取查询参数
-    const searchParams = request.nextUrl.searchParams;
-    const query = searchParams.get('q');
+    const { searchParams } = new URL(request.url);
+    const query = searchParams.get('q') || '';
+    const tagParam = searchParams.get('tag') || '';
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const pageSize = parseInt(searchParams.get('pageSize') || '12', 10);
 
-    // 如果没有查询参数，返回错误
-    if (!query) {
-      return errorResponse('搜索关键词不能为空');
+    // 构建缓存键
+    const cacheKey = `search:${query}:${tagParam}:${page}:${pageSize}`;
+
+    // 尝试从缓存获取结果
+    const cachedResult = await redisHelper.get(cacheKey);
+    if (cachedResult) {
+      return successResponse(cachedResult);
     }
 
-    // 使用MySQL的LIKE查询搜索服务
+    // 构建查询条件
+    const whereCondition: Prisma.ServiceWhereInput = {
+      OR: [{ name: { contains: query } }, { description: { contains: query } }],
+    };
+
+    // 如果有标签参数，添加标签过滤条件
+    if (tagParam) {
+      whereCondition.tags = {
+        some: {
+          tag: {
+            name: tagParam,
+          },
+        },
+      };
+    }
+
+    // 获取总数
+    const total = await prisma.service.count({
+      where: whereCondition,
+    });
+
+    // 使用MySQL的查询搜索服务
     const services = await prisma.service.findMany({
-      where: {
-        OR: [{ name: { contains: query } }, { description: { contains: query } }],
-      },
-      include: {
+      where: whereCondition,
+      select: {
+        id: true,
+        name: true,
+        url: true,
+        description: true,
+        icon: true,
+        clickCount: true,
+        categoryId: true,
         category: {
           select: {
             name: true,
             slug: true,
           },
         },
+        tags: {
+          select: {
+            tag: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
         clickCount: 'desc',
       },
-      take: 50,
+      take: pageSize,
+      skip: (page - 1) * pageSize,
     });
 
     // 格式化结果
@@ -44,9 +92,24 @@ export async function GET(request: NextRequest) {
       categoryId: service.categoryId,
       categoryName: service.category.name,
       categorySlug: service.category.slug,
+      tags: service.tags.map(st => st.tag),
     }));
 
-    return successResponse(formattedServices);
+    const result = {
+      data: formattedServices,
+      pagination: {
+        current: page,
+        pageSize,
+        total,
+      },
+    };
+
+    // 缓存结果
+    await redisHelper.set(cacheKey, result, {
+      ex: CACHE_TTL,
+    });
+
+    return successResponse(result);
   } catch (error) {
     console.error('搜索失败:', error);
     return serverErrorResponse(error);

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, FormEvent, KeyboardEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { SearchIcon } from './icons/SearchIcon';
+import { TagIcon } from './icons/TagIcon';
 import { SearchResult } from '@/types/api';
 
 // 添加自定义滚动条样式
@@ -136,8 +137,14 @@ export default function LiveSearch() {
 
   // 处理结果点击
   const handleResultClick = async (result: SearchResult) => {
+    // 如果是标签结果，直接跳转到标签页面
+    if (result.isTag || result.id < 0) {
+      router.push(result.url);
+      return;
+    }
+
     try {
-      // 记录点击
+      // 记录点击 - 只对服务进行记录，不对标签记录
       await fetch(`/api/services/${result.id}/click`, { method: 'POST' });
     } catch (error) {
       if (process.env.NODE_ENV === 'development') {
@@ -269,7 +276,11 @@ export default function LiveSearch() {
                 >
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex-shrink-0 w-10 h-10 relative">
-                      {result.icon ? (
+                      {result.isTag ? (
+                        <div className="w-10 h-10 bg-brand-50 rounded-lg flex items-center justify-center text-brand-400">
+                          <TagIcon className="w-5 h-5" />
+                        </div>
+                      ) : result.icon ? (
                         <Image
                           src={result.icon}
                           alt={result.name}
@@ -278,20 +289,21 @@ export default function LiveSearch() {
                           unoptimized={result.icon.endsWith('.svg')}
                         />
                       ) : (
-                        <div className="w-10 h-10 bg-brand-100 rounded-lg flex items-center justify-center text-brand-500 font-medium">
+                        <div className="w-10 h-10 bg-brand-100 rounded-lg flex items-center justify-center text-brand-400 font-medium">
                           {result.name.charAt(0)}
                         </div>
                       )}
                     </div>
                     <div className="flex-1">
                       <div className="text-sm font-medium text-gray-900 flex items-center">
+                        {result.isTag && <span className="text-brand-400 mr-1">#</span>}
                         {result.name}
                       </div>
                       <div className="text-xs text-gray-400 line-clamp-1 mt-0.5">
                         {result.description}
                       </div>
                     </div>
-                    <div className="px-3 py-1 text-xs font-normal text-brand-300 bg-brand-100 rounded-full flex items-center">
+                    <div className="px-3 py-1 text-xs font-normal rounded-full flex items-center text-brand-300 bg-brand-100">
                       {result.categoryName}
                     </div>
                   </div>

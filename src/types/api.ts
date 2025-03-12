@@ -15,6 +15,8 @@ export interface SearchResult {
   categoryId: number;
   categoryName: string;
   categorySlug: string;
+  isTag?: boolean; // 标识是否为标签结果
+  tagId?: number; // 标签ID，当isTag为true时有效
 }
 
 // 登录请求类型

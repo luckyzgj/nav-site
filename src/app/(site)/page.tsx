@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import CategorySection from '@/components/CategorySection';
 import ServiceCard from '@/components/ServiceCard';
-import { Category, ServiceWithCategory } from '@/types';
+import { Category, ServiceWithCategory, Tag } from '@/types';
 import SmoothScrollScript from '@/components/SmoothScrollScript';
 import BackToTopButton from '@/components/BackToTopButton';
 import CategoryNavStyles from '@/components/CategoryNavStyles';
@@ -46,14 +46,73 @@ async function getPopularServices(): Promise<ServiceWithCategory[]> {
           slug: true,
         } as { name: boolean; slug: boolean },
       },
+      tags: {
+        include: {
+          tag: true,
+        },
+      },
     },
   });
 
+  // 格式化结果，添加标签信息
   return popularServices.map(service => ({
     ...service,
     categoryName: service.category.name,
     categorySlug: service.category.slug,
-  })) as unknown as ServiceWithCategory[];
+    tags: service.tags.map(st => st.tag),
+  }));
+}
+
+// 获取热门标签
+async function getPopularTagsByCategory(): Promise<Record<number, Tag[]>> {
+  // 获取所有服务标签关联
+  const serviceTags = await prisma.serviceTag.findMany({
+    include: {
+      service: {
+        select: {
+          categoryId: true,
+        },
+      },
+      tag: true,
+    },
+  });
+
+  // 按分类ID分组标签
+  const tagsByCategory: Record<number, Map<number, { tag: Tag; count: number }>> = {};
+
+  // 统计每个分类下每个标签的使用次数
+  for (const serviceTag of serviceTags) {
+    const categoryId = serviceTag.service.categoryId;
+    const tag = serviceTag.tag;
+
+    if (!tagsByCategory[categoryId]) {
+      tagsByCategory[categoryId] = new Map();
+    }
+
+    if (!tagsByCategory[categoryId].has(tag.id)) {
+      tagsByCategory[categoryId].set(tag.id, { tag, count: 0 });
+    }
+
+    const tagData = tagsByCategory[categoryId].get(tag.id);
+    if (tagData) {
+      tagData.count += 1;
+    }
+  }
+
+  // 转换为最终结果格式，每个分类取前5个热门标签
+  const result: Record<number, Tag[]> = {};
+
+  for (const [categoryId, tagsMap] of Object.entries(tagsByCategory)) {
+    const categoryIdNum = Number(categoryId);
+    const sortedTags = Array.from(tagsMap.values())
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5)
+      .map(item => item.tag);
+
+    result[categoryIdNum] = sortedTags;
+  }
+
+  return result;
 }
 
 // 定义Banner类型
@@ -92,12 +151,15 @@ export default async function Home() {
   const categories = await getCategoriesWithServices();
   const popularServices = await getPopularServices();
   const banner = await getActiveBanner();
+  const tagsByCategory = await getPopularTagsByCategory();
 
   return (
     <div className="relative">
       {/* 左侧分类导航 - 固定在左侧，不影响主内容宽度 */}
       <div className="hidden xl:block w-30 fixed left-[max(0px,calc(50%-610px))] top-[103px] bg-white bg-opacity-80 backdrop-blur-sm shadow-sm rounded-lg overflow-y-auto max-h-[calc(100vh-120px)] z-10">
-        <h2 className="font-medium text-brand-400 px-3 py-1.5 border-b-2 border-brand-50">分类</h2>
+        <h2 className="font-medium text-brand-400 px-3 py-1.5 border-b-2 border-b-brand-50 border-t-4 border-t-brand-300">
+          分类
+        </h2>
         <div className="flex flex-col space-y-1 p-2">
           {categories.map(category => (
             <a
@@ -147,16 +209,15 @@ export default async function Home() {
                   width={450}
                   height={150}
                   className="rounded-md object-cover shadow-sm w-full"
-                  unoptimized
                 />
               </Link>
             </div>
 
             {/* 标题和描述 */}
-            <div className="p-4 w-full md:w-auto">
+            <div className="p-4 w-full md:w-1/2 md:flex-shrink-0 md:pr-8">
               <Link
                 href={banner.url}
-                className="text-2xl font-bold text-brand-400 hover:text-gray-800 hover:underline transition-all duration-200 block"
+                className="text-2xl font-medium text-brand-400 hover:text-gray-800 hover:underline transition-all duration-200 block"
                 target="_blank"
               >
                 {banner.title}
@@ -167,14 +228,14 @@ export default async function Home() {
             </div>
 
             {/* 在桌面端显示在右侧的图片 */}
-            <div className="hidden md:block">
-              <Link href={banner.url}>
+            <div className="hidden md:block md:w-1/2 md:flex-shrink-0">
+              <Link href={banner.url} target="_blank">
                 <Image
                   src={banner.imageUrl}
                   alt={banner.title}
                   width={450}
                   height={150}
-                  className="rounded-md object-cover shadow-sm"
+                  className="rounded-md object-cover shadow-sm w-full"
                   unoptimized
                 />
               </Link>
@@ -202,7 +263,10 @@ export default async function Home() {
 
         {/* 热门网站 */}
         <div className="mb-10">
-          <h2 className="font-bold text-2xl mb-2 text-gray-800 pb-2">热门</h2>
+          <h2 className="font-bold text-2xl mb-4 text-gray-800 pb-2 -space-y-2 inline-block">
+            <span>热门</span>
+            <span className="bg-brand-200 h-2 block w-full"></span>
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {popularServices.map(service => (
               <ServiceCard key={service.id} service={service} />
@@ -217,6 +281,7 @@ export default async function Home() {
               key={category.id}
               category={category}
               services={category.services || []}
+              tags={tagsByCategory[category.id] || []}
             />
           ))}
         </div>

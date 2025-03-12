@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+const config = {
   images: {
     domains: ['localhost'],
     unoptimized: process.env.NODE_ENV === 'development',
@@ -34,4 +34,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+export default config;

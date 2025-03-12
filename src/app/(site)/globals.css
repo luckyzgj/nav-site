@@ -6,7 +6,7 @@
   --foreground-rgb: 0, 0, 0;
   --background-rgb: 255, 247, 237;
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #374151;
   --background-gradient: linear-gradient(160deg, #ecfdf5 0%, #f7fee7 75%, #fdf2f8 100%);
 }
 
@@ -27,7 +27,9 @@
 }
 
 body {
-  font-family: 'Inter', Arial, Helvetica, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
+    sans-serif;
   @apply text-gray-800 bg-brand-50;
 }
 

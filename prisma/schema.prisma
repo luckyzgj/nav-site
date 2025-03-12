@@ -23,18 +23,22 @@ model Category {
 }
 
 model Service {
-  id          Int      @id @default(autoincrement())
-  name        String
-  url         String
-  description String   @db.Text
-  icon        String?
-  clickCount  Int      @default(0)
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(255)
+  url         String        @db.VarChar(255)
+  description String        @db.Text
+  icon        String?       @db.VarChar(255)
+  clickCount  Int           @default(0)
   categoryId  Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  category    Category @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  category    Category      @relation(fields: [categoryId], references: [id])
+  tags        ServiceTag[]
 
   @@index([categoryId])
+  @@index([name])
+  @@index([description(length: 768)])
+  @@index([clickCount])
 }
 
 model Admin {
@@ -63,4 +67,28 @@ model Banner {
   sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+// 标签模型
+model Tag {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique @db.VarChar(255)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  services    ServiceTag[]
+
+  @@index([name])
+}
+
+// 服务与标签的多对多关联模型
+model ServiceTag {
+  serviceId   Int
+  tagId       Int
+  service     Service       @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  tag         Tag           @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  createdAt   DateTime      @default(now())
+
+  @@id([serviceId, tagId])
+  @@index([serviceId])
+  @@index([tagId])
 }

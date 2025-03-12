@@ -1,9 +1,17 @@
 'use client';
 
 import Image from 'next/image';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useServiceClick } from '@/hooks/useServiceClick';
 import { Tooltip } from 'antd';
+
+// 定义Tag类型
+type Tag = {
+  id: number;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 // 定义Service类型
 type Service = {
@@ -14,8 +22,10 @@ type Service = {
   icon: string | null;
   categoryId: number;
   categoryName?: string;
+  categorySlug?: string;
   createdAt?: Date;
   updatedAt?: Date;
+  tags?: Tag[];
 };
 
 interface ServiceCardProps {
@@ -38,19 +48,13 @@ const tooltipStyles = {
 export default function ServiceCard({ service }: ServiceCardProps) {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const isMounted = useRef(true);
+  const [isVisible, setIsVisible] = useState(false);
   const handleServiceClick = useServiceClick();
-
-  // 组件挂载/卸载处理
-  useEffect(() => {
-    isMounted.current = true;
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
 
   // 图片加载处理
   useEffect(() => {
+    let isSubscribed = true;
+
     // 重置状态
     setIsImageLoaded(false);
     setHasError(false);
@@ -69,14 +73,14 @@ export default function ServiceCard({ service }: ServiceCardProps) {
     img.src = service.icon;
 
     const handleLoad = () => {
-      if (isMounted.current) {
+      if (isSubscribed) {
         imageCache[service.icon!] = true;
         setIsImageLoaded(true);
       }
     };
 
     const handleError = () => {
-      if (isMounted.current) {
+      if (isSubscribed) {
         setHasError(true);
         setIsImageLoaded(true); // 即使出错也标记为已加载，以隐藏loading状态
       }
@@ -92,33 +96,34 @@ export default function ServiceCard({ service }: ServiceCardProps) {
 
     // 清理函数
     return () => {
+      isSubscribed = false;
       img.removeEventListener('load', handleLoad);
       img.removeEventListener('error', handleError);
     };
   }, [service.icon]);
 
-  const onClick = () => {
+  const onClick = useCallback(() => {
     handleServiceClick(service.id, service.url);
-  };
+  }, [handleServiceClick, service.id, service.url]);
 
   // 渲染首字母图标
-  const renderInitial = () => (
-    <div className="w-10 h-10 bg-brand-100 rounded-lg flex items-center justify-center text-brand-500 text-xl font-bold">
-      {service.name.charAt(0).toUpperCase()}
-    </div>
+  const renderInitial = useCallback(
+    () => (
+      <div className="w-10 h-10 bg-brand-100 rounded-lg flex items-center justify-center text-brand-500 text-xl font-bold">
+        {service.name.charAt(0).toUpperCase()}
+      </div>
+    ),
+    [service.name]
   );
 
-  return (
-    <Tooltip
-      title={service.description}
-      placement="bottom"
-      mouseEnterDelay={0.3}
-      color="rgba(255, 115, 78, 0.95)"
-      styles={tooltipStyles}
-    >
+  // 使用 useMemo 缓存卡片内容
+  const cardContent = useMemo(
+    () => (
       <div
         className="bg-white bg-opacity-80 rounded-lg shadow-sm outline-2 outline-none hover:outline-brand-200 hover:bg-opacity-90 transition-all duration-300 overflow-hidden cursor-pointer"
         onClick={onClick}
+        onMouseEnter={() => setIsVisible(true)}
+        onMouseLeave={() => setIsVisible(false)}
       >
         <div className="p-3 flex items-center space-x-2">
           {/* 左侧图标 */}
@@ -155,6 +160,28 @@ export default function ServiceCard({ service }: ServiceCardProps) {
           </div>
         </div>
       </div>
+    ),
+    [service, isImageLoaded, hasError, onClick, renderInitial]
+  );
+
+  return (
+    <Tooltip
+      title={service.description}
+      placement="bottom"
+      mouseEnterDelay={0.3}
+      color="rgba(255, 115, 78, 0.95)"
+      styles={{
+        ...tooltipStyles,
+        body: {
+          ...tooltipStyles.body,
+          opacity: isVisible ? 1 : 0,
+          transition: 'opacity 0.2s ease-in-out',
+        },
+      }}
+      open={isVisible}
+      destroyTooltipOnHide={false}
+    >
+      {cardContent}
     </Tooltip>
   );
 }

@@ -545,9 +545,9 @@ export default function CategoriesPage() {
     {
       title: '操作',
       key: 'action',
-      width: 200,
+      width: 180,
       render: (_, record, index) => (
-        <Space size="middle">
+        <Space size="small">
           <Button
             type="text"
             icon={<ArrowUpOutlined />}

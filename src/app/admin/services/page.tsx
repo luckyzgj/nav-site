@@ -17,6 +17,8 @@ import {
   Flex,
   Row,
   Col,
+  Tag as AntTag,
+  Spin,
 } from 'antd';
 import {
   PlusOutlined,
@@ -28,6 +30,7 @@ import {
 import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
 import Image from 'next/image';
 import { useAdminApp } from '@/components/AdminAppProvider';
+import type { SelectProps } from 'antd/es/select';
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -45,10 +48,17 @@ interface Service {
   categoryName?: string;
   createdAt: string;
   updatedAt: string;
+  tags?: Tag[];
 }
 
 // 分类类型定义
 interface Category {
+  id: number;
+  name: string;
+}
+
+// 标签类型定义
+interface Tag {
   id: number;
   name: string;
 }
@@ -60,21 +70,186 @@ interface ServiceFormValues {
   description: string;
   categoryId: number;
   icon?: string;
+  tagIds?: string[];
 }
+
+// 服务表单组件
+interface ServiceFormProps {
+  visible: boolean;
+  editingId: number | null;
+  initialValues?: Partial<ServiceFormValues>;
+  categories: Category[];
+  tags: Tag[];
+  fileList: UploadFile[];
+  onSave: (values: ServiceFormValues) => void;
+  onCancel: () => void;
+  onUploadChange: UploadProps['onChange'];
+  onPreview: (file: UploadFile) => void;
+}
+
+// 服务表单组件
+const ServiceForm: React.FC<ServiceFormProps> = ({
+  visible,
+  initialValues,
+  categories,
+  tags,
+  fileList,
+  onSave,
+  onCancel,
+  onUploadChange,
+  onPreview,
+}) => {
+  const [form] = Form.useForm<ServiceFormValues>();
+
+  // 当初始值变化时，重置表单
+  useEffect(() => {
+    if (visible && initialValues) {
+      form.setFieldsValue(initialValues);
+    }
+  }, [visible, initialValues, form]);
+
+  // 标签选择组件
+  const tagSelectProps: SelectProps = {
+    mode: 'tags',
+    style: { width: '100%' },
+    placeholder: '请选择标签或输入新标签，按空格、逗号或顿号创建',
+    showSearch: true,
+    options: tags.map(tag => ({
+      label: tag.name,
+      value: tag.name, // 使用标签名称作为值
+    })),
+    filterOption: (input, option) => {
+      if (!option || !option.label) return false;
+
+      // 将输入和选项标签转换为小写字符串进行比较
+      const optionLabel = String(option.label).toLowerCase();
+      const inputValue = input.toLowerCase();
+
+      // 只要标签名称包含输入的文本，就返回 true
+      return optionLabel.includes(inputValue);
+    },
+    tokenSeparators: [',', ' ', '，', '、'], // 添加全角逗号和顿号作为分隔符
+  };
+
+  return (
+    <Form
+      form={form}
+      layout="vertical"
+      onFinish={onSave}
+      preserve={false}
+      initialValues={{
+        name: '',
+        url: '',
+        description: '',
+        categoryId: undefined,
+        tagIds: [],
+        ...initialValues,
+      }}
+    >
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item
+            name="name"
+            label="网站名称"
+            rules={[{ required: true, message: '请输入网站名称' }]}
+          >
+            <Input placeholder="请输入网站名称" />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item
+            name="url"
+            label="网站地址"
+            rules={[
+              { required: true, message: '请输入网站地址' },
+              { type: 'url', message: '请输入有效的URL' },
+            ]}
+          >
+            <Input placeholder="请输入网站地址，以http://或https://开头" />
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item
+            name="categoryId"
+            label="所属分类"
+            rules={[{ required: true, message: '请选择所属分类' }]}
+          >
+            <Select placeholder="请选择所属分类">
+              {categories.map(category => (
+                <Option key={category.id} value={category.id}>
+                  {category.name}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item name="icon" label="网站图标" hidden>
+            <Input />
+          </Form.Item>
+          <Form.Item label="网站图标">
+            <Upload
+              listType="picture-card"
+              fileList={fileList}
+              onChange={onUploadChange}
+              onPreview={onPreview}
+              beforeUpload={() => false}
+              maxCount={1}
+            >
+              {fileList.length === 0 && (
+                <div>
+                  <PlusOutlined />
+                  <div style={{ marginTop: 8 }}>上传</div>
+                </div>
+              )}
+            </Upload>
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <Form.Item name="tagIds" label="标签">
+        <Select {...tagSelectProps} />
+      </Form.Item>
+
+      <Form.Item
+        name="description"
+        label="网站描述"
+        rules={[{ required: true, message: '请输入网站描述' }]}
+      >
+        <TextArea rows={4} placeholder="请输入网站描述" />
+      </Form.Item>
+
+      <Form.Item style={{ marginBottom: 0 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Button onClick={onCancel} style={{ marginRight: 8 }}>
+            取消
+          </Button>
+          <Button type="primary" htmlType="submit">
+            保存
+          </Button>
+        </div>
+      </Form.Item>
+    </Form>
+  );
+};
 
 export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [filteredServices, setFilteredServices] = useState<Service[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [form] = Form.useForm();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [formInitialValues, setFormInitialValues] = useState<Partial<ServiceFormValues>>({});
   const { message } = useAdminApp();
 
   // 获取网站列表
@@ -85,8 +260,18 @@ export default function ServicesPage() {
       const data = await response.json();
 
       if (data.success) {
-        setServices(data.data);
-        setFilteredServices(data.data);
+        const servicesList = data.data.data.data;
+
+        // 根据当前选中的分类ID筛选服务
+        if (selectedCategoryId !== null) {
+          setFilteredServices(
+            servicesList.filter((service: Service) => service.categoryId === selectedCategoryId)
+          );
+        } else {
+          setFilteredServices(servicesList);
+        }
+
+        setServices(servicesList);
       } else {
         message.error(data.message || '获取网站列表失败');
       }
@@ -96,7 +281,7 @@ export default function ServicesPage() {
     } finally {
       setLoading(false);
     }
-  }, [message]);
+  }, [message, selectedCategoryId]);
 
   // 获取分类列表
   const fetchCategories = useCallback(async () => {
@@ -115,27 +300,91 @@ export default function ServicesPage() {
     }
   }, [message]);
 
+  // 获取标签列表
+  const fetchTags = useCallback(async () => {
+    try {
+      const response = await fetch('/api/admin/tags');
+      const data = await response.json();
+
+      if (data.success) {
+        setTags(data.data.data);
+      } else {
+        message.error(data.message || '获取标签列表失败');
+      }
+    } catch (error) {
+      console.error('获取标签列表失败:', error);
+      message.error('获取标签列表失败，请稍后重试');
+    }
+  }, [message]);
+
   // 初始加载
   useEffect(() => {
     fetchServices();
     fetchCategories();
-  }, [fetchServices, fetchCategories]);
+    fetchTags();
+  }, [fetchServices, fetchCategories, fetchTags]);
 
-  // 筛选网站列表
+  // 监听服务数据变化，确保筛选条件正确应用
+  useEffect(() => {
+    if (selectedCategoryId !== null) {
+      setFilteredServices(services.filter(service => service.categoryId === selectedCategoryId));
+    } else {
+      setFilteredServices(services);
+    }
+  }, [services, selectedCategoryId]);
+
+  // 根据分类筛选网站
   const filterServices = (categoryId: number | null) => {
     setSelectedCategoryId(categoryId);
-    if (categoryId === null) {
-      setFilteredServices(services);
-    } else {
-      const filtered = services.filter(service => service.categoryId === categoryId);
-      setFilteredServices(filtered);
-    }
+    setCurrentPage(1);
   };
 
   // 重置筛选
   const resetFilter = () => {
     setSelectedCategoryId(null);
     setFilteredServices(services);
+    setCurrentPage(1);
+  };
+
+  // 获取服务的标签
+  const fetchServiceTags = async (serviceId: number) => {
+    try {
+      const response = await fetch(`/api/admin/services/${serviceId}/tags`);
+      const data = await response.json();
+
+      if (data.success) {
+        return data.data;
+      } else {
+        message.error(data.message || '获取服务标签失败');
+        return [];
+      }
+    } catch (error) {
+      console.error('获取服务标签失败:', error);
+      message.error('获取服务标签失败，请稍后重试');
+      return [];
+    }
+  };
+
+  // 更新服务的标签
+  const updateServiceTags = async (serviceId: number, tagIds: number[]) => {
+    try {
+      const response = await fetch(`/api/admin/services/${serviceId}/tags`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ tagIds }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        message.error(data.message || '更新服务标签失败');
+      }
+    } catch (error) {
+      console.error('更新服务标签失败:', error);
+      message.error('更新服务标签失败，请稍后重试');
+    }
   };
 
   // 添加或更新网站
@@ -168,6 +417,58 @@ export default function ServicesPage() {
         icon: iconPath,
       };
 
+      // 获取表单中的标签名称列表
+      const tagNames = values.tagIds || [];
+
+      // 处理标签 - 检查哪些是新标签，哪些是已存在的标签
+      const existingTagIds: number[] = [];
+      const newTagNames: string[] = [];
+
+      // 遍历表单中的标签名称
+      for (const tagName of tagNames) {
+        // 检查标签是否已存在
+        const existingTag = tags.find(tag => tag.name === tagName);
+        if (existingTag) {
+          // 如果标签已存在，添加其ID到列表
+          existingTagIds.push(existingTag.id);
+        } else {
+          // 如果标签不存在，添加到新标签列表
+          newTagNames.push(tagName);
+        }
+      }
+
+      // 创建新标签并获取它们的ID
+      const newTagIds: number[] = [];
+      for (const tagName of newTagNames) {
+        try {
+          const response = await fetch('/api/admin/tags', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name: tagName }),
+          });
+
+          const data = await response.json();
+          if (data.success) {
+            newTagIds.push(data.data.id);
+            // 添加新标签到本地状态
+            setTags(prevTags => [...prevTags, data.data]);
+          } else {
+            message.warning(`标签 "${tagName}" 创建失败: ${data.message}`);
+          }
+        } catch (error) {
+          console.error(`创建标签 "${tagName}" 失败:`, error);
+          message.warning(`标签 "${tagName}" 创建失败，请稍后重试`);
+        }
+      }
+
+      // 合并已存在的标签ID和新创建的标签ID
+      const allTagIds = [...existingTagIds, ...newTagIds];
+
+      // 从请求数据中移除tagIds，因为服务API不处理这个字段
+      delete serviceData.tagIds;
+
       // 发送请求
       const url = editingId ? `/api/admin/services/${editingId}` : '/api/admin/services';
       const method = editingId ? 'PUT' : 'POST';
@@ -183,11 +484,17 @@ export default function ServicesPage() {
       const data = await response.json();
 
       if (data.success) {
+        // 如果服务创建/更新成功，更新标签
+        const serviceId = editingId || data.data.id;
+        await updateServiceTags(serviceId, allTagIds);
+
         message.success(editingId ? '更新网站成功' : '添加网站成功');
         setModalVisible(false);
-        form.resetFields();
         setEditingId(null);
         setFileList([]);
+        setFormInitialValues({});
+
+        // 重新获取服务列表，筛选条件会在fetchServices中应用
         fetchServices();
       } else {
         message.error(data.message || (editingId ? '更新网站失败' : '添加网站失败'));
@@ -220,14 +527,21 @@ export default function ServicesPage() {
   };
 
   // 编辑网站
-  const handleEdit = (record: Service) => {
+  const handleEdit = async (record: Service) => {
     setEditingId(record.id);
-    form.setFieldsValue({
+
+    // 获取服务的标签
+    const serviceTags = await fetchServiceTags(record.id);
+    const tagNames = serviceTags.map((tag: Tag) => tag.name);
+
+    // 设置表单初始值
+    setFormInitialValues({
       name: record.name,
       url: record.url,
       description: record.description,
       categoryId: record.categoryId,
-      icon: record.icon,
+      icon: record.icon || undefined,
+      tagIds: tagNames,
     });
 
     // 设置图标预览
@@ -250,8 +564,8 @@ export default function ServicesPage() {
   // 添加网站
   const handleAdd = () => {
     setEditingId(null);
-    form.resetFields();
     setFileList([]);
+    setFormInitialValues({});
     setModalVisible(true);
   };
 
@@ -335,6 +649,23 @@ export default function ServicesPage() {
       sorter: (a: Service, b: Service) => a.categoryName?.localeCompare(b.categoryName || '') || 0,
     },
     {
+      title: '标签',
+      dataIndex: 'tags',
+      key: 'tags',
+      width: 240,
+      render: (_: unknown, record: Service) => {
+        // 获取服务的标签
+        const serviceTags = record.tags || [];
+        return (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            {serviceTags.map((tag: Tag) => (
+              <AntTag key={tag.id}>{tag.name}</AntTag>
+            ))}
+          </div>
+        );
+      },
+    },
+    {
       title: '点击量',
       dataIndex: 'clickCount',
       key: 'clickCount',
@@ -352,76 +683,72 @@ export default function ServicesPage() {
       title: '操作',
       key: 'action',
       width: 150,
-      fixed: 'right' as const,
       render: (_: unknown, record: Service) => (
-        <Space size="middle">
+        <Space size="small">
           <Button
-            type="default"
+            type="text"
             icon={<EyeOutlined />}
             onClick={() => window.open(record.url, '_blank')}
-          >
-            访问
-          </Button>
-          <Button type="default" icon={<EditOutlined />} onClick={() => handleEdit(record)}>
-            编辑
-          </Button>
+            title="访问"
+          />
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(record)}
+            title="编辑"
+          />
           <Popconfirm
-            title="确定要删除这个网站吗？"
-            description="删除后无法恢复。"
+            title="确定要删除这个网站吗?"
             onConfirm={() => handleDelete(record.id)}
             okText="确定"
             cancelText="取消"
           >
-            <Button type="primary" danger icon={<DeleteOutlined />}>
-              删除
-            </Button>
+            <Button type="text" danger icon={<DeleteOutlined />} title="删除" />
           </Popconfirm>
         </Space>
       ),
     },
   ];
 
-  // 上传按钮
-  const uploadButton = (
-    <div>
-      <PlusOutlined />
-      <div style={{ marginTop: 8 }}>上传</div>
-    </div>
-  );
-
   return (
-    <div className="admin-services-page">
+    <div>
       <Flex justify="space-between" align="center" style={{ marginBottom: 16 }}>
         <Title level={2} style={{ margin: 0 }}>
           网站管理
         </Title>
-        <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-          添加网站
-        </Button>
+        <Space>
+          <Button icon={<ReloadOutlined />} onClick={() => fetchServices()} loading={loading}>
+            刷新
+          </Button>
+          <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
+            添加网站
+          </Button>
+        </Space>
       </Flex>
 
-      {/* 分类筛选卡片 */}
-
-      <Row gutter={[10, 10]} style={{ marginBottom: 16 }}>
-        <Col>
-          <Button type={selectedCategoryId === null ? 'primary' : 'default'} onClick={resetFilter}>
-            全部
-          </Button>
-        </Col>
-        {categories.map(category => (
-          <Col key={category.id}>
-            <Button
-              type={selectedCategoryId === category.id ? 'primary' : 'default'}
-              onClick={() => filterServices(category.id)}
-            >
-              {category.name}
-            </Button>
+      <div style={{ marginBottom: 16 }}>
+        <Row gutter={16}>
+          <Col span={24}>
+            <Space wrap>
+              <Button
+                type={selectedCategoryId === null ? 'primary' : 'default'}
+                onClick={resetFilter}
+              >
+                全部
+              </Button>
+              {categories.map(category => (
+                <Button
+                  key={category.id}
+                  type={selectedCategoryId === category.id ? 'primary' : 'default'}
+                  onClick={() => filterServices(category.id)}
+                >
+                  {category.name}
+                </Button>
+              ))}
+            </Space>
           </Col>
-        ))}
-        <Col>
-          <Button icon={<ReloadOutlined />} onClick={resetFilter} title="重置筛选" />
-        </Col>
-      </Row>
+        </Row>
+      </div>
 
       <Table
         columns={columns}
@@ -434,10 +761,9 @@ export default function ServicesPage() {
           onChange: handlePageChange,
           onShowSizeChange: handlePageSizeChange,
           showSizeChanger: true,
-          pageSizeOptions: ['10', '20', '50', '100'],
-          showTotal: total => `共 ${total} 条记录`,
+          showQuickJumper: true,
+          showTotal: total => `共 ${total} 条`,
         }}
-        scroll={{ x: 'max-content' }}
       />
 
       <Modal
@@ -446,101 +772,36 @@ export default function ServicesPage() {
         onCancel={() => setModalVisible(false)}
         footer={null}
         width={700}
+        destroyOnClose={true}
       >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSave}
-          initialValues={{ categoryId: categories[0]?.id }}
+        {modalVisible && (
+          <ServiceForm
+            visible={modalVisible}
+            editingId={editingId}
+            initialValues={formInitialValues}
+            categories={categories}
+            tags={tags}
+            fileList={fileList}
+            onSave={handleSave}
+            onCancel={() => setModalVisible(false)}
+            onUploadChange={handleUploadChange}
+            onPreview={handlePreview}
+          />
+        )}
+      </Modal>
+
+      {previewImage && (
+        <Modal
+          open={!!previewImage}
+          footer={null}
+          onCancel={() => setPreviewImage(null)}
+          title="图标预览"
         >
-          <Form.Item
-            name="name"
-            label="网站名称"
-            rules={[{ required: true, message: '请输入网站名称' }]}
-          >
-            <Input placeholder="请输入网站名称" />
-          </Form.Item>
-
-          <Form.Item
-            name="url"
-            label="网站网址"
-            rules={[
-              { required: true, message: '请输入网站网址' },
-              { type: 'url', message: '请输入有效的URL' },
-            ]}
-          >
-            <Input placeholder="请输入网站网址，例如：https://example.com" />
-          </Form.Item>
-
-          <Form.Item
-            name="description"
-            label="网站简介"
-            rules={[{ required: true, message: '请输入网站简介' }]}
-          >
-            <TextArea placeholder="请输入网站简介" rows={4} showCount maxLength={500} />
-          </Form.Item>
-
-          <Form.Item
-            name="categoryId"
-            label="所属分类"
-            rules={[{ required: true, message: '请选择所属分类' }]}
-          >
-            <Select placeholder="请选择所属分类">
-              {categories.map(category => (
-                <Option key={category.id} value={category.id}>
-                  {category.name}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            name="icon"
-            label="网站图标"
-            valuePropName="file"
-            getValueFromEvent={e => e?.file}
-            extra="建议上传正方形图片，支持JPG、PNG、GIF、WebP、SVG格式，大小不超过2MB"
-          >
-            <Upload
-              listType="picture-card"
-              fileList={fileList}
-              onChange={handleUploadChange}
-              onPreview={handlePreview}
-              beforeUpload={() => false}
-              maxCount={1}
-              accept=".jpg,.jpeg,.png,.gif,.webp,.svg"
-            >
-              {fileList.length >= 1 ? null : uploadButton}
-            </Upload>
-          </Form.Item>
-
-          <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
-            <Space>
-              <Button onClick={() => setModalVisible(false)}>取消</Button>
-              <Button type="primary" htmlType="submit">
-                保存
-              </Button>
-            </Space>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* 图片预览 */}
-      <Modal open={!!previewImage} footer={null} onCancel={() => setPreviewImage(null)}>
-        <div style={{ position: 'relative', width: '100%', height: '500px' }}>
-          {previewImage && (
-            <Image
-              src={previewImage}
-              alt="预览"
-              fill
-              style={{ objectFit: 'contain' }}
-              sizes="100vw"
-              priority
-              unoptimized
-            />
-          )}
-        </div>
-      </Modal>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <Spin />
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

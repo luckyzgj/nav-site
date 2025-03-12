@@ -3,7 +3,7 @@
  *
  * 这个配置文件会覆盖 .prettierrc，并确保在所有环境中使用相同的格式化规则
  */
-module.exports = {
+export default {
   // 使用单引号而不是双引号
   singleQuote: true,
   // 在语句末尾使用分号

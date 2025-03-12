@@ -60,12 +60,12 @@ export default function Navbar({ siteName }: NavbarProps) {
             <ul className="flex space-x-6">
               <li>
                 <Link
-                  href="/about"
+                  href="/tags"
                   className={`hover:text-brand-400 transition-colors ${
-                    pathname === '/about' ? 'font-semibold text-brand-400' : ''
+                    pathname === '/tags' ? 'font-semibold text-brand-400' : ''
                   }`}
                 >
-                  关于
+                  标签
                 </Link>
               </li>
               <li>
