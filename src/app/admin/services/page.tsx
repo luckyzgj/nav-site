@@ -26,6 +26,7 @@ import {
   DeleteOutlined,
   EyeOutlined,
   ReloadOutlined,
+  SearchOutlined,
 } from '@ant-design/icons';
 import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
 import Image from 'next/image';
@@ -250,6 +251,7 @@ export default function ServicesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [formInitialValues, setFormInitialValues] = useState<Partial<ServiceFormValues>>({});
+  const [searchText, setSearchText] = useState<string>('');
   const { message } = useAdminApp();
 
   // 获取网站列表
@@ -326,12 +328,21 @@ export default function ServicesPage() {
 
   // 监听服务数据变化，确保筛选条件正确应用
   useEffect(() => {
+    let filtered = services;
+
+    // 应用分类筛选
     if (selectedCategoryId !== null) {
-      setFilteredServices(services.filter(service => service.categoryId === selectedCategoryId));
-    } else {
-      setFilteredServices(services);
+      filtered = filtered.filter(service => service.categoryId === selectedCategoryId);
     }
-  }, [services, selectedCategoryId]);
+
+    // 应用搜索筛选
+    if (searchText) {
+      const lowerSearchText = searchText.toLowerCase();
+      filtered = filtered.filter(service => service.name.toLowerCase().includes(lowerSearchText));
+    }
+
+    setFilteredServices(filtered);
+  }, [services, selectedCategoryId, searchText]);
 
   // 根据分类筛选网站
   const filterServices = (categoryId: number | null) => {
@@ -342,7 +353,13 @@ export default function ServicesPage() {
   // 重置筛选
   const resetFilter = () => {
     setSelectedCategoryId(null);
-    setFilteredServices(services);
+    setSearchText('');
+    setCurrentPage(1);
+  };
+
+  // 处理搜索
+  const handleSearch = (value: string) => {
+    setSearchText(value);
     setCurrentPage(1);
   };
 
@@ -727,8 +744,8 @@ export default function ServicesPage() {
       </Flex>
 
       <div style={{ marginBottom: 16 }}>
-        <Row gutter={16}>
-          <Col span={24}>
+        <Row gutter={16} align="middle">
+          <Col span={16}>
             <Space wrap>
               <Button
                 type={selectedCategoryId === null ? 'primary' : 'default'}
@@ -746,6 +763,17 @@ export default function ServicesPage() {
                 </Button>
               ))}
             </Space>
+          </Col>
+          <Col span={8}>
+            <Input.Search
+              placeholder="搜索网站名称"
+              allowClear
+              enterButton={<SearchOutlined />}
+              onSearch={handleSearch}
+              value={searchText}
+              onChange={e => setSearchText(e.target.value)}
+              style={{ width: '100%' }}
+            />
           </Col>
         </Row>
       </div>

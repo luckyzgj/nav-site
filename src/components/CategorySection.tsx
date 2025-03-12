@@ -18,18 +18,20 @@ export default function CategorySection({ category, services, tags = [] }: Categ
       id={`category-${category.slug}`}
       className="scroll-mt-16 md:scroll-mt-20 lg:scroll-mt-24"
     >
-      <div className="flex flex-wrap justify-between items-center mb-4 pb-2">
-        <div className="flex flex-1 items-center flex-wrap min-w-0 pr-4">
-          <h2 className="font-bold text-2xl text-gray-800 mr-10 whitespace-nowrap">
+      <div className="flex flex-wrap items-center mb-4 pb-2">
+        <div className="flex-shrink-0 mr-4">
+          <h2 className="font-bold text-2xl text-gray-800 whitespace-nowrap">
             <Link href={`/t/${category.slug}`} className="-space-y-2">
               <span className="relative -top-0.5">{category.name}</span>
               <span className="bg-brand-200 h-2 block w-full"></span>
             </Link>
           </h2>
+        </div>
 
-          {/* 分类下的热门标签 */}
-          {tags && tags.length > 0 && (
-            <div className="flex flex-wrap gap-4 overflow-hidden">
+        {/* 分类下的热门标签 */}
+        {tags && tags.length > 0 && (
+          <div className="flex-1 flex justify-center overflow-hidden">
+            <div className="flex flex-wrap gap-4 justify-center">
               {tags.map(tag => (
                 <Link
                   key={tag.id}
@@ -41,12 +43,12 @@ export default function CategorySection({ category, services, tags = [] }: Categ
                 </Link>
               ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         <Link
           href={`/t/${category.slug}`}
-          className="text-sm text-brand-300 hover:text-brand-400 shadow-sm bg-white px-3 py-1 rounded-full whitespace-nowrap"
+          className="flex-shrink-0 text-sm text-brand-300 hover:text-brand-400 shadow-sm bg-white px-3 py-1 rounded-full whitespace-nowrap ml-4"
         >
           更多
         </Link>
