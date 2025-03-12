@@ -9,6 +9,10 @@ import CategoryIcon from '@/components/CategoryIcon';
 import { Prisma } from '@prisma/client';
 import Image from 'next/image';
 import Link from 'next/link';
+
+// 设置页面不缓存，每次请求都重新渲染
+export const revalidate = 0;
+
 // 获取所有分类及其网站
 async function getCategoriesWithServices(): Promise<Category[]> {
   const categories = await prisma.category.findMany({

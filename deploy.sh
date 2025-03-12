@@ -47,6 +47,11 @@ cat > .next/static/version/info.json << EOF
 }
 EOF
 
+# 清除Nginx缓存（如果需要）
+echo "清除Nginx缓存..."
+# 取消注释并根据您的服务器配置调整以下命令
+# sudo ./scripts/clear-nginx-cache.sh
+
 # 重启应用（根据您的部署环境调整）
 echo "重启应用..."
 # pm2 restart nav-site

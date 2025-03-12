@@ -19,8 +19,10 @@ export async function middleware(request: NextRequest) {
     // 创建响应
     const response = NextResponse.next();
 
-    // 添加缓存控制头
-    response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
+    // 添加缓存控制头，防止缓存
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
 
     return response;
   }

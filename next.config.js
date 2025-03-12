@@ -13,12 +13,20 @@ const nextConfig = {
   async headers() {
     return [
       {
-        // 对所有静态资源应用这些头
+        // 对所有路由应用这些头，防止浏览器和CDN缓存
         source: '/:path*',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=0, must-revalidate',
+            value: 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
           },
         ],
       },
