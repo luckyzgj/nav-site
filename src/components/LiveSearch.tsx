@@ -277,7 +277,7 @@ export default function LiveSearch() {
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex-shrink-0 w-10 h-10 relative">
                       {result.isTag ? (
-                        <div className="w-10 h-10 bg-brand-50 rounded-lg flex items-center justify-center text-brand-400">
+                        <div className="w-10 h-10 bg-brand-50 rounded-lg flex items-center justify-center text-brand-300">
                           <TagIcon className="w-5 h-5" />
                         </div>
                       ) : result.icon ? (
@@ -295,7 +295,7 @@ export default function LiveSearch() {
                       )}
                     </div>
                     <div className="flex-1">
-                      <div className="text-sm font-medium text-gray-900 flex items-center">
+                      <div className="text-sm font-medium text-gray-800 flex items-center">
                         {result.isTag && <span className="text-brand-400 mr-1">#</span>}
                         {result.name}
                       </div>

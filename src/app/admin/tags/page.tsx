@@ -4,6 +4,8 @@
 import '@ant-design/v5-patch-for-react-19';
 import { useState, useEffect, useCallback } from 'react';
 import { Table, Button, Space, Modal, Form, Input, Popconfirm, Typography, Flex } from 'antd';
+import type { TableProps } from 'antd';
+import type { SortOrder } from 'antd/es/table/interface';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useAdminApp } from '@/components/AdminAppProvider';
 import type { Tag } from '@/types';
@@ -15,6 +17,12 @@ interface TagWithCount extends Tag {
   serviceCount: number;
 }
 
+interface Pagination {
+  current: number;
+  pageSize: number;
+  total: number;
+}
+
 export default function TagsPage() {
   const [tags, setTags] = useState<TagWithCount[]>([]);
   const [loading, setLoading] = useState(false);
@@ -23,18 +31,30 @@ export default function TagsPage() {
   const [form] = Form.useForm();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [pagination, setPagination] = useState<Pagination>({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
   const { message } = useAdminApp();
+  const [sortOrder, setSortOrder] = useState<SortOrder>('descend');
 
   // 获取标签列表
   const fetchTags = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/admin/tags');
+      const response = await fetch(
+        `/api/admin/tags?page=${currentPage}&pageSize=${pageSize}&sortOrder=${sortOrder}`
+      );
       const data = await response.json();
 
       if (data.success) {
-        const tagsList = data.data.data;
+        const { data: tagsList, pagination: paginationData } = data.data;
         setTags(tagsList);
+        // 更新分页信息
+        setPagination(paginationData);
+        setCurrentPage(paginationData.current);
+        setPageSize(paginationData.pageSize);
       } else {
         message.error(data.message || '获取标签列表失败');
       }
@@ -44,7 +64,7 @@ export default function TagsPage() {
     } finally {
       setLoading(false);
     }
-  }, [message]);
+  }, [message, currentPage, pageSize, sortOrder]);
 
   // 初始加载
   useEffect(() => {
@@ -144,6 +164,13 @@ export default function TagsPage() {
     setPageSize(size);
   };
 
+  // 处理表格变化
+  const handleTableChange: TableProps<TagWithCount>['onChange'] = (_, __, sorter) => {
+    if ('order' in sorter) {
+      setSortOrder(sorter.order || 'descend');
+    }
+  };
+
   // 表格列定义
   const columns = [
     {
@@ -162,7 +189,9 @@ export default function TagsPage() {
       dataIndex: 'serviceCount',
       key: 'serviceCount',
       width: 100,
-      sorter: (a: TagWithCount, b: TagWithCount) => a.serviceCount - b.serviceCount,
+      sorter: true,
+      sortOrder,
+      defaultSortOrder: 'descend' as SortOrder,
     },
     {
       title: '创建时间',
@@ -216,9 +245,11 @@ export default function TagsPage() {
         dataSource={tags}
         rowKey="id"
         loading={loading}
+        onChange={handleTableChange}
         pagination={{
           current: currentPage,
           pageSize: pageSize,
+          total: pagination.total,
           onChange: handlePageChange,
           onShowSizeChange: handlePageSizeChange,
           showSizeChanger: true,

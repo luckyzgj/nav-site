@@ -41,31 +41,44 @@ export default function AdminDashboard() {
 
   // 获取统计数据
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchStats = async () => {
       try {
-        // 获取统计数据
-        const statsResponse = await fetch('/api/admin/stats');
-        const statsData = await statsResponse.json();
+        const response = await fetch('/api/admin/stats');
+        const data = await response.json();
 
-        if (statsData.success) {
-          setStats(statsData.data);
-        }
-
-        // 获取热门网站
-        const popularResponse = await fetch('/api/admin/popular-services');
-        const popularData = await popularResponse.json();
-
-        if (popularData.success) {
-          setPopularServices(popularData.data);
+        if (data.success) {
+          setStats(data.data);
+        } else {
+          console.error('获取统计数据失败:', data.message);
         }
       } catch (error) {
-        console.error('获取数据失败:', error);
+        console.error('获取统计数据失败:', error);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  // 获取热门网站
+  useEffect(() => {
+    const fetchPopularServices = async () => {
+      try {
+        const response = await fetch('/api/admin/popular-services');
+        const data = await response.json();
+
+        if (data.success) {
+          setPopularServices(data.data);
+        } else {
+          console.error('获取热门网站失败:', data.message);
+        }
+      } catch (error) {
+        console.error('获取热门网站失败:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    fetchPopularServices();
   }, []);
 
   // 判断文件是否为SVG

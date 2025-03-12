@@ -8,6 +8,8 @@ import {
   serverErrorResponse,
 } from '@/utils/api';
 import { redisHelper } from '@/lib/redis';
+import { Prisma } from '@prisma/client';
+import type { Tag } from '@prisma/client';
 
 // 缓存时间（秒）
 const CACHE_TTL = 30; // 30秒
@@ -25,9 +27,10 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const page = parseInt(searchParams.get('page') || '1', 10);
     const pageSize = parseInt(searchParams.get('pageSize') || '10', 10);
+    const sortOrder = searchParams.get('sortOrder') || 'descend';
 
     // 构建缓存键
-    const cacheKey = `admin:tags:${page}:${pageSize}`;
+    const cacheKey = `admin:tags:${page}:${pageSize}:${sortOrder}`;
 
     // 尝试从缓存获取结果
     const cachedResult = await redisHelper.get(cacheKey);
@@ -35,32 +38,31 @@ export async function GET(request: NextRequest) {
       return successResponse(cachedResult);
     }
 
+    // 获取所有标签及其关联的服务数量
+    const tags = await prisma.$queryRaw<Array<Tag & { serviceCount: bigint }>>`
+      SELECT 
+        t.*,
+        COUNT(st.tagId) as serviceCount
+      FROM Tag t
+      LEFT JOIN ServiceTag st ON t.id = st.tagId
+      GROUP BY t.id
+      ORDER BY 
+        serviceCount ${sortOrder === 'descend' ? Prisma.sql`DESC` : Prisma.sql`ASC`},
+        t.name ASC
+      LIMIT ${pageSize}
+      OFFSET ${(page - 1) * pageSize}
+    `;
+
     // 获取总数
     const total = await prisma.tag.count();
 
-    // 获取所有标签及其关联的服务数量
-    const tags = await prisma.tag.findMany({
-      include: {
-        _count: {
-          select: {
-            services: true,
-          },
-        },
-      },
-      orderBy: {
-        name: 'asc',
-      },
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-    });
-
-    // 格式化返回数据，添加服务数量
+    // 格式化返回数据
     const formattedTags = tags.map(tag => ({
       id: tag.id,
       name: tag.name,
       createdAt: tag.createdAt,
       updatedAt: tag.updatedAt,
-      serviceCount: tag._count.services,
+      serviceCount: Number(tag.serviceCount),
     }));
 
     const result = {

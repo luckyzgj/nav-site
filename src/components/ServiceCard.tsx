@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useServiceClick } from '@/hooks/useServiceClick';
 import { Tooltip } from 'antd';
 
@@ -45,7 +45,8 @@ const tooltipStyles = {
   },
 } as const;
 
-export default function ServiceCard({ service }: ServiceCardProps) {
+// 使用 React.memo 包装组件，避免不必要的重渲染
+const ServiceCard = React.memo(function ServiceCard({ service }: ServiceCardProps) {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -172,16 +173,16 @@ export default function ServiceCard({ service }: ServiceCardProps) {
       color="rgba(255, 115, 78, 0.95)"
       styles={{
         ...tooltipStyles,
-        body: {
-          ...tooltipStyles.body,
-          opacity: isVisible ? 1 : 0,
-          transition: 'opacity 0.2s ease-in-out',
-        },
       }}
       open={isVisible}
-      destroyTooltipOnHide={false}
+      destroyTooltipOnHide
     >
       {cardContent}
     </Tooltip>
   );
-}
+});
+
+// 添加显示名称，便于调试
+ServiceCard.displayName = 'ServiceCard';
+
+export default ServiceCard;
