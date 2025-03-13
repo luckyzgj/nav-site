@@ -5,6 +5,9 @@
  * 用于统一处理服务点击统计逻辑
  */
 export function useServiceClick() {
+  // 设置统一的来源值
+  const DEFAULT_REF_SOURCE = 'https://123.ss';
+
   /**
    * 处理服务点击事件
    * @param serviceId 服务ID
@@ -17,6 +20,7 @@ export function useServiceClick() {
     options?: {
       preventDefault?: boolean;
       event?: React.MouseEvent;
+      refSource?: string;
     }
   ) => {
     // 如果提供了事件且需要阻止默认行为
@@ -36,8 +40,15 @@ export function useServiceClick() {
       // 在生产环境中静默失败，不影响用户体验
     }
 
+    // 添加来源参数，始终使用默认来源
+    const refSource = DEFAULT_REF_SOURCE;
+
+    // 使用字符串拼接方式构建 URL，保持原始格式
+    const separator = url.includes('?') ? '&' : '?';
+    const finalUrl = `${url}${separator}ref=${refSource}`;
+
     // 无论记录是否成功，都打开URL
-    window.open(url, '_blank', 'noopener,noreferrer');
+    window.open(finalUrl, '_blank', 'noopener,noreferrer');
   };
 
   return handleServiceClick;
