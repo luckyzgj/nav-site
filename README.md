@@ -7,6 +7,7 @@
 - 前端：Next.js + TypeScript + Tailwind CSS
 - 后台：Ant Design
 - 数据库：MySQL
+- 缓存：Redis
 
 ## 功能特点
 
@@ -31,7 +32,7 @@ npm install
 
 ### 配置环境变量
 
-复制`.env.example`文件为`.env`，并根据实际情况修改配置：
+根目录创建`.env`文件，并根据实际情况修改配置：
 
 ```
 # 数据库配置
@@ -41,6 +42,16 @@ DATABASE_URL="mysql://用户名:密码@localhost:3306/数据库名"
 NEXT_PUBLIC_API_URL="http://localhost:3000/api"
 NEXT_PUBLIC_SITE_NAME="123导航"
 NEXT_PUBLIC_UPLOAD_DIR="uploads"
+```
+
+Redis 配置文件 /src/lib/redis.ts
+
+```
+const redis = new Redis({
+  host: 'localhost',
+  port: 6379,
+  db: 0,
+});
 ```
 
 ### 初始化数据库

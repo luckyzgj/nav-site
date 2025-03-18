@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   // 创建管理员账户
-  const password = 'admin123456'; // 默认密码
+  const password = 'admin123'; // 默认密码
   const hashedPassword = await hash(password, 10);
 
   const admin = await prisma.admin.create({
